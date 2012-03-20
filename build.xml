@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<project basedir="." default="run" name="arrows">
+
+  <property name="src" location="src"/>
+  <property name="build" location="bin"/>
+  <property name="pkg" value="arrows"/>
+  <property name="main_class" value="arrows"/>
+
+  <property name="TALK" value="false" />
+
+  <property name="java_ver" value="1.6" />
+
+  <target name="get-jvm">
+    <condition property="jvm.ok">
+      <equals arg1="${ant.java.version}" arg2="1.6"/>
+    </condition>
+  </target>
+
+  <target name="check-jvm" depends="get-jvm" unless="jvm.ok">
+    <fail message="Wrong JVM - ${ant.java.version}. Try setting or unsetting yo\
+ur JAVA_HOME"/>
+  </target>
+
+  <target name="clean">
+    <delete dir="${build}"/>
+  </target>
+
+  <target name="init">
+    <mkdir dir="${build}" />
+  </target>
+
+  <target name="c" depends="check-jvm, init">
+    <javac
+        srcdir="${src}"
+        destdir="${build}"
+        debug="on"
+        source="${java_ver}" >
+      <include name="*.java"/>
+      <include name="*/*.java"/>
+      <include name="*/*/*.java"/>
+    </javac>
+  </target>
+
+  <target name="run" depends="c">
+    <java
+        classname="${pkg}.${main_class}"
+        classpath="${build}">
+      <arg value="${args}"/>
+    </java>
+  </target>
+
+
+</project>
