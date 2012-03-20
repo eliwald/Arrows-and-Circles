@@ -30,7 +30,8 @@ public class Diagram implements Cloneable {
 		return _edges.add(e);
 	}
 
-	public Object clone() {
-		
+	public Object clone() throws CloneNotSupportedException {
+		Diagram cloned = (Diagram) super.clone();
+		return cloned;
 	}
 }
