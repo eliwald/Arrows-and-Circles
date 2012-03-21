@@ -12,9 +12,18 @@ public class Edge {
 	private EdgeDirection _direction;
 	private String _label;
 
-	public Edge(Node s, Node e) {
+	public Edge(Point2D.Double start, Point2D.Double end) {
+		_label = "";
+		_point_start = start;
+		_point_end = end;
+	}
+
+	public Edge(Node s, Node e, Point2D.Double start, Point2D.Double end) {
 		_start = s;
 		_end = e;
+		_label = "";
+		_point_start = start;
+		_point_end = end;
 	}
 
 	public void setLabel(String label) {
