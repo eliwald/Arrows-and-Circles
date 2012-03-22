@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.awt.geom.Point2D;
 import java.awt.Color;
+import java.awt.geom.Ellipse2D;
 
 public class Node {
 	private Point2D.Double _center;
@@ -13,6 +14,8 @@ public class Node {
 	private Color _color;
 	private boolean _startState;
 	private boolean _endState;
+        
+        private java.awt.geom.Ellipse2D.Double _circle;
 
 	public Node(double x, double y) {
 		_center = new Point2D.Double(x, y);
@@ -79,4 +82,15 @@ public class Node {
 	public void setEnd(boolean b){
 		_endState = b;
 	}
+        
+        public Ellipse2D.Double getCircle() {
+            return _circle;
+        }
+        
+        public Ellipse2D.Double resetCircle() {
+            _circle = new Ellipse2D.Double(_center.x-_radius, _center.y-_radius, _radius*2, _radius*2);
+            return _circle;
+            
+        }
+        
 }

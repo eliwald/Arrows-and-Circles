@@ -1,1 +1,3 @@
 bin/*
+/nbproject/private/
+/build/
