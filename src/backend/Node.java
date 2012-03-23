@@ -6,7 +6,7 @@ import java.awt.geom.Point2D;
 import java.awt.Color;
 import java.awt.geom.Ellipse2D;
 
-public class Node {
+public class Node /*implements Drawable, Cloneable*/ extends DiagramObject {
 	private Point2D.Double _center;
 	private double _radius;
 	private String _label;
@@ -15,7 +15,7 @@ public class Node {
 	private boolean _startState;
 	private boolean _endState;
         
-        private java.awt.geom.Ellipse2D.Double _circle;
+    private java.awt.geom.Ellipse2D.Double _circle;
 
 	public Node(double x, double y) {
 		_center = new Point2D.Double(x, y);
@@ -59,6 +59,14 @@ public class Node {
 		return _connected.remove(e);
 	}
 
+	public Collection<Edge> getConnected() {
+		return _connected;
+	}
+
+	public void setConnected(Collection<Edge> connected) {
+		_connected = connected;
+	}
+
 	public void setColor(Color c){
 		_color = c;
 	}
@@ -82,15 +90,20 @@ public class Node {
 	public void setEnd(boolean b){
 		_endState = b;
 	}
+
+	public Object clone() throws CloneNotSupportedException {
+		//TODO: Implement cloning
+		return null;
+	}
         
-        public Ellipse2D.Double getCircle() {
-            return _circle;
-        }
+    public Ellipse2D.Double getCircle() {
+        return _circle;
+    }
         
-        public Ellipse2D.Double resetCircle() {
-            _circle = new Ellipse2D.Double(_center.x-_radius, _center.y-_radius, _radius*2, _radius*2);
-            return _circle;
+    public Ellipse2D.Double resetCircle() {
+        _circle = new Ellipse2D.Double(_center.x-_radius, _center.y-_radius, _radius*2, _radius*2);
+        return _circle;
             
-        }
+    }
         
 }

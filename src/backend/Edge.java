@@ -2,7 +2,7 @@ package backend;
 
 import java.awt.geom.Point2D;
 
-public class Edge {
+public class Edge /*implements Drawable, Cloneable*/ extends DiagramObject {
 	private Node _start;
 	private Node _end;
 	private Point2D.Double _point_start;
@@ -48,5 +48,18 @@ public class Edge {
 
 	public Node getEnd() {
 		return _end;
+	}
+
+	public EdgeDirection getDirection() {
+		return _direction;
+	}
+
+	public void setDirection(EdgeDirection d){
+		_direction = d;
+	}
+
+	public Object clone() throws CloneNotSupportedException {
+		//TODO: Implement cloning
+		return null;
 	}
 }
