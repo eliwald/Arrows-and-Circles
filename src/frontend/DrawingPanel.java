@@ -9,8 +9,10 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import javax.swing.JPanel;
 import backend.*;
+import java.awt.BasicStroke;
 import java.awt.Graphics;
 import java.awt.geom.Line2D;
+import java.awt.geom.Point2D;
 
 /**
  *
@@ -52,7 +54,13 @@ public class DrawingPanel extends JPanel {
        super.paintComponent(g); 
        Graphics2D g2 = (Graphics2D)g;
        for (Node n : _diagram.getNodes()){
+           if (n.selected()){
+               g2.setColor(java.awt.Color.BLUE);
+               g2.setStroke(new BasicStroke(3));
+           }
            g2.draw(n.resetCircle());
+           g2.setColor(java.awt.Color.BLACK);
+           g2.setStroke(new BasicStroke(1));
        }
 
        for (Edge e: _diagram.getEdges()) {

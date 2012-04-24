@@ -17,6 +17,7 @@ public class Node implements DiagramObject, Cloneable {
 	private boolean _startState;
 	private boolean _endState;
     private Point _offset;
+    private boolean _selected;
         
     private java.awt.geom.Ellipse2D.Double _circle;
 
@@ -29,6 +30,7 @@ public class Node implements DiagramObject, Cloneable {
 		_startState = false;
 		_endState = false;
         _offset = new Point(0,0);
+        _selected = true;
 	}
 
 	public void setCenter(double x, double y){
@@ -130,6 +132,14 @@ public class Node implements DiagramObject, Cloneable {
         _circle = new Ellipse2D.Double(_center.x-_radius, _center.y-_radius, _radius*2, _radius*2);
         return _circle;
             
+    }
+
+    public boolean selected() {
+        return _selected;
+    }
+
+    public void setSelected(boolean b){
+        _selected = b;
     }
         
 }

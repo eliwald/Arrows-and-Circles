@@ -23,10 +23,17 @@ public class Edge implements Cloneable, DiagramObject {
 		_label = "";
 		_point_start = start;
 		_point_end = end;
+        this.resetLine();
 	}
 
     public Line2D.Double resetLine() {
-        Line2D.Double line = new Line2D.Double(_start.getCenter(),_end.getCenter());
+        double difX = _end.getCenter().x - _start.getCenter().x;
+        double difY = _end.getCenter().y - _start.getCenter().y;
+        double vecX = difX/Math.sqrt((difX*difX+difY*difY));
+        double vecY = difY/Math.sqrt((difX*difX+difY*difY));
+        _point_start = new Point2D.Double(_start.getCenter().x+(_start.getRadius()*vecX),_start.getCenter().y+(_start.getRadius()*vecY));
+        _point_end = new Point2D.Double(_end.getCenter().x-(_end.getRadius()*vecX),_end.getCenter().y-(_end.getRadius()*vecY));
+        Line2D.Double line = new Line2D.Double(_point_start,_point_end);
         return line;
 
     }
