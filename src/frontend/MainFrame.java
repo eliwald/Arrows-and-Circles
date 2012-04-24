@@ -16,6 +16,7 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.ImageIcon;
 
 /**
  *
@@ -279,8 +280,6 @@ public class MainFrame extends javax.swing.JFrame {
         );
 
         pack();
-        jSplitPane3.setDividerLocation(.5);
-        update(getGraphics());
     }// </editor-fold>//GEN-END:initComponents
 
     
