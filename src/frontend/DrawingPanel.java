@@ -34,10 +34,11 @@ public class DrawingPanel extends JPanel {
         return _diagram;
     }
     
-    public void addNode(Point p) {
+    public Node addNode(Point p) {
         Node n = new Node(p.x,p.y);
         _diagram.addNode(n);
         repaint();
+        return n;
         
     }
 

@@ -300,17 +300,34 @@ public class MainFrame extends javax.swing.JFrame {
     private void drawingPanel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_drawingPanel1MouseClicked
         // TODO add your handling code here:
         if (evt.getClickCount() >=2){
-            drawingPanel1.addNode(evt.getPoint());
+            Node add = drawingPanel1.addNode(evt.getPoint());
+            for (Node n : drawingPanel1.getDiagram().getNodes()){
+                n.setSelected(false);
+            }
+            add.setSelected(true);
         }
         else{
-            for (Node n : drawingPanel1.getDiagram().getNodes()){
-                if (n.getCircle().contains(evt.getPoint())){
-                    n.setSelected(true);
-                    drawingPanel1.repaint();
+            String mod = evt.getMouseModifiersText(evt.getModifiers());
+            System.out.println(mod);
+            if (mod.contains("Ctrl")) {
+    //            System.out.println("shift click");
+                for (Node n : drawingPanel1.getDiagram().getNodes()){
+                    if (n.getCircle().contains(evt.getPoint())){
+                        n.setSelected(true);
+                        drawingPanel1.repaint();
+                    }
                 }
-                else{
-                    n.setSelected(false);
-                    drawingPanel1.repaint();
+            }
+            else{
+                for (Node n : drawingPanel1.getDiagram().getNodes()){
+                    if (n.getCircle().contains(evt.getPoint())){
+                        n.setSelected(true);
+                        drawingPanel1.repaint();
+                    }
+                    else{
+                        n.setSelected(false);
+                        drawingPanel1.repaint();
+                    }
                 }
             }
         }
@@ -457,7 +474,7 @@ public class MainFrame extends javax.swing.JFrame {
             drawingPanel1._progressLine = new Line2D.Double(point_start, _mouseLoc);
             drawingPanel1.repaint();
         }*/
-        System.out.println(_shift);
+//        System.out.println(_shift);
         if (_shift) {
             Node currNode = null;
             Point newp = new Point(evt.getX(),evt.getY());
