@@ -19,6 +19,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 /**
  *
@@ -99,9 +102,12 @@ public class MainFrame extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Arrows & Circles Alpha");
 
-        jTabbedPane1.addChangeListener(new javax.swing.event.ChangeListener() {
-            public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                jTabbedPane1StateChanged(evt);
+        jTabbedPane1.addChangeListener(new ChangeListener(){
+            public void stateChanged(ChangeEvent evt){
+                if (((JTabbedPane)evt.getSource()).getSelectedComponent() != null) {
+                    jScrollPane1 = (JScrollPane)((JTabbedPane)evt.getSource()).getSelectedComponent();
+                    drawingPanel1 = (DrawingPanel)jScrollPane1.getViewport().getView();
+                }
             }
         });
 
@@ -209,7 +215,7 @@ public class MainFrame extends javax.swing.JFrame {
                 .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addGap(0, 64, Short.MAX_VALUE))
         );
 
         jSplitPane3.setLeftComponent(jInternalFrame1);
@@ -247,7 +253,7 @@ public class MainFrame extends javax.swing.JFrame {
                     .addComponent(jRadioButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jRadioButton2)
                     .addComponent(jRadioButton3))
-                .addContainerGap(517, Short.MAX_VALUE))
+                .addContainerGap(250, Short.MAX_VALUE))
         );
 
         jSplitPane3.setRightComponent(jInternalFrame2);
@@ -618,12 +624,6 @@ public class MainFrame extends javax.swing.JFrame {
         _edgePressed = false;
 
     }//GEN-LAST:event_drawingPanel1MouseReleased
-
-    private void jTabbedPane1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jTabbedPane1StateChanged
-        // TODO add your handling code here:
-//        JScrollPane p = (JScrollPane)jTabbedPane1.getSelectedComponent();
-//        drawingPanel1 = (DrawingPanel)p.getComponent(0);
-    }//GEN-LAST:event_jTabbedPane1StateChanged
 
     private void jRadioButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton1ActionPerformed
         // TODO add your handling code here:
