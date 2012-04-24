@@ -44,23 +44,23 @@ public class Diagram implements Cloneable {
 		return _nodes;
 	}
 
-	public void setNodes(Collection<Node> nodes) {
-		_nodes = nodes;
-	}
-
 	public Collection<Edge> getEdges() {
 		return _edges;
 	}
 
-	public void setEdges(Collection<Edge> edges) {
-		_edges = edges;
-	}
-
 	public Object clone() throws CloneNotSupportedException {
 		Diagram cloned = (Diagram) super.clone();
-		/*cloned.setNodes((Collection<Node>) _nodes.clone());
-		cloned.setEdges((Collection<Edge>) _edges.clone());
-		cloned.setName(getName());*/
+		cloned.setName(getName());
+		Collection<Node> cloned_nodes = cloned.getNodes();
+		Collection<Node> old_nodes = getNodes();
+		Collection<Edge> cloned_edges = cloned.getEdges();
+		Collection<Edge> old_edges = getEdges();
+		for (Node n : old_nodes) {
+			cloned_nodes.add(n.clone());
+		}
+		for (Edge e : old_edges) {
+			cloned_edges.add(e.clone());
+		}
 		return cloned;
 	}
 
@@ -100,5 +100,10 @@ public class Diagram implements Cloneable {
 			simulation.add(tempEdgeTaken);
 		}
 		return simulation;
+	}
+
+	public static void main(String[] args) {
+		Diagram dia = new Diagram();
+
 	}
 }
