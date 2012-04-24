@@ -4,8 +4,9 @@
   <property name="src" location="${basedir}/src"/>
   <property name="lib" location="${basedir}/lib"/>
   <property name="build" location="${basedir}/bin"/>
-  <property name="pkg" value="arrows"/>
-  <property name="main_class" value="arrows"/>
+  <property name="pkg" value="frontend"/>
+  <property name="args" value="" />
+  <property name="main_class" value="MainFrame"/>
 
   <property name="TALK" value="false" />
 
