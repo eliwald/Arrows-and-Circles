@@ -286,7 +286,6 @@ public class MainFrame extends javax.swing.JFrame {
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
         // TODO add your handling code here:
         jTabbedPane1.addTab("Untitled", new DrawingPanel());
-        
     }//GEN-LAST:event_jMenuItem3ActionPerformed
 
     private void jMenuItem5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem5ActionPerformed
@@ -336,14 +335,11 @@ public class MainFrame extends javax.swing.JFrame {
 
             }
             else {
-//                System.out.println("cool dude");
                 double difX = _mouseLoc.x - _edgeStart.getCenter().x;
                 double difY = _mouseLoc.y - _edgeStart.getCenter().y;
                 double vecX = difX/Math.sqrt((difX*difX+difY*difY));
                 double vecY = difY/Math.sqrt((difX*difX+difY*difY));
                 Point2D.Double point_start = new Point2D.Double(_edgeStart.getCenter().x+(_edgeStart.getRadius()*vecX),_edgeStart.getCenter().y+(_edgeStart.getRadius()*vecY));
-
-//                System.out.println(evt.getPoint());
                 drawingPanel1._progressLine = new Line2D.Double(point_start, _mouseLoc);
             }
 
@@ -369,9 +365,7 @@ public class MainFrame extends javax.swing.JFrame {
             }
         }
         String mod = evt.getMouseModifiersText(evt.getModifiers());
-//        System.out.println(mod);
         if (mod.contains("Shift")) {
-//            System.out.println("shift click");
             _edgePressed = true;
         }
     }//GEN-LAST:event_drawingPanel1MousePressed
@@ -440,8 +434,6 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void drawingPanel1MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_drawingPanel1MouseMoved
         // TODO add your handling code here:
-        //System.out.println(evt.getPoint());
-//        System.out.println(_edgeStart);
 
         drawingPanel1.grabFocus();
         _mouseLoc = evt.getPoint();
@@ -457,7 +449,6 @@ public class MainFrame extends javax.swing.JFrame {
             drawingPanel1._progressLine = new Line2D.Double(point_start, _mouseLoc);
             drawingPanel1.repaint();
         }*/
-        System.out.println(_shift);
         if (_shift) {
             Node currNode = null;
             Point newp = new Point(evt.getX(),evt.getY());
@@ -506,12 +497,12 @@ public class MainFrame extends javax.swing.JFrame {
             }
             else {
                 for (Node n : drawingPanel1.getDiagram().getNodes()) {
-                        if (n.getCircle().contains(_mouseLoc)) {
-                            drawingPanel1.addEdge(_edgeStart, n);
-                            drawingPanel1._progressLine = null;
-                            drawingPanel1.repaint();
-                            break;
-                         }
+                    if (n.getCircle().contains(_mouseLoc)) {
+                        drawingPanel1.addEdge(_edgeStart, n);
+                        drawingPanel1._progressLine = null;
+                        drawingPanel1.repaint();
+                        break;
+                     }
                 }
                 _edgeStart = null;
                 drawingPanel1._progressLine = null;

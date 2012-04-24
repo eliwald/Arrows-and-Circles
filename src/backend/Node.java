@@ -23,7 +23,7 @@ public class Node implements DiagramObject, Cloneable {
 
 	public Node(double x, double y) {
 		_center = new Point2D.Double(x, y);
-		_radius = 20;
+		_radius = 30;
 		_label = "";
 		_connected = new HashSet<Edge>();
 		_color = Color.BLACK;
