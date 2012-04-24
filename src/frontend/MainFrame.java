@@ -31,6 +31,7 @@ public class MainFrame extends javax.swing.JFrame {
     private boolean _edgePressed = false;
     private boolean _shift = false;
     private Robot _robot;
+    private int _numSelected = 0;
 
     /**
      * Creates new form MainFram
@@ -215,7 +216,7 @@ public class MainFrame extends javax.swing.JFrame {
             .addGroup(jInternalFrame3Layout.createSequentialGroup()
                 .addGap(24, 24, 24)
                 .addComponent(jToggleButton1)
-                .addContainerGap(487, Short.MAX_VALUE))
+                .addContainerGap(488, Short.MAX_VALUE))
         );
 
         jSplitPane3.setRightComponent(jInternalFrame3);
@@ -301,28 +302,34 @@ public class MainFrame extends javax.swing.JFrame {
     private void drawingPanel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_drawingPanel1MouseClicked
         // TODO add your handling code here:
         if (evt.getClickCount() >=2){
+            _numSelected = 0;
             drawingPanel1.addNode(evt.getPoint());
             Node add = drawingPanel1.addNode(evt.getPoint());
             for (Node n : drawingPanel1.getDiagram().getNodes()){
                 n.setSelected(false);
             }
             add.setSelected(true);
+            _numSelected++;
         }
         else{
             String mod = evt.getMouseModifiersText(evt.getModifiers());
             System.out.println(mod);
-            if (mod.contains("Ctrl")) {
+            if (mod.equals("Ctrl+Button1")) {
+    //            System.out.println("shift click");
                 for (Node n : drawingPanel1.getDiagram().getNodes()){
                     if (n.getCircle().contains(evt.getPoint())){
                         n.setSelected(true);
+                        _numSelected++;
                         drawingPanel1.repaint();
                     }
                 }
             }
             else{
+                _numSelected = 0;
                 for (Node n : drawingPanel1.getDiagram().getNodes()){
                     if (n.getCircle().contains(evt.getPoint())){
                         n.setSelected(true);
+                        _numSelected++;
                         drawingPanel1.repaint();
                     }
                     else{
@@ -332,6 +339,7 @@ public class MainFrame extends javax.swing.JFrame {
                 }
             }
         }
+        System.out.println("selected: " + _numSelected);
     }//GEN-LAST:event_drawingPanel1MouseClicked
 
     private void drawingPanel1MouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_drawingPanel1MouseDragged
