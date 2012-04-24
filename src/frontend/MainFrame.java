@@ -279,6 +279,8 @@ public class MainFrame extends javax.swing.JFrame {
         );
 
         pack();
+        jSplitPane3.setDividerLocation(.5);
+        update(getGraphics());
     }// </editor-fold>//GEN-END:initComponents
 
     
