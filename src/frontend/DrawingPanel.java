@@ -10,6 +10,7 @@ import java.awt.Point;
 import javax.swing.JPanel;
 import backend.*;
 import java.awt.Graphics;
+import java.awt.geom.Line2D;
 
 /**
  *
@@ -19,6 +20,8 @@ import java.awt.Graphics;
 public class DrawingPanel extends JPanel {
     
     private Diagram _diagram;
+
+    public static Line2D.Double _progressLine;
     
     public DrawingPanel() {
         _diagram = new Diagram();
@@ -30,12 +33,18 @@ public class DrawingPanel extends JPanel {
     }
     
     public void addNode(Point p) {
-        System.out.println("shit");
         Node n = new Node(p.x,p.y);
         _diagram.addNode(n);
         repaint();
         
     }
+
+    public void addEdge(Node n1, Node n2) {
+        Edge e = new Edge(n1,n2,n1.getCenter(),n2.getCenter());
+        _diagram.addEdge(e);
+        repaint();
+    }
+
     
     
     @Override
@@ -45,6 +54,13 @@ public class DrawingPanel extends JPanel {
        for (Node n : _diagram.getNodes()){
            g2.draw(n.resetCircle());
        }
+
+       for (Edge e: _diagram.getEdges()) {
+           g2.draw(e.resetLine());
+       }
+
+       if (_progressLine != null)
+            g2.draw(_progressLine);
        
     }
     

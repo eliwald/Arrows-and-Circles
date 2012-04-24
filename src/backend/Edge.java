@@ -1,5 +1,6 @@
 package backend;
 
+import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 
 public class Edge /*implements Drawable, Cloneable*/ extends DiagramObject {
@@ -25,6 +26,12 @@ public class Edge /*implements Drawable, Cloneable*/ extends DiagramObject {
 		_point_start = start;
 		_point_end = end;
 	}
+
+    public Line2D.Double resetLine() {
+        Line2D.Double line = new Line2D.Double(_start.getCenter(),_end.getCenter());
+        return line;
+
+    }
 
 	public void setLabel(String label) {
 		_label = label;

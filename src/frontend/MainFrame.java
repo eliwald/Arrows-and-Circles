@@ -4,8 +4,11 @@
  */
 package frontend;
 
+import backend.Edge;
 import backend.Node;
 import java.awt.Point;
+import java.awt.geom.Line2D;
+import java.util.ArrayList;
 
 /**
  *
@@ -13,10 +16,16 @@ import java.awt.Point;
  */
 public class MainFrame extends javax.swing.JFrame {
 
+    private Node _selected;
+    private Node _edgeStart;
+    private Point _mouseLoc;
+    private boolean _edgePressed = false;
+
     /**
      * Creates new form MainFram
      */
     public MainFrame() {
+
         initComponents();
     }
 
@@ -81,6 +90,14 @@ public class MainFrame extends javax.swing.JFrame {
             public void mouseDragged(java.awt.event.MouseEvent evt) {
                 drawingPanel1MouseDragged(evt);
             }
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                drawingPanel1MouseMoved(evt);
+            }
+        });
+        drawingPanel1.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                drawingPanel1KeyPressed(evt);
+            }
         });
 
         javax.swing.GroupLayout drawingPanel1Layout = new javax.swing.GroupLayout(drawingPanel1);
@@ -135,7 +152,7 @@ public class MainFrame extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jSlider1, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 199, Short.MAX_VALUE)
+                    .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 222, Short.MAX_VALUE)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(56, Short.MAX_VALUE))
         );
@@ -153,7 +170,7 @@ public class MainFrame extends javax.swing.JFrame {
                 .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 31, Short.MAX_VALUE))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         jSplitPane3.setLeftComponent(jInternalFrame1);
@@ -170,14 +187,14 @@ public class MainFrame extends javax.swing.JFrame {
             .addGroup(jInternalFrame3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jToggleButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(266, Short.MAX_VALUE))
+                .addContainerGap(287, Short.MAX_VALUE))
         );
         jInternalFrame3Layout.setVerticalGroup(
             jInternalFrame3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jInternalFrame3Layout.createSequentialGroup()
                 .addGap(24, 24, 24)
                 .addComponent(jToggleButton1)
-                .addContainerGap(251, Short.MAX_VALUE))
+                .addContainerGap(487, Short.MAX_VALUE))
         );
 
         jSplitPane3.setRightComponent(jInternalFrame3);
@@ -270,21 +287,66 @@ public class MainFrame extends javax.swing.JFrame {
     private void drawingPanel1MouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_drawingPanel1MouseDragged
         // TODO add your handling code here:
         Point newp = new Point(evt.getX(),evt.getY());
-        for (Node n : drawingPanel1.getDiagram().getNodes()) {
-            if (n.getCircle().contains(newp)) {
-                double difX = n.getCenter().x  - evt.getX();
-                double difY = n.getCenter().y  - evt.getY();
-//                n.setCenter(evt.getX()+difX, evt.getY()+difY);
-                n.setCenter(evt.getX(), evt.getY());
-                n.resetCircle();
-                drawingPanel1.repaint();
-            }
+        if (_selected != null && drawingPanel1.contains(evt.getPoint())){
+            _selected.setCenter(evt.getX()-_selected.getOffset().x, evt.getY()-_selected.getOffset().y);
+            _selected.resetCircle();
+            drawingPanel1.repaint();
         }
+        
     }//GEN-LAST:event_drawingPanel1MouseDragged
 
     private void drawingPanel1MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_drawingPanel1MousePressed
         // TODO add your handling code here:
+        Point newp = new Point(evt.getX(),evt.getY());
+        _selected = null;
+        for (Node n : drawingPanel1.getDiagram().getNodes()) {
+            if (n.getCircle().contains(newp)) {
+                _selected = n;
+                n.setOffset(evt.getX() - n.getCenter().x, evt.getY() - n.getCenter().y);
+            }
+        }
     }//GEN-LAST:event_drawingPanel1MousePressed
+
+    private void drawingPanel1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_drawingPanel1KeyPressed
+        // TODO add your handling code here:
+        if (!_edgePressed) {
+            for (Node n : drawingPanel1.getDiagram().getNodes()) {
+                if (n.getCircle().contains(_mouseLoc)) {
+                    _edgeStart = n;
+                }
+            }
+        }
+        else {
+            for (Node n : drawingPanel1.getDiagram().getNodes()) {
+                if (n.getCircle().contains(_mouseLoc)) {
+                    System.out.println("second");
+                    drawingPanel1.addEdge(_edgeStart, n);
+
+                    break;
+                }
+            }
+            _edgeStart = null;
+            drawingPanel1._progressLine = null;
+            drawingPanel1.repaint();
+        }
+
+        _edgePressed = !_edgePressed;
+    }//GEN-LAST:event_drawingPanel1KeyPressed
+
+    private void drawingPanel1MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_drawingPanel1MouseMoved
+        // TODO add your handling code here:
+        //System.out.println(evt.getPoint());
+//        System.out.println(_edgeStart);
+
+        drawingPanel1.grabFocus();
+
+        _mouseLoc = evt.getPoint();
+        if (_edgeStart != null) {
+            System.out.println(evt.getPoint());
+            drawingPanel1._progressLine = new Line2D.Double(_mouseLoc,_edgeStart.getCenter());
+            drawingPanel1.repaint();
+        }
+    }//GEN-LAST:event_drawingPanel1MouseMoved
 
     /**
      * @param args the command line arguments
