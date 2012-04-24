@@ -37,6 +37,9 @@ public class DrawingPanel extends JPanel {
     public Node addNode(Point p) {
         Node n = new Node(p.x,p.y);
         _diagram.addNode(n);
+        this.add(n.getTextField());
+        n.getTextField().setText("n"+_diagram.getNodes().size());
+        System.out.println("added text area");
         repaint();
         return n;
         

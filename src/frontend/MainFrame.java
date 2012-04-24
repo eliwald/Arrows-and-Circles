@@ -11,6 +11,7 @@ import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.Robot;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
@@ -382,7 +383,8 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void drawingPanel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_drawingPanel1MouseClicked
         // TODO add your handling code here:
-        if (evt.getClickCount() >=2){
+        String mod = MouseEvent.getMouseModifiersText(evt.getModifiers());
+        if (evt.getClickCount() >=2 && mod.equals("Button1")){
             _numSelected = 0;
             Node add = drawingPanel1.addNode(evt.getPoint());
             for (Node n : drawingPanel1.getDiagram().getNodes()){
@@ -392,7 +394,7 @@ public class MainFrame extends javax.swing.JFrame {
             _numSelected++;
         }
         else{
-            String mod = evt.getMouseModifiersText(evt.getModifiers());
+            
             if (mod.equals("Ctrl+Button1")) {
                 System.out.println("ctrl click");
                 for (Node n : drawingPanel1.getDiagram().getNodes()){
@@ -412,16 +414,19 @@ public class MainFrame extends javax.swing.JFrame {
             else{
                 _numSelected = 0;
                 for (Node n : drawingPanel1.getDiagram().getNodes()){
+                    n.setSelected(false);
+                    //when there is only one node selected, make text area accessible for that node only
+                    n.getTextField().setVisible(false);
+                }
+                for (Node n : drawingPanel1.getDiagram().getNodes()){
                     if (n.getCircle().contains(evt.getPoint())){
                         n.setSelected(true);
+                        n.getTextField().setVisible(true);
                         _numSelected++;
-                        drawingPanel1.repaint();
-                    }
-                    else{
-                        n.setSelected(false);
-                        drawingPanel1.repaint();
+                        break;
                     }
                 }
+                drawingPanel1.repaint();
             }
         }
         System.out.println("selected: " + _numSelected);
