@@ -15,6 +15,7 @@ public class Edge implements Cloneable, DiagramObject {
 		_label = "";
 		_point_start = start;
 		_point_end = end;
+		_direction = EdgeDirection.SINGLE;
 	}
 
 	public Edge(Node s, Node e, Point2D.Double start, Point2D.Double end) {
@@ -23,12 +24,12 @@ public class Edge implements Cloneable, DiagramObject {
 		_label = "";
 		_point_start = start;
 		_point_end = end;
+		_direction = EdgeDirection.SINGLE;
 	}
 
     public Line2D.Double resetLine() {
         Line2D.Double line = new Line2D.Double(_start.getCenter(),_end.getCenter());
         return line;
-
     }
 
 	public void setLabel(String label) {

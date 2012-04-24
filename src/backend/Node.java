@@ -79,10 +79,6 @@ public class Node implements DiagramObject, Cloneable {
 		return _connected;
 	}
 
-	public void setConnected(Collection<Edge> connected) {
-		_connected = connected;
-	}
-
 	public void setColor(Color c){
 		_color = c;
 	}
