@@ -44,16 +44,8 @@ public class Diagram implements Cloneable {
 		return _nodes;
 	}
 
-	public void setNodes(Collection<Node> nodes) {
-		_nodes = nodes;
-	}
-
 	public Collection<Edge> getEdges() {
 		return _edges;
-	}
-
-	public void setEdges(Collection<Edge> edges) {
-		_edges = edges;
 	}
 
 	public Object clone() throws CloneNotSupportedException {
@@ -100,5 +92,10 @@ public class Diagram implements Cloneable {
 			simulation.add(tempEdgeTaken);
 		}
 		return simulation;
+	}
+
+	public static void main(String[] args) {
+		Diagram dia = new Diagram();
+
 	}
 }
