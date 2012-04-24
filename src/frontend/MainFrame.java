@@ -467,10 +467,6 @@ public class MainFrame extends javax.swing.JFrame {
             drawingPanel1._progressLine = new Line2D.Double(point_start, _mouseLoc);
             drawingPanel1.repaint();
         }*/
-<<<<<<< HEAD
-=======
-//        System.out.println(_shift);
->>>>>>> 4079efc95c616c86554f51f2373883583114d120
         if (_shift) {
             Node currNode = null;
             Point newp = new Point(evt.getX(),evt.getY());
