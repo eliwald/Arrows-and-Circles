@@ -96,8 +96,9 @@ public class Diagram implements Cloneable {
 						throw new InvalidDeterministicFSMException("A single node can't go to multiple nodes on the same input.");
 				}
 			}
-			simulation.add(tempDest);
 			simulation.add(tempEdgeTaken);
+			simulation.add(tempDest);
+			tempNode = tempDest;
 		}
 		return simulation;
 	}
