@@ -64,7 +64,7 @@ public class Diagram implements Cloneable {
 		return cloned;
 	}
 
-	public List<DiagramObject> deterministicSimulation(String input) throws InvalidDeterministicFSMException {
+	public List<DiagramObject> deterministicSimulation(String input) throws InvalidDFSMException {
 		String tempInput;
 		Node tempNode = null;
 		Node tempDest = null;
@@ -76,7 +76,7 @@ public class Diagram implements Cloneable {
 		HashSet<String> temp_edge_labels = new HashSet<String>();
 
 		if (_nodes.size() == 0)
-			throw new InvalidDeterministicFSMException("There are no nodes in the FSM.\n");
+			throw new InvalidDFSMException("There are no nodes in the FSM.\n");
 
 		for (Node n : _nodes) {
 			if (n.isStart()) {
@@ -159,7 +159,7 @@ public class Diagram implements Cloneable {
 		}
 
 		if (!message.equals(""))
-			throw new InvalidDeterministicFSMException(message);
+			throw new InvalidDFSMException(message);
 		for (int i = 0; i < input.length(); i ++) {
 			tempInput = input.substring(i, i+1);
 			for (Edge e : tempNode.getConnected()){
