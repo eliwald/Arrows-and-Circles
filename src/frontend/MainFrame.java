@@ -301,16 +301,33 @@ public class MainFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
         if (evt.getClickCount() >=2){
             drawingPanel1.addNode(evt.getPoint());
-    
-        else{
+            Node add = drawingPanel1.addNode(evt.getPoint());
             for (Node n : drawingPanel1.getDiagram().getNodes()){
-                if (n.getCircle().contains(evt.getPoint())){
-                    n.setSelected(true);
-                    drawingPanel1.repaint();
+                n.setSelected(false);
+            }
+            add.setSelected(true);
+        }
+        else{
+            String mod = evt.getMouseModifiersText(evt.getModifiers());
+            System.out.println(mod);
+            if (mod.contains("Ctrl")) {
+                for (Node n : drawingPanel1.getDiagram().getNodes()){
+                    if (n.getCircle().contains(evt.getPoint())){
+                        n.setSelected(true);
+                        drawingPanel1.repaint();
+                    }
                 }
-                else{
-                    n.setSelected(false);
-                    drawingPanel1.repaint();
+            }
+            else{
+                for (Node n : drawingPanel1.getDiagram().getNodes()){
+                    if (n.getCircle().contains(evt.getPoint())){
+                        n.setSelected(true);
+                        drawingPanel1.repaint();
+                    }
+                    else{
+                        n.setSelected(false);
+                        drawingPanel1.repaint();
+                    }
                 }
             }
         }
@@ -450,6 +467,10 @@ public class MainFrame extends javax.swing.JFrame {
             drawingPanel1._progressLine = new Line2D.Double(point_start, _mouseLoc);
             drawingPanel1.repaint();
         }*/
+<<<<<<< HEAD
+=======
+//        System.out.println(_shift);
+>>>>>>> 4079efc95c616c86554f51f2373883583114d120
         if (_shift) {
             Node currNode = null;
             Point newp = new Point(evt.getX(),evt.getY());
