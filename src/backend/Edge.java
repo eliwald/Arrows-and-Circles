@@ -75,10 +75,10 @@ public class Edge implements Cloneable, DiagramObject {
 	public Object clone() throws CloneNotSupportedException {
 		Edge cloned = (Edge) super.clone();
 		cloned.setLabel(getLabel());
-		cloned.setStartNode(getStartNode());
-		cloned.setEndNode(getEndNode());
-		cloned.setStartPoint(getStartPoint());
-		cloned.setEndPoint(getEndPoint());
+		cloned.setStartNode((Node) getStartNode().clone());
+		cloned.setEndNode((Node) getEndNode().clone());
+		cloned.setStartPoint((Point2D.Double) getStartPoint().clone());
+		cloned.setEndPoint((Point2D.Double) getEndPoint().clone());
 		cloned.setDirection(getDirection());
 		return cloned;
 	}

@@ -51,9 +51,9 @@ public class Diagram implements Cloneable {
 	public Object clone() throws CloneNotSupportedException {
 		Diagram cloned = (Diagram) super.clone();
 		cloned.setName(getName());
-		Collection<Node> cloned_nodes = cloned.getNodes();
+		Collection<Node> cloned_nodes = new HashSet<Node>();
 		Collection<Node> old_nodes = getNodes();
-		Collection<Edge> cloned_edges = cloned.getEdges();
+		Collection<Edge> cloned_edges = new HashSet<Edge>();
 		Collection<Edge> old_edges = getEdges();
 		for (Node n : old_nodes) {
 			cloned_nodes.add((Node) n.clone());
