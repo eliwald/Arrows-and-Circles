@@ -287,7 +287,7 @@ public class MainFrame extends javax.swing.JFrame {
   
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
         // TODO add your handling code here:
-        jTabbedPane1.addTab("Untitled", new DrawingPanel());
+        jTabbedPane1.addTab("Untitled", new ImageIcon("frontend/ask.png"), new DrawingPanel());
         jTabbedPane1.setSelectedIndex(jTabbedPane1.getTabCount() - 1);
     }//GEN-LAST:event_jMenuItem3ActionPerformed
 
