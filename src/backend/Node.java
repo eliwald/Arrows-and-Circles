@@ -7,11 +7,13 @@ import java.awt.Color;
 import java.awt.Point;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D.Double;
+import javax.swing.JTextArea;
 
 public class Node implements DiagramObject, Cloneable {
 	private Point2D.Double _center;
 	private double _radius;
 	private String _label;
+    private JTextArea _area;
 	private Collection<Edge> _connected;
 	private Color _color;
 	private boolean _startState;
