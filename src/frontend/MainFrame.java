@@ -267,7 +267,51 @@ public class MainFrame extends javax.swing.JFrame {
   
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
         // TODO add your handling code here:
-        jTabbedPane1.addTab("Untitled", new ImageIcon("frontend/ask.png"), new DrawingPanel());
+        javax.swing.JScrollPane newPane = new javax.swing.JScrollPane();
+        DrawingPanel newPanel = new DrawingPanel();
+        newPane.setViewportView(newPanel);
+        jScrollPane1 = newPane;
+        drawingPanel1 = newPanel;
+        drawingPanel1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                drawingPanel1MouseClicked(evt);
+            }
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                drawingPanel1MousePressed(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                drawingPanel1MouseReleased(evt);
+            }
+        });
+        drawingPanel1.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseDragged(java.awt.event.MouseEvent evt) {
+                drawingPanel1MouseDragged(evt);
+            }
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                drawingPanel1MouseMoved(evt);
+            }
+        });
+        drawingPanel1.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                drawingPanel1KeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                drawingPanel1KeyReleased(evt);
+            }
+        });
+
+        javax.swing.GroupLayout drawingPanel1Layout = new javax.swing.GroupLayout(drawingPanel1);
+        drawingPanel1.setLayout(drawingPanel1Layout);
+        drawingPanel1Layout.setHorizontalGroup(
+            drawingPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 599, Short.MAX_VALUE)
+        );
+        drawingPanel1Layout.setVerticalGroup(
+            drawingPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 778, Short.MAX_VALUE)
+        );
+
+        jTabbedPane1.addTab("Untitled", new ImageIcon("frontend/ask.png"), jScrollPane1);
         jTabbedPane1.setSelectedIndex(jTabbedPane1.getTabCount() - 1);
     }//GEN-LAST:event_jMenuItem3ActionPerformed
 

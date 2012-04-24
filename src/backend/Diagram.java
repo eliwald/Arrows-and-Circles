@@ -9,7 +9,6 @@ public class Diagram implements Cloneable {
 	private Collection<Node> _nodes;
 	private Collection<Edge> _edges;
 	private String _name;
-	private String _input_alphabet;
 
 	public Diagram() {
 		_nodes = new HashSet<Node>();
@@ -47,10 +46,6 @@ public class Diagram implements Cloneable {
 
 	public Collection<Edge> getEdges() {
 		return _edges;
-	}
-
-	public String getInputAlphabet() {
-		return _input_alphabet;
 	}
 
 	public Object clone() throws CloneNotSupportedException {
@@ -125,11 +120,6 @@ public class Diagram implements Cloneable {
 				message += !e.getLabel().equals("") ? "Edge " + e.getLabel() + " doesn't have a start or end node.\n"
 														: "There is an edge without a start or end node.\n";
 		}
-
-		if (!tempNode.getLabel().equals(""))
-			_input_alphabet = "Basing input alphabet off edges from node " + tempNode.getLabel() + ".\n";
-		else
-			_input_alphabet = "Basing input alphabet off unlabeled node.\n";
 
 		for (Edge e : tempNode.getConnected()) {
 			if (e.getDirection() == EdgeDirection.SINGLE && e.getStartNode() == tempNode && !e.getLabel().equals("")) {
