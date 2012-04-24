@@ -7,7 +7,7 @@ import java.awt.Color;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D.Double;
 
-public class Node implements DiagramObject, Cloneable /*, Drawable */ {
+public class Node implements DiagramObject, Cloneable {
 	private Point2D.Double _center;
 	private double _radius;
 	private String _label;
@@ -68,7 +68,7 @@ public class Node implements DiagramObject, Cloneable /*, Drawable */ {
 		_connected = connected;
 	}
 
-	public void setColor(Color c){
+	public void setColor(Color c){Edge
 		_color = c;
 	}
 
@@ -93,12 +93,18 @@ public class Node implements DiagramObject, Cloneable /*, Drawable */ {
 	}
 
 	public Object clone() throws CloneNotSupportedException {
-		Node nodeClone = (Node) super.clone();
-		nodeClone._center = (Double) _center.clone();
-		nodeClone._radius = _radius;
-		nodeClone._label = _label;
-		nodeClone._connected = _connected.
-		return nodeClone;
+		Node clonedObject = (Node) super.clone();
+		clonedObject._center = (Double) _center.clone();
+		clonedObject._radius = _radius;
+		clonedObject._label = _label;
+		clonedObject._connected = new HashSet<Edge>();
+		for(Edge e : _connected) {
+			clonedObject._connected.add((Edge) e.clone());
+		}
+		clonedObject._color = (Color) super.clone();
+		clonedObject._startState = _startState;
+		clonedObject._endState = _endState;
+		return clonedObject;
 	}
         
     public Ellipse2D.Double getCircle() {
