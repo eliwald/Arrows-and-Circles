@@ -5,8 +5,9 @@ import java.util.HashSet;
 import java.awt.geom.Point2D;
 import java.awt.Color;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Point2D.Double;
 
-public class Node /*implements Drawable, Cloneable*/ extends DiagramObject {
+public class Node implements DiagramObject, Cloneable /*, Drawable */ {
 	private Point2D.Double _center;
 	private double _radius;
 	private String _label;
@@ -35,10 +36,10 @@ public class Node /*implements Drawable, Cloneable*/ extends DiagramObject {
 		return _center;
 	}
 
-	public void setRadius(double r){
-		_radius = r;
+	public void setRadius(double radius){
+		_radius = radius;
 	}
-
+	hi
 	public double getRadius() {
 		return _radius;
 	}
@@ -92,8 +93,12 @@ public class Node /*implements Drawable, Cloneable*/ extends DiagramObject {
 	}
 
 	public Object clone() throws CloneNotSupportedException {
-		//TODO: Implement cloning
-		return null;
+		Node nodeClone = (Node) super.clone();
+		nodeClone._center = (Double) _center.clone();
+		nodeClone._radius = _radius;
+		nodeClone._label = _label;
+		nodeClone._connected = _connected.
+		return nodeClone;
 	}
         
     public Ellipse2D.Double getCircle() {
