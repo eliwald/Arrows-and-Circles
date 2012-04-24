@@ -39,7 +39,7 @@ public class Node implements DiagramObject, Cloneable {
 	public void setRadius(double radius){
 		_radius = radius;
 	}
-	hi
+	
 	public double getRadius() {
 		return _radius;
 	}
@@ -68,7 +68,7 @@ public class Node implements DiagramObject, Cloneable {
 		_connected = connected;
 	}
 
-	public void setColor(Color c){Edge
+	public void setColor(Color c){
 		_color = c;
 	}
 
