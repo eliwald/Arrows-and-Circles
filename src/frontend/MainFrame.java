@@ -286,6 +286,7 @@ public class MainFrame extends javax.swing.JFrame {
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
         // TODO add your handling code here:
         jTabbedPane1.addTab("Untitled", new DrawingPanel());
+        jTabbedPane1.setSelectedIndex(jTabbedPane1.getTabCount() - 1);
     }//GEN-LAST:event_jMenuItem3ActionPerformed
 
     private void jMenuItem5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem5ActionPerformed
@@ -300,7 +301,7 @@ public class MainFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
         if (evt.getClickCount() >=2){
             drawingPanel1.addNode(evt.getPoint());
-        }
+    
         else{
             for (Node n : drawingPanel1.getDiagram().getNodes()){
                 if (n.getCircle().contains(evt.getPoint())){
