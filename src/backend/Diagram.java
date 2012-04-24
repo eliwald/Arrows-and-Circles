@@ -9,6 +9,7 @@ public class Diagram implements Cloneable {
 	private Collection<Node> _nodes;
 	private Collection<Edge> _edges;
 	private String _name;
+	private String _input_alphabet;
 
 	public Diagram() {
 		_nodes = new HashSet<Node>();
@@ -48,6 +49,10 @@ public class Diagram implements Cloneable {
 		return _edges;
 	}
 
+	public String getInputAlphabet() {
+		return _input_alphabet;
+	}
+
 	public Object clone() throws CloneNotSupportedException {
 		Diagram cloned = (Diagram) super.clone();
 		cloned.setName(getName());
@@ -69,31 +74,109 @@ public class Diagram implements Cloneable {
 		Node tempNode = null;
 		Node tempDest = null;
 		Edge tempEdgeTaken = null;
+		String message = "";
 		LinkedList<DiagramObject> simulation = new LinkedList<DiagramObject>();
+		HashSet<Node> start_nodes = new HashSet<Node>();
+		HashSet<String> edge_labels = new HashSet<String>();
+		HashSet<String> temp_edge_labels = new HashSet<String>();
+
+		if (_nodes.size() == 0)
+			throw new InvalidDeterministicFSMException("There are no nodes in the FSM.\n");
+
 		for (Node n : _nodes) {
 			if (n.isStart()) {
-				if (tempNode != null)
-					throw new InvalidDeterministicFSMException("Can't have multiple start states in a deterministic FSM.");
-				else
+				start_nodes.add(n);
+				if (tempNode == null || (tempNode != null && tempNode.getLabel().equals("")))
 					tempNode = n;
 			}
 		}
-		if (tempNode == null)
-			throw new InvalidDeterministicFSMException("Must have exactly one start state in a deterministic FSM.");
+
+		if (tempNode == null) {
+			for (Node n : _nodes) {
+				if (tempNode == null && !n.getLabel().equals("")) {
+					tempNode = n;
+					break;
+				}
+			}
+		}
+
+		if (tempNode == null) {
+			for (Node n : _nodes) {
+				tempNode = n;
+				break;
+			}
+		}
+
+		if (start_nodes.size() < 1)
+			message += "There is no start node.\n";
+		else if (start_nodes.size() > 1)
+			message += "There are multiple start nodes.\n";
+
+		for (Edge e : _edges) {
+			if (e.getLabel().equals(""))
+				message += "There is an edge without a label.\n";
+		}
+		
+		for (Edge e : _edges) {
+			if (e.getDirection() != EdgeDirection.SINGLE)
+				message += !e.getLabel().equals("") ? "Edge " + e.getLabel() + " is not a singly-directed edge.\n"
+														: "There is a non-singly directed edge.\n";
+			if (e.getStartNode() == null || e.getEndNode() == null)
+				message += !e.getLabel().equals("") ? "Edge " + e.getLabel() + " doesn't have a start or end node.\n"
+														: "There is an edge without a start or end node.\n";
+		}
+
+		if (!tempNode.getLabel().equals(""))
+			_input_alphabet = "Basing input alphabet off edges from node " + tempNode.getLabel() + ".\n";
+		else
+			_input_alphabet = "Basing input alphabet off unlabeled node.\n";
+
+		for (Edge e : tempNode.getConnected()) {
+			if (e.getDirection() == EdgeDirection.SINGLE && e.getStartNode() == tempNode && !e.getLabel().equals("")) {
+				if (!edge_labels.contains(e.getLabel()))
+					edge_labels.add(e.getLabel());
+				else
+					message += "Node has two edges labeled " + e.getLabel() + ".\n";
+			}
+		}
+
+		for (Node n : _nodes) {
+			for (Edge e : n.getConnected()) {
+				if (e.getDirection() == EdgeDirection.SINGLE && e.getStartNode() == n)
+					temp_edge_labels.add(e.getLabel());
+			}
+
+			for (String s : edge_labels) {
+				if(!temp_edge_labels.remove(s)) {
+					if (!n.getLabel().equals(""))
+						message += "Node " + n.getLabel() + " doesn't have an edge labeled " + s + ".\n";
+					else
+						message += "There is a node without label " + s + ".\n";
+				}
+			}
+
+			for (String s : temp_edge_labels) {
+				if (!n.getLabel().equals(""))
+					message += "Node " + n.getLabel() + " has edge labeled " + s + ", which is a duplicate or is not in input alphabet.\n";
+				else
+					message += "There is a node with an edge labeled " + s + ", which is a duplicate or is not in input alphabet.\n";
+			}
+		}
+
+		for (int i = 0; i < input.length(); i ++) {
+			if (!edge_labels.contains(input.substring(i, i+1)))
+				message += "Input character \'" + input.substring(i, i+1) + "\' is not in the input alphabet.\n";
+		}
+
+		if (!message.equals(""))
+			throw new InvalidDeterministicFSMException(message);
 		for (int i = 0; i < input.length(); i ++) {
 			tempInput = input.substring(i, i+1);
 			for (Edge e : tempNode.getConnected()){
-				if (e.getDirection() != EdgeDirection.SINGLE)
-					throw new InvalidDeterministicFSMException("Each edge must be a singly-directed edge.");
-				if (e.getEndNode() == null || e.getStartNode() == null)
-					throw new InvalidDeterministicFSMException("Each edge must have a start and an end node.");
 				if (e.getStartNode() == tempNode && e.getLabel().equals(tempInput)) {
-					if (tempDest == null && tempEdgeTaken == null) {
-						tempDest = e.getEndNode();
-						tempEdgeTaken = e;
-					}
-					else
-						throw new InvalidDeterministicFSMException("A single node can't go to multiple nodes on the same input.");
+					tempDest = e.getEndNode();
+					tempEdgeTaken = e;
+					break;
 				}
 			}
 			simulation.add(tempEdgeTaken);
@@ -105,6 +188,8 @@ public class Diagram implements Cloneable {
 
 	public static void main(String[] args) {
 		Diagram dia = new Diagram();
-
+		Node _q1 = new Node(0, 0);
+		_q1.setStart(true);
+		_q1.setLabel("Q_1");
 	}
 }
