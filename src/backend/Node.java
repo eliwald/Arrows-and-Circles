@@ -6,8 +6,9 @@ import java.awt.geom.Point2D;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Point2D.Double;
 
-public class Node /*implements Drawable, Cloneable*/ extends DiagramObject {
+public class Node implements DiagramObject, Cloneable {
 	private Point2D.Double _center;
 	private double _radius;
 	private String _label;
@@ -40,6 +41,7 @@ public class Node /*implements Drawable, Cloneable*/ extends DiagramObject {
 	}
 
 
+
     public void setOffset(double x, double y){
         _offset.setLocation(x, y);
     }
@@ -50,8 +52,9 @@ public class Node /*implements Drawable, Cloneable*/ extends DiagramObject {
 
 	public void setRadius(double r){
 		_radius = r;
-	}
 
+    }
+	
 	public double getRadius() {
 		return _radius;
 	}
@@ -105,8 +108,18 @@ public class Node /*implements Drawable, Cloneable*/ extends DiagramObject {
 	}
 
 	public Object clone() throws CloneNotSupportedException {
-		//TODO: Implement cloning
-		return null;
+		Node clonedObject = (Node) super.clone();
+		clonedObject._center = (Double) _center.clone();
+		clonedObject._radius = _radius;
+		clonedObject._label = _label;
+		clonedObject._connected = new HashSet<Edge>();
+		for(Edge e : _connected) {
+			clonedObject._connected.add((Edge) e.clone());
+		}
+		clonedObject._color = (Color) super.clone();
+		clonedObject._startState = _startState;
+		clonedObject._endState = _endState;
+		return clonedObject;
 	}
         
     public Ellipse2D.Double getCircle() {

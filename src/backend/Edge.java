@@ -3,13 +3,11 @@ package backend;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 
-public class Edge /*implements Drawable, Cloneable*/ extends DiagramObject {
+public class Edge implements Cloneable, DiagramObject {
 	private Node _start;
 	private Node _end;
 	private Point2D.Double _point_start;
 	private Point2D.Double _point_end;
-	private double weight;
-	private double curveAngle;
 	private EdgeDirection _direction;
 	private String _label;
 
@@ -41,32 +39,54 @@ public class Edge /*implements Drawable, Cloneable*/ extends DiagramObject {
 		return _label;
 	}
 
-	public void setStart(Node start) {
+	public void setStartNode(Node start) {
 		_start = start;
 	}
 
-	public Node getStart() {
+	public Node getStartNode() {
 		return _start;
 	}
 
-	public void setEnd(Node end) {
+	public void setEndNode(Node end) {
 		_end = end;
 	}
 
-	public Node getEnd() {
+	public Node getEndNode() {
 		return _end;
 	}
 
-	public EdgeDirection getDirection() {
-		return _direction;
+	public void setStartPoint(Point2D.Double start) {
+		_point_start = start;
+	}
+
+	public Point2D.Double getStartPoint() {
+		return _point_start;
+	}
+
+	public void setEndPoint(Point2D.Double end) {
+		_point_end = end;
+	}
+
+	public Point2D.Double getEndPoint() {
+		return _point_end;
 	}
 
 	public void setDirection(EdgeDirection d){
 		_direction = d;
 	}
 
+	public EdgeDirection getDirection() {
+		return _direction;
+	}
+
 	public Object clone() throws CloneNotSupportedException {
-		//TODO: Implement cloning
-		return null;
+		Edge cloned = (Edge) super.clone();
+		cloned.setLabel(getLabel());
+		cloned.setStartNode((Node) getStartNode().clone());
+		cloned.setEndNode((Node) getEndNode().clone());
+		cloned.setStartPoint((Point2D.Double) getStartPoint().clone());
+		cloned.setEndPoint((Point2D.Double) getEndPoint().clone());
+		cloned.setDirection(getDirection());
+		return cloned;
 	}
 }

@@ -44,23 +44,23 @@ public class Diagram implements Cloneable {
 		return _nodes;
 	}
 
-	public void setNodes(Collection<Node> nodes) {
-		_nodes = nodes;
-	}
-
 	public Collection<Edge> getEdges() {
 		return _edges;
 	}
 
-	public void setEdges(Collection<Edge> edges) {
-		_edges = edges;
-	}
-
 	public Object clone() throws CloneNotSupportedException {
 		Diagram cloned = (Diagram) super.clone();
-		/*cloned.setNodes((Collection<Node>) _nodes.clone());
-		cloned.setEdges((Collection<Edge>) _edges.clone());
-		cloned.setName(getName());*/
+		cloned.setName(getName());
+		Collection<Node> cloned_nodes = new HashSet<Node>();
+		Collection<Node> old_nodes = getNodes();
+		Collection<Edge> cloned_edges = new HashSet<Edge>();
+		Collection<Edge> old_edges = getEdges();
+		for (Node n : old_nodes) {
+			cloned_nodes.add((Node) n.clone());
+		}
+		for (Edge e : old_edges) {
+			cloned_edges.add((Edge) e.clone());
+		}
 		return cloned;
 	}
 
@@ -85,20 +85,26 @@ public class Diagram implements Cloneable {
 			for (Edge e : tempNode.getConnected()){
 				if (e.getDirection() != EdgeDirection.SINGLE)
 					throw new InvalidDeterministicFSMException("Each edge must be a singly-directed edge.");
-				if (e.getEnd() == null || e.getStart() == null)
+				if (e.getEndNode() == null || e.getStartNode() == null)
 					throw new InvalidDeterministicFSMException("Each edge must have a start and an end node.");
-				if (e.getStart() == tempNode && e.getLabel().equals(tempInput)) {
+				if (e.getStartNode() == tempNode && e.getLabel().equals(tempInput)) {
 					if (tempDest == null && tempEdgeTaken == null) {
-						tempDest = e.getEnd();
+						tempDest = e.getEndNode();
 						tempEdgeTaken = e;
 					}
 					else
 						throw new InvalidDeterministicFSMException("A single node can't go to multiple nodes on the same input.");
 				}
 			}
-			simulation.add(tempDest);
 			simulation.add(tempEdgeTaken);
+			simulation.add(tempDest);
+			tempNode = tempDest;
 		}
 		return simulation;
+	}
+
+	public static void main(String[] args) {
+		Diagram dia = new Diagram();
+
 	}
 }

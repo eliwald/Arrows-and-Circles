@@ -1,5 +1,5 @@
 package backend;
 
-public abstract class DiagramObject {
+public interface DiagramObject {
 	
 }
