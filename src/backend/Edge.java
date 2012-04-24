@@ -2,7 +2,7 @@ package backend;
 
 import java.awt.geom.Point2D;
 
-public class Edge implements Cloneable /*Drawable*/ extends DiagramObject {
+public class Edge implements Cloneable, DiagramObject {
 	private Node _start;
 	private Node _end;
 	private Point2D.Double _point_start;

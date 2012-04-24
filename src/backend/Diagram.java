@@ -56,10 +56,10 @@ public class Diagram implements Cloneable {
 		Collection<Edge> cloned_edges = cloned.getEdges();
 		Collection<Edge> old_edges = getEdges();
 		for (Node n : old_nodes) {
-			cloned_nodes.add(n.clone());
+			cloned_nodes.add((Node) n.clone());
 		}
 		for (Edge e : old_edges) {
-			cloned_edges.add(e.clone());
+			cloned_edges.add((Edge) e.clone());
 		}
 		return cloned;
 	}
@@ -85,11 +85,11 @@ public class Diagram implements Cloneable {
 			for (Edge e : tempNode.getConnected()){
 				if (e.getDirection() != EdgeDirection.SINGLE)
 					throw new InvalidDeterministicFSMException("Each edge must be a singly-directed edge.");
-				if (e.getEnd() == null || e.getStart() == null)
+				if (e.getEndNode() == null || e.getStartNode() == null)
 					throw new InvalidDeterministicFSMException("Each edge must have a start and an end node.");
-				if (e.getStart() == tempNode && e.getLabel().equals(tempInput)) {
+				if (e.getStartNode() == tempNode && e.getLabel().equals(tempInput)) {
 					if (tempDest == null && tempEdgeTaken == null) {
-						tempDest = e.getEnd();
+						tempDest = e.getEndNode();
 						tempEdgeTaken = e;
 					}
 					else

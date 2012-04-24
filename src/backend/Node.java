@@ -6,7 +6,7 @@ import java.awt.geom.Point2D;
 import java.awt.Color;
 import java.awt.geom.Ellipse2D;
 
-public class Node /*implements Drawable, Cloneable*/ extends DiagramObject {
+public class Node implements DiagramObject {
 	private Point2D.Double _center;
 	private double _radius;
 	private String _label;
