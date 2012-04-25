@@ -178,8 +178,5 @@ public class Diagram implements Cloneable {
 
 	public static void main(String[] args) {
 		Diagram dia = new Diagram();
-		Node _q1 = new Node(0, 0);
-		_q1.setStart(true);
-		_q1.setLabel("Q_1");
 	}
 }

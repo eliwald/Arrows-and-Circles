@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 import javax.swing.JLabel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.border.Border;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
@@ -48,23 +49,33 @@ public class Node implements DiagramObject, Cloneable {
         double hypo = 2*_radius;
         double temp = hypo*hypo;
         double dimension = Math.sqrt(temp/2);
-        _area = new JTextField();
+        _area = new JTextField(){
+        @Override public void setBorder(Border border) {
+        // No!
+            }
+        };
+
+        String s = "n"+_container.getDiagram().getNodes().size();
+        _area.setText(s);
         _area.setVisible(true);
-        _area.setEnabled(true);
         _area.setOpaque(false);
-        _area.setSize((int)dimension, (int)dimension);
+        _area.setSize((int)(dimension), (int)(dimension));
         _area.getDocument().addDocumentListener(new NodeDocListener());
         _area.setHorizontalAlignment(JTextField.CENTER);
+        _area.grabFocus();
+        _area.selectAll();
+        _area.requestFocusInWindow();
+        _area.setEditable(true);
+        _area.setEnabled(true);
         _label = new JLabel("");
         _label.setVisible(true);
         _label.setSize((int)dimension, (int)dimension);
         _label.setOpaque(false);
         _label.setHorizontalAlignment(JTextField.CENTER);
-        _container.add(_area);
         _container.add(_label);
-        String s = "n"+_container.getDiagram().getNodes().size();
-        _area.setText(s);
+        _container.add(_area);
         _label.setText(s);
+        _name = s;
 	}
 
 	public void setCenter(double x, double y){
@@ -172,8 +183,9 @@ public class Node implements DiagramObject, Cloneable {
         double dimension = Math.sqrt(temp/2);
         dimension /= 2;
         Point p = new Point((int)(_center.x-dimension), (int)(_center.y-dimension));
-        _area.setLocation(p);
-        _label.setLocation(p);
+        _area.setLocation(new Point(p.x+2, p.y+2));
+        
+        _label.setLocation(new Point(p.x+1, p.y+1));
         _circle = new Ellipse2D.Double(_center.x-_radius, _center.y-_radius, _radius*2, _radius*2);
         return _circle;
             
@@ -190,16 +202,27 @@ public class Node implements DiagramObject, Cloneable {
     private class NodeDocListener implements DocumentListener{
 
         public void insertUpdate(DocumentEvent e) {
+            try {
+                _name = e.getDocument().getText(0, e.getDocument().getLength());
+                _label.setText(_name);
+            } catch (BadLocationException ex) {
+                Logger.getLogger(Node.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
 
         public void removeUpdate(DocumentEvent e) {
+            try {
+                _name = e.getDocument().getText(0, e.getDocument().getLength());
+                _label.setText(_name);
+            } catch (BadLocationException ex) {
+                Logger.getLogger(Node.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
 
         public void changedUpdate(DocumentEvent e) {
             try {
                 _name = e.getDocument().getText(0, e.getDocument().getLength());
-                
-                _container.repaint();
+                _label.setText(_name);
             } catch (BadLocationException ex) {
                 Logger.getLogger(Node.class.getName()).log(Level.SEVERE, null, ex);
             }
