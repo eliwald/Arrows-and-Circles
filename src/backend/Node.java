@@ -56,12 +56,12 @@ public class Node implements DiagramObject, Cloneable {
         _area.setSize((int)(dimension), (int)(dimension));
         _area.getDocument().addDocumentListener(new NodeDocListener());
         _area.setHorizontalAlignment(JTextField.CENTER);
-        _area.grabFocus();
         _area.selectAll();
-        _area.requestFocusInWindow();
         _area.setEditable(true);
         _area.setEnabled(true);
         _container.add(_area);
+        
+        _area.grabFocus();
         _name = s;
 	}
 

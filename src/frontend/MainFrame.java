@@ -413,15 +413,14 @@ public class MainFrame extends javax.swing.JFrame {
             else{
                 _numSelected = 0;
                 for (Node n : drawingPanel1.getDiagram().getNodes()){
+                    n.getTextField().setEditable(false);
                     n.setSelected(false);
-                    //when there is only one node selected, make text area accessible for that node only
-                    n.getTextField().setVisible(false);
                 }
                 for (Node n : drawingPanel1.getDiagram().getNodes()){
                     if (n.getCircle().contains(evt.getPoint())){
                         n.setSelected(true);
-                        n.getTextField().setVisible(true);
                         _numSelected++;
+                        n.getTextField().setEditable(true);
                         break;
                     }
                 }
@@ -471,9 +470,13 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void drawingPanel1MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_drawingPanel1MousePressed
         // TODO add your handling code here:
+
+        drawingPanel1.grabFocus();
         Point newp = new Point(evt.getX(),evt.getY());
         _selected = null;
         for (Node n : drawingPanel1.getDiagram().getNodes()) {
+            n.getTextField().select(0, 0);
+            n.getTextField().setEditable(false);
             if (n.getCircle().contains(newp)) {
                 _selected = n;
                 n.setOffset(evt.getX() - n.getCenter().x, evt.getY() - n.getCenter().y);
@@ -487,6 +490,7 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void drawingPanel1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_drawingPanel1KeyPressed
         // TODO add your handling code here:
+        drawingPanel1.grabFocus();
         if(evt.getKeyCode() == KeyEvent.VK_SHIFT) {
             _shift = true;
             Node currNode = null;
@@ -550,7 +554,7 @@ public class MainFrame extends javax.swing.JFrame {
     private void drawingPanel1MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_drawingPanel1MouseMoved
         // TODO add your handling code here:
 
-        drawingPanel1.grabFocus();
+        
         _mouseLoc = evt.getPoint();
         /*if (_edgeStart != null) {
 
