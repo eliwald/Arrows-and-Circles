@@ -384,6 +384,8 @@ public class MainFrame extends javax.swing.JFrame {
                 n.setSelected(false);
             }
             add.setSelected(true);
+            add.getTextField().setVisible(true);
+            add.getLabel().setVisible(false);
             _numSelected++;
         }
         else{
@@ -406,14 +408,16 @@ public class MainFrame extends javax.swing.JFrame {
             else{
                 _numSelected = 0;
                 for (Node n : drawingPanel1.getDiagram().getNodes()){
-                    n.getTextField().setEditable(false);
                     n.setSelected(false);
+                    n.getTextField().setVisible(false);
+                    n.getLabel().setVisible(true);
                 }
                 for (Node n : drawingPanel1.getDiagram().getNodes()){
                     if (n.getCircle().contains(evt.getPoint())){
                         n.setSelected(true);
+                        n.getTextField().setVisible(true);
+                        n.getLabel().setVisible(false);
                         _numSelected++;
-                        n.getTextField().setEditable(true);
                         break;
                     }
                 }
@@ -469,7 +473,6 @@ public class MainFrame extends javax.swing.JFrame {
         _selected = null;
         for (Node n : drawingPanel1.getDiagram().getNodes()) {
             n.getTextField().select(0, 0);
-            n.getTextField().setEditable(false);
             if (n.getCircle().contains(newp)) {
                 _selected = n;
                 n.setOffset(evt.getX() - n.getCenter().x, evt.getY() - n.getCenter().y);
