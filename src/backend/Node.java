@@ -8,20 +8,12 @@ import java.awt.Color;
 import java.awt.Point;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D.Double;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.JLabel;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.text.BadLocationException;
 
 public class Node implements DiagramObject, Cloneable {
 	private Point2D.Double _center;
 	private double _radius;
-	private String _name;
     private JTextField _area;
 	private Collection<Edge> _connected;
 	private Color _color;
@@ -38,7 +30,6 @@ public class Node implements DiagramObject, Cloneable {
         _container = container;
 		_center = new Point2D.Double(x, y);
 		_radius = 30;
-		_name = "";
 		_connected = new HashSet<Edge>();
 		_color = Color.BLACK;
 		_startState = false;
@@ -54,15 +45,12 @@ public class Node implements DiagramObject, Cloneable {
         _area.setVisible(true);
         _area.setOpaque(false);
         _area.setSize((int)(dimension), (int)(dimension));
-        _area.getDocument().addDocumentListener(new NodeDocListener());
         _area.setHorizontalAlignment(JTextField.CENTER);
-        _area.grabFocus();
         _area.selectAll();
-        _area.requestFocusInWindow();
         _area.setEditable(true);
         _area.setEnabled(true);
         _container.add(_area);
-        _name = s;
+        _area.grabFocus();
 	}
 
 	public void setCenter(double x, double y){
@@ -74,8 +62,6 @@ public class Node implements DiagramObject, Cloneable {
 		return _center;
 	}
 
-
-
     public void setOffset(double x, double y){
         _offset.setLocation(x, y);
     }
@@ -86,19 +72,10 @@ public class Node implements DiagramObject, Cloneable {
 
 	public void setRadius(double r){
 		_radius = r;
-
     }
 	
 	public double getRadius() {
 		return _radius;
-	}
-
-	public void setLabel(String label) {
-		_name = label;
-	}
-
-	public String getName() {
-		return _name;
 	}
 
 	public boolean addConnected(Edge e){
@@ -145,12 +122,10 @@ public class Node implements DiagramObject, Cloneable {
 		Node clonedObject = (Node) super.clone();
 		clonedObject._center = (Double) _center.clone();
 		clonedObject._radius = _radius;
-		clonedObject._name = _name;
 		clonedObject._connected = new HashSet<Edge>();
 		for(Edge e : _connected) {
 			clonedObject._connected.add((Edge) e.clone());
 		}
-		clonedObject._color = (Color) super.clone();
 		clonedObject._startState = _startState;
 		clonedObject._endState = _endState;
 		return clonedObject;
@@ -178,34 +153,5 @@ public class Node implements DiagramObject, Cloneable {
 
     public void setSelected(boolean b){
         _selected = b;
-    }
-
-    private class NodeDocListener implements DocumentListener{
-
-        public void insertUpdate(DocumentEvent e) {
-            try {
-                _name = e.getDocument().getText(0, e.getDocument().getLength());
-            } catch (BadLocationException ex) {
-                Logger.getLogger(Node.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-
-        public void removeUpdate(DocumentEvent e) {
-            try {
-                _name = e.getDocument().getText(0, e.getDocument().getLength());
-            } catch (BadLocationException ex) {
-                Logger.getLogger(Node.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-
-        public void changedUpdate(DocumentEvent e) {
-            try {
-                _name = e.getDocument().getText(0, e.getDocument().getLength());
-            } catch (BadLocationException ex) {
-                Logger.getLogger(Node.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-        
-    }
-        
+    }  
 }

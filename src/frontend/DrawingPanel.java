@@ -12,7 +12,6 @@ import backend.*;
 import java.awt.BasicStroke;
 import java.awt.Graphics;
 import java.awt.geom.Line2D;
-import java.awt.geom.Point2D;
 
 /**
  *
@@ -23,7 +22,7 @@ public class DrawingPanel extends JPanel {
     
     private Diagram _diagram;
 
-    public static Line2D.Double _progressLine;
+    public Line2D.Double _progressLine;
     
     public DrawingPanel() {
         _diagram = new Diagram();
