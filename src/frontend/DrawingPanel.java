@@ -12,6 +12,7 @@ import backend.*;
 import java.awt.BasicStroke;
 import java.awt.Graphics;
 import java.awt.geom.Line2D;
+import java.awt.geom.QuadCurve2D;
 
 /**
  *
@@ -64,7 +65,8 @@ public class DrawingPanel extends JPanel {
        }
 
        for (Edge e: _diagram.getEdges()) {
-           g2.draw(e.resetLine());
+           QuadCurve2D.Double q = e.resetLine();
+           g2.draw(q);
        }
 
        if (_progressLine != null)
