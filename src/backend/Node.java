@@ -22,7 +22,6 @@ public class Node implements DiagramObject, Cloneable {
 	private Point2D.Double _center;
 	private double _radius;
 	private String _name;
-    private JLabel _label;
     private JTextField _area;
 	private Collection<Edge> _connected;
 	private Color _color;
@@ -49,12 +48,7 @@ public class Node implements DiagramObject, Cloneable {
         double hypo = 2*_radius;
         double temp = hypo*hypo;
         double dimension = Math.sqrt(temp/2);
-        _area = new JTextField(){
-        @Override public void setBorder(Border border) {
-        // No!
-            }
-        };
-
+        _area = new JTextField(){@Override public void setBorder(Border border) {}};
         String s = "n"+_container.getDiagram().getNodes().size();
         _area.setText(s);
         _area.setVisible(true);
@@ -67,14 +61,7 @@ public class Node implements DiagramObject, Cloneable {
         _area.requestFocusInWindow();
         _area.setEditable(true);
         _area.setEnabled(true);
-        _label = new JLabel("");
-        _label.setVisible(true);
-        _label.setSize((int)dimension, (int)dimension);
-        _label.setOpaque(false);
-        _label.setHorizontalAlignment(JTextField.CENTER);
-        _container.add(_label);
         _container.add(_area);
-        _label.setText(s);
         _name = s;
 	}
 
@@ -154,10 +141,6 @@ public class Node implements DiagramObject, Cloneable {
         return _area;
     }
 
-    public JLabel getLabel(){
-        return _label;
-    }
-
 	public Object clone() throws CloneNotSupportedException {
 		Node clonedObject = (Node) super.clone();
 		clonedObject._center = (Double) _center.clone();
@@ -184,8 +167,6 @@ public class Node implements DiagramObject, Cloneable {
         dimension /= 2;
         Point p = new Point((int)(_center.x-dimension), (int)(_center.y-dimension));
         _area.setLocation(new Point(p.x+2, p.y+2));
-        
-        _label.setLocation(new Point(p.x+1, p.y+1));
         _circle = new Ellipse2D.Double(_center.x-_radius, _center.y-_radius, _radius*2, _radius*2);
         return _circle;
             
@@ -204,7 +185,6 @@ public class Node implements DiagramObject, Cloneable {
         public void insertUpdate(DocumentEvent e) {
             try {
                 _name = e.getDocument().getText(0, e.getDocument().getLength());
-                _label.setText(_name);
             } catch (BadLocationException ex) {
                 Logger.getLogger(Node.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -213,7 +193,6 @@ public class Node implements DiagramObject, Cloneable {
         public void removeUpdate(DocumentEvent e) {
             try {
                 _name = e.getDocument().getText(0, e.getDocument().getLength());
-                _label.setText(_name);
             } catch (BadLocationException ex) {
                 Logger.getLogger(Node.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -222,7 +201,6 @@ public class Node implements DiagramObject, Cloneable {
         public void changedUpdate(DocumentEvent e) {
             try {
                 _name = e.getDocument().getText(0, e.getDocument().getLength());
-                _label.setText(_name);
             } catch (BadLocationException ex) {
                 Logger.getLogger(Node.class.getName()).log(Level.SEVERE, null, ex);
             }
