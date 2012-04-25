@@ -23,6 +23,7 @@ public class DrawingPanel extends JPanel {
     
     private Diagram _diagram;
 
+
     public Line2D.Double _progressLine;
     
     public DrawingPanel() {
@@ -58,6 +59,9 @@ public class DrawingPanel extends JPanel {
            if (n.selected()){
                g2.setColor(java.awt.Color.BLUE);
                g2.setStroke(new BasicStroke(3));
+               g2.fill(n.getResize());
+               g2.draw(n.getResize());
+
            }
            g2.draw(n.resetCircle());
            g2.setColor(java.awt.Color.BLACK);
