@@ -431,7 +431,6 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void drawingPanel1MouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_drawingPanel1MouseDragged
         // TODO add your handling code here:
-
         _mouseLoc = evt.getPoint();
         if (_edgePressed && _edgeStart != null) {
             if (_shift) {
@@ -446,8 +445,23 @@ public class MainFrame extends javax.swing.JFrame {
                 double vecY = difY/Math.sqrt((difX*difX+difY*difY));
                 Point2D.Double curr = new Point2D.Double(n.getCenter().x+(n.getRadius()*vecX),n.getCenter().y+(n.getRadius()*vecY));
                 _robot.mouseMove(loc.x+(int)curr.x, loc.y+(int)curr.y);
-
             }
+            Node con = null;
+            for (Node n : drawingPanel1.getDiagram().getNodes()) {
+                if (n.getCircle().contains(_mouseLoc)) {
+                    con = n;
+                }
+            }
+            if (con != null) {
+                double difX = con.getCenter().x - _edgeStart.getCenter().x;
+                double difY = con.getCenter().x - _edgeStart.getCenter().y;
+                double vecX = difX/Math.sqrt((difX*difX+difY*difY));
+                double vecY = difY/Math.sqrt((difX*difX+difY*difY));
+                Point2D.Double point_start = new Point2D.Double(_edgeStart.getCenter().x+(_edgeStart.getRadius()*vecX),_edgeStart.getCenter().y+(_edgeStart.getRadius()*vecY));
+                Point2D.Double point_end = new Point2D.Double(con.getCenter().x-(con.getRadius()*vecX),con.getCenter().y-(con.getRadius()*vecY));
+                drawingPanel1._progressLine = new Line2D.Double(point_start, point_end);
+            }
+            
             else {
                 double difX = _mouseLoc.x - _edgeStart.getCenter().x;
                 double difY = _mouseLoc.y - _edgeStart.getCenter().y;
@@ -457,8 +471,7 @@ public class MainFrame extends javax.swing.JFrame {
                 drawingPanel1._progressLine = new Line2D.Double(point_start, _mouseLoc);
             }
 
-
-                drawingPanel1.repaint();
+            drawingPanel1.repaint();
         }
         else if (_selected != null && drawingPanel1.contains(evt.getPoint())){
             _selected.setCenter(evt.getX()-_selected.getOffset().x, evt.getY()-_selected.getOffset().y);
@@ -551,6 +564,7 @@ public class MainFrame extends javax.swing.JFrame {
             double vecY = difY/Math.sqrt((difX*difX+difY*difY));
             Point2D.Double curr = new Point2D.Double(currNode.getCenter().x+(currNode.getRadius()*vecX),currNode.getCenter().y+(currNode.getRadius()*vecY));
             _robot.mouseMove(loc.x+(int)curr.x, loc.y+(int)curr.y);
+            drawingPanel1.repaint();
         }
         else {
             _shift = false;
