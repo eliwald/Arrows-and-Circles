@@ -109,32 +109,32 @@ public class Diagram implements Cloneable {
 			message += "There are multiple start nodes.\n";
 
 		for (Edge e : _edges) {
-			if (e.getLabel().getText().equals(""))
+			if (e.getTextField().getText().equals(""))
 				message += "There is an edge without a label.\n";
 		}
 		
 		for (Edge e : _edges) {
 			if (e.getDirection() != EdgeDirection.SINGLE)
-				message += !e.getLabel().getText().equals("") ? "Edge " + e.getLabel().getText() + " is not a singly-directed edge.\n"
+				message += !e.getTextField().getText().equals("") ? "Edge " + e.getTextField().getText() + " is not a singly-directed edge.\n"
 														: "There is a non-singly directed edge.\n";
 			if (e.getStartNode() == null || e.getEndNode() == null)
-				message += !e.getLabel().getText().equals("") ? "Edge " + e.getLabel().getText() + " doesn't have a start or end node.\n"
+				message += !e.getTextField().getText().equals("") ? "Edge " + e.getTextField().getText() + " doesn't have a start or end node.\n"
 														: "There is an edge without a start or end node.\n";
 		}
 
 		for (Edge e : tempNode.getConnected()) {
-			if (e.getDirection() == EdgeDirection.SINGLE && e.getStartNode() == tempNode && !e.getLabel().getText().equals("")) {
-				if (!edge_labels.contains(e.getLabel().getText()))
-					edge_labels.add(e.getLabel().getText());
+			if (e.getDirection() == EdgeDirection.SINGLE && e.getStartNode() == tempNode && !e.getTextField().getText().equals("")) {
+				if (!edge_labels.contains(e.getTextField().getText()))
+					edge_labels.add(e.getTextField().getText());
 				else
-					message += "Node has two edges labeled " + e.getLabel().getText() + ".\n";
+					message += "Node has two edges labeled " + e.getTextField().getText() + ".\n";
 			}
 		}
 
 		for (Node n : _nodes) {
 			for (Edge e : n.getConnected()) {
 				if (e.getDirection() == EdgeDirection.SINGLE && e.getStartNode() == n)
-					temp_edge_labels.add(e.getLabel().getText());
+					temp_edge_labels.add(e.getTextField().getText());
 			}
 
 			for (String s : edge_labels) {
@@ -164,7 +164,7 @@ public class Diagram implements Cloneable {
 		for (int i = 0; i < input.length(); i ++) {
 			tempInput = input.substring(i, i+1);
 			for (Edge e : tempNode.getConnected()){
-				if (e.getStartNode() == tempNode && e.getLabel().getText().equals(tempInput)) {
+				if (e.getStartNode() == tempNode && e.getTextField().getText().equals(tempInput)) {
 					tempDest = e.getEndNode();
 					tempEdgeTaken = e;
 					break;

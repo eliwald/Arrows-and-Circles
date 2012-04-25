@@ -193,7 +193,7 @@ public class Node implements DiagramObject, Cloneable {
 		return _circle;
 	}
 
-	public boolean selected() {
+	public boolean isSelected() {
 		return _selected;
 	}
 

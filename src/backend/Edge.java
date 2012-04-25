@@ -3,6 +3,7 @@ package backend;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.QuadCurve2D;
+import javax.swing.JLabel;
 import javax.swing.JTextField;
 
 public class Edge implements Cloneable, DiagramObject {
@@ -11,12 +12,15 @@ public class Edge implements Cloneable, DiagramObject {
 	private Point2D.Double _point_start;
 	private Point2D.Double _point_end;
 	private EdgeDirection _direction;
-	private JTextField _label;
+	private JTextField _area;
+    private JLabel _label;
     private QuadCurve2D.Double _curve;
     private double _ctrl_x, _ctrl_y;
+    private boolean _selected;
 
 	public Edge(Point2D.Double start, Point2D.Double end) {
-		_label = new JTextField();
+		_area = new JTextField();
+        _label = new JLabel();
 		_point_start = start;
 		_point_end = end;
 		_direction = EdgeDirection.SINGLE;
@@ -25,10 +29,11 @@ public class Edge implements Cloneable, DiagramObject {
 	public Edge(Node s, Node e, Point2D.Double start, Point2D.Double end) {
 		_start = s;
 		_end = e;
-		_label = new JTextField();
+		_area = new JTextField();
+        _label = new JLabel();
 		_point_start = start;
 		_point_end = end;
-        
+        _selected = true;
 		_direction = EdgeDirection.SINGLE;
         double difX = _end.getCenter().x - _start.getCenter().x;
         double difY = _end.getCenter().y - _start.getCenter().y;
@@ -50,13 +55,33 @@ public class Edge implements Cloneable, DiagramObject {
         return _curve;
     }
 
-	public JTextField getLabel(){
-		return _label;
+    public QuadCurve2D.Double getCurve(){
+        return _curve;
+    }
+
+    public boolean isSelected(){
+        return _selected;
+    }
+
+    public void setSelected(boolean selected){
+        _selected = selected;
+    }
+
+	public JTextField getTextField(){
+		return _area;
 	}
 
-	public void setLabel(JTextField label) {
-		_label = label;
+	public void setFieldText(JTextField label) {
+		_area = label;
 	}
+
+    public JLabel getLabel(){
+        return _label;
+    }
+
+    public void setLabel(String s){
+        _label.setText(s);
+    }
 
 	public void setStartNode(Node start) {
 		_start = start;

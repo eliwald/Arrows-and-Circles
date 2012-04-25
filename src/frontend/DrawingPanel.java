@@ -50,23 +50,25 @@ public class DrawingPanel extends JPanel {
     public void addEdge(Node n1, Node n2) {
     	if (n1 != null && n2 != null) {
     		
-    		DiagramProject dp = new DiagramProject();
-    		dp.modify(new DiagramModifyAction() {
-				
-				@Override
-				public boolean modify(Diagram diagram) {
-					Edge e = new Edge(n1,n2,n1.getCenter(),n2.getCenter());
-					diagram.addEdge(e);
-					return false;
-				}
-				
-				@Override
-				public String message() {
-					// TODO Auto-generated method stub
-					return null;
-				}
-			});
+//    		DiagramProject dp = new DiagramProject();
+//    		dp.modify(new DiagramModifyAction() {
+//
+//				@Override
+//				public boolean modify(Diagram diagram) {
+//					Edge e = new Edge(n1,n2,n1.getCenter(),n2.getCenter());
+//					diagram.addEdge(e);
+//					return false;
+//				}
+//
+//				@Override
+//				public String message() {
+//					// TODO Auto-generated method stub
+//					return null;
+//				}
+//			});
     		Edge e = new Edge(n1,n2,n1.getCenter(),n2.getCenter());
+            n1.addConnected(e);
+            n2.addConnected(e);
     		_diagram.addEdge(e);
 	        repaint();
     	}
@@ -79,7 +81,7 @@ public class DrawingPanel extends JPanel {
        super.paintComponent(g); 
        Graphics2D g2 = (Graphics2D)g;
        for (Node n : _diagram.getNodes()){
-           if (n.selected()){
+           if (n.isSelected()){
                g2.setColor(java.awt.Color.BLUE);
                g2.setStroke(new BasicStroke(3));
                g2.fill(n.getResize());
@@ -92,8 +94,14 @@ public class DrawingPanel extends JPanel {
        }
 
        for (Edge e: _diagram.getEdges()) {
-           QuadCurve2D.Double q = e.resetLine();
-           g2.draw(q);
+//           QuadCurve2D.Double q = e.resetLine();
+           if(e.isSelected()){
+               g2.setColor(java.awt.Color.BLUE);
+               g2.setStroke(new BasicStroke(2));
+           }
+           g2.draw(e.resetLine());
+           g2.setColor(java.awt.Color.BLACK);
+           g2.setStroke(new BasicStroke(1));
        }
 
        if (_progressLine != null)

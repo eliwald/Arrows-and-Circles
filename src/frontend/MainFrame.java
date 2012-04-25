@@ -4,6 +4,7 @@
  */
 package frontend;
 
+import backend.Edge;
 import backend.Node;
 import java.awt.AWTException;
 import java.awt.Point;
@@ -14,6 +15,7 @@ import java.awt.event.MouseMotionListener;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
@@ -37,7 +39,8 @@ public class MainFrame extends javax.swing.JFrame {
     private boolean _edgePressed = false;
     private boolean _shift = false;
     private Robot _robot;
-    private int _numSelected = 0;
+    private int _nodesSelected = 0;
+    private int _edgesSelected = 0;
 
     /**
      * Creates new form MainFram
@@ -398,51 +401,82 @@ public class MainFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
         String mod = MouseEvent.getMouseModifiersText(evt.getModifiers());
         if (evt.getClickCount() >=2 && mod.equals("Button1")){
-            _numSelected = 0;
+            _nodesSelected = 0;
+            _edgesSelected = 0;
             Node add = drawingPanel1.addNode(evt.getPoint());
             for (Node n : drawingPanel1.getDiagram().getNodes()){
                 n.setSelected(false);
+            }
+            for (Edge e : drawingPanel1.getDiagram().getEdges()){
+                e.setSelected(false);
             }
             add.setSelected(true);
 
             add.getTextField().setVisible(true);
             add.getLabel().setVisible(false);
-            _numSelected++;
+            _nodesSelected++;
         }
         else{
             
             if (mod.equals("Ctrl+Button1")) {
                 for (Node n : drawingPanel1.getDiagram().getNodes()){
                     if (n.getCircle().contains(evt.getPoint())){
-                        if (n.selected()){
+                        if (n.isSelected()){
                             n.setSelected(false);
-                            _numSelected--;
+                            _nodesSelected--;
                         }
                         else{
                             n.setSelected(true);
-                            _numSelected++;
+                            _nodesSelected++;
+                        }
+                        drawingPanel1.repaint();
+                    }
+                }
+                for (Edge e : drawingPanel1.getDiagram().getEdges()){
+                    if (e.getCurve().intersects(evt.getPoint().x,evt.getPoint().y, 2, 2)){
+                        if (e.isSelected()){
+                            e.setSelected(false);
+                            _edgesSelected--;
+                        }
+                        else{
+                            e.setSelected(true);
+                            _edgesSelected++;
                         }
                         drawingPanel1.repaint();
                     }
                 }
             }
             else{
-                _numSelected = 0;
+                _nodesSelected = 0;
                 for (Node n : drawingPanel1.getDiagram().getNodes()){
                     n.setSelected(false);
                     n.getTextField().setVisible(false);
                     n.getLabel().setVisible(true);
+                }
+                for (Edge e : drawingPanel1.getDiagram().getEdges()){
+                    e.setSelected(false);
+                    e.getTextField().setVisible(false);
+                    e.getLabel().setVisible(true);
                 }
                 for (Node n : drawingPanel1.getDiagram().getNodes()){
                     if (n.getCircle().contains(evt.getPoint())){
                         n.setSelected(true);
                         n.getTextField().setVisible(true);
                         n.getLabel().setVisible(false);
-                        _numSelected++;
+                        _nodesSelected++;
+                        drawingPanel1.repaint();
+                        return;
+                    }
+                }
+                for (Edge e : drawingPanel1.getDiagram().getEdges()){
+                    if (e.getCurve().intersects(evt.getPoint().x,evt.getPoint().y, 2, 2)){
+                        e.setSelected(true);
+                        e.getTextField().setVisible(true);
+                        e.getLabel().setVisible(false);
+                        _edgesSelected++;
                         break;
                     }
                 }
-                drawingPanel1.repaint();
             }
         }
     }//GEN-LAST:event_drawingPanel1MouseClicked
@@ -474,9 +508,13 @@ public class MainFrame extends javax.swing.JFrame {
                 double difX = con.getCenter().x - _edgeStart.getCenter().x;
                 double difY = con.getCenter().x - _edgeStart.getCenter().y;
                 double vecX = difX/Math.sqrt((difX*difX+difY*difY));
+//                double vecX = Math.sqrt(con.getCenter().x*con.getCenter().x - _edgeStart.getCenter().x*_edgeStart.getCenter().x);
                 double vecY = difY/Math.sqrt((difX*difX+difY*difY));
+//                double vecY = Math.sqrt(con.getCenter().y*con.getCenter().y - _edgeStart.getCenter().y*_edgeStart.getCenter().y);
+
                 Point2D.Double point_start = new Point2D.Double(_edgeStart.getCenter().x+(_edgeStart.getRadius()*vecX),_edgeStart.getCenter().y+(_edgeStart.getRadius()*vecY));
                 Point2D.Double point_end = new Point2D.Double(con.getCenter().x-(con.getRadius()*vecX),con.getCenter().y-(con.getRadius()*vecY));
+                System.out.println("new line");
                 drawingPanel1._progressLine = new Line2D.Double(point_start, point_end);
             }
             
@@ -534,7 +572,7 @@ public class MainFrame extends javax.swing.JFrame {
                 n.setOffset(evt.getX() - n.getCenter().x, evt.getY() - n.getCenter().y);
 
             }
-            if (n.selected()) {
+            if (n.isSelected()) {
                 Rectangle2D r = n.getResize();
                 if (n.getResize().contains(newp)) {
                     _resizing = n;
@@ -551,6 +589,34 @@ public class MainFrame extends javax.swing.JFrame {
     private void drawingPanel1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_drawingPanel1KeyPressed
         // TODO add your handling code here:
         drawingPanel1.grabFocus();
+        if(evt.getKeyCode() == KeyEvent.VK_DELETE || evt.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
+            ArrayList<Node> toRemoveNodes = new ArrayList<Node>();
+            for (Node n : drawingPanel1.getDiagram().getNodes()){
+                if (n.isSelected()){
+                    toRemoveNodes.add(n);
+                }
+            }
+            for (Node n : toRemoveNodes){
+                for (Edge e : n.getConnected()){
+                    drawingPanel1.getDiagram().getEdges().remove(e);
+                }
+                drawingPanel1.remove(n.getLabel());
+                drawingPanel1.remove(n.getTextField());
+                drawingPanel1.getDiagram().getNodes().remove(n);
+            }
+            ArrayList<Edge> toRemoveEdges = new ArrayList<Edge>();
+            for (Edge e : drawingPanel1.getDiagram().getEdges()){
+                if (e.isSelected()){
+                    toRemoveEdges.add(e);
+                }
+            }
+            for (Edge e : toRemoveEdges){
+                drawingPanel1.remove(e.getLabel());
+                drawingPanel1.remove(e.getTextField());
+                drawingPanel1.getDiagram().getEdges().remove(e);
+            }
+
+        }
         if(evt.getKeyCode() == KeyEvent.VK_SHIFT) {
             _shift = true;
             Node currNode = null;
