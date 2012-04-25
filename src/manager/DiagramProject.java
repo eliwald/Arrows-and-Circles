@@ -23,27 +23,26 @@ public class DiagramProject {
 	/** The object that keeps track of recent changes to the diagram.
 	 * It is useful for undo and redo features. */
 	private DiagramHistory _history;
-
+	
 	/**
-	 * The factory that a new diagram project object with blank diagram.
+	 * Constructs a new diagram project object with blank diagram.
 	 * @return The diagram project.
 	 * @throws IOException
 	 */
-	public static DiagramProject newBlankProject() {
-		// TODO: implement opening the project file and populate data.
-		throw new UnsupportedOperationException("Not yet implemented.");
+	public DiagramProject() {
+		_filename = null;
+		_history = new DiagramHistory(MAX_HISTORY);
 	}
 
 	/**
-	 * The factory that opens an existing diagram project object by reading in
-	 * the file from the specified filename and populating the data.
-	 * @param filename The path to the project file.
+	 * Constructs a project from the given diagram and uses the specified filename.
+	 * @param filename The absolute path to the project file.
 	 * @return The diagram project.
 	 * @throws IOException 
 	 */
-	public static DiagramProject openExistingProject(String filename) throws IOException {
-		// TODO: implement opening the project file and populate data.
-		throw new UnsupportedOperationException("Not yet implemented.");
+	public DiagramProject(Diagram diagram, String filename) {
+		_filename = filename;
+		_history = new DiagramHistory(MAX_HISTORY, diagram);
 	}
 
 	/**
@@ -53,12 +52,10 @@ public class DiagramProject {
 	 * @return The diagram project.
 	 * @throws IOException 
 	 */
-	public static void saveCurrentProject(DiagramProject dp) throws IOException {
+	public static void saveProject(DiagramProject dp) throws IOException {
 		// TODO: implement opening the project file and populate data.
 		throw new UnsupportedOperationException("Not yet implemented.");
 	}
-	
-	
 	
 	/**
 	 * Modifies the current diagram object by using the specified action object
@@ -68,24 +65,19 @@ public class DiagramProject {
 	 * 		The implemented modify method must be robust and do not break.
 	 * @return A boolean indicating whether the modification of the current 
 	 * 		diagram is a success or not.
+	 * @throws CloneNotSupportedException is thrown if the current diagram is not cloneable.
 	 */
-	public boolean modify(DiagramModifyAction action) {
+	public boolean apply(DiagramModifyAction action) throws CloneNotSupportedException {
 		
-		try {
-			// Create a new clone of the current diagram.
-			Diagram newDiagram = (Diagram) _history.getCurrentDiagram().clone();
-			
-			// Try to modify the diagram, and see if it is successful.
-			boolean success = action.modify(newDiagram);
-			if(success) {
-				_history.add(newDiagram, action.message());
-			}
-			
-			return success;
-			
-		} catch (CloneNotSupportedException e) {
-			e.printStackTrace();
-			return false;
+		// Create a new clone of the current diagram.
+		Diagram newDiagram = (Diagram) _history.getCurrentDiagram().clone();
+		
+		// Try to modify the diagram, and see if it is successful.
+		boolean success = action.modify(newDiagram);
+		if(success) {
+			_history.add(newDiagram, action.message());
 		}
+		
+		return success;
 	}
 }

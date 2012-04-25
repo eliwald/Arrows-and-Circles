@@ -59,24 +59,12 @@ public class DrawingPanel extends JPanel {
 
     public void addEdge(Node n1, Node n2) {
     	if (n1 != null && n2 != null) {
-    		clearAll();
-//    		DiagramProject dp = new DiagramProject();
-//    		dp.modify(new DiagramModifyAction() {
-//
-//				@Override
-//				public boolean modify(Diagram diagram) {
-//					Edge e = new Edge(n1,n2,n1.getCenter(),n2.getCenter());
-//					diagram.addEdge(e);
-//					return false;
-//				}
-//
-//				@Override
-//				public String message() {
-//					// TODO Auto-generated method stub
-//					return null;
-//				}
-//			});
-    		Edge e = new Edge(n1,n2,n1.getCenter(),n2.getCenter(), this);
+
+    		for (Edge e : _diagram.getEdges()){
+                e.setSelected(false);
+            }
+    		Edge e = new Edge(n1,n2,n1.getCenter(),n2.getCenter(),this);
+
             n1.addConnected(e);
             n2.addConnected(e);
     		_diagram.addEdge(e);
