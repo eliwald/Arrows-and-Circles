@@ -514,7 +514,6 @@ public class MainFrame extends javax.swing.JFrame {
 
                 Point2D.Double point_start = new Point2D.Double(_edgeStart.getCenter().x+(_edgeStart.getRadius()*vecX),_edgeStart.getCenter().y+(_edgeStart.getRadius()*vecY));
                 Point2D.Double point_end = new Point2D.Double(con.getCenter().x-(con.getRadius()*vecX),con.getCenter().y-(con.getRadius()*vecY));
-                System.out.println("new line");
                 drawingPanel1._progressLine = new Line2D.Double(point_start, point_end);
             }
             
