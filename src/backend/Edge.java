@@ -1,10 +1,15 @@
 package backend;
 
+import frontend.DrawingPanel;
+import frontend.MyDocListener;
+import java.awt.Point;
+import java.awt.Polygon;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.QuadCurve2D;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import javax.swing.border.Border;
 
 public class Edge implements Cloneable, DiagramObject {
 	private Node _start;
@@ -17,8 +22,13 @@ public class Edge implements Cloneable, DiagramObject {
     private QuadCurve2D.Double _curve;
     private double _ctrl_x, _ctrl_y;
     private boolean _selected;
+    private DrawingPanel _container;
+    private boolean _current = false;
 
-	public Edge(Point2D.Double start, Point2D.Double end) {
+    private final int ARROW_SIZE = 5;
+
+	public Edge(Point2D.Double start, Point2D.Double end, DrawingPanel container) {
+        _container = container;
 		_area = new JTextField();
         _label = new JLabel();
 		_point_start = start;
@@ -26,9 +36,10 @@ public class Edge implements Cloneable, DiagramObject {
 		_direction = EdgeDirection.SINGLE;
 	}
 
-	public Edge(Node s, Node e, Point2D.Double start, Point2D.Double end) {
+	public Edge(Node s, Node e, Point2D.Double start, Point2D.Double end, DrawingPanel container) {
 		_start = s;
 		_end = e;
+        _container = container;
 		_area = new JTextField();
         _label = new JLabel();
 		_point_start = start;
@@ -41,10 +52,34 @@ public class Edge implements Cloneable, DiagramObject {
         double vecY = difY/Math.sqrt((difX*difX+difY*difY));
         _ctrl_x = Math.min(_start.getCenter().x, _end.getCenter().x) + vecX/2;
         _ctrl_y = Math.min(_start.getCenter().y, _end.getCenter().y) + vecY/2;
+        _area = new JTextField(){@Override public void
+			setBorder(Border border) {}};
+		String str = "fill this in";
+		_area.setText(str);
+		_area.setVisible(true);
+		_area.setOpaque(false);
+		_area.setSize(150, 12);
+		_area.setHorizontalAlignment(JTextField.CENTER);
+		_area.selectAll();
+		_area.setEditable(true);
+		_area.setEnabled(true);
+		_label = new JLabel(str);
+		_area.getDocument().addDocumentListener(new MyDocListener(_label));
+		_label.setVisible(true);
+		_label.setOpaque(false);
+		_label.setSize(150, 12);
+		_label.setHorizontalAlignment(JTextField.CENTER);
+
+		_container.add(_label);
+		_container.add(_area);
+		_area.grabFocus();
         this.resetLine();
 	}
 
     public QuadCurve2D.Double resetLine() {
+        Point p = new Point((int)_ctrl_x, (int)_ctrl_y);
+        _area.setLocation(p);
+		_label.setLocation(p);
         double difX = _end.getCenter().x - _start.getCenter().x;
         double difY = _end.getCenter().y - _start.getCenter().y;
         double vecX = difX/Math.sqrt((difX*difX+difY*difY));
@@ -53,6 +88,21 @@ public class Edge implements Cloneable, DiagramObject {
         _point_end = new Point2D.Double(_end.getCenter().x-(_end.getRadius()*vecX),_end.getCenter().y-(_end.getRadius()*vecY));
         _curve = new QuadCurve2D.Double(_point_start.x,_point_start.y, _ctrl_x, _ctrl_y, _point_end.x, _point_end.y);
         return _curve;
+    }
+
+    public Polygon getForward() {
+        double difX = _end.getCenter().x - _start.getCenter().x;
+        double difY = _end.getCenter().y - _start.getCenter().y;
+        double vecX = difX/Math.sqrt((difX*difX+difY*difY));
+        double vecY = difY/Math.sqrt((difX*difX+difY*difY));
+        Polygon p = new Polygon();
+        int startX = (int)(_end.getCenter().x-(_end.getRadius()*vecX));
+        int startY = (int)(_end.getCenter().y-(_end.getRadius()*vecY));
+        p.addPoint(startX,startY);
+        p.addPoint((int)(startX+20 * (vecX-vecY)), (int)((startY+20 * (vecX-vecY))));
+        p.addPoint((int)(startX-20 * (vecX-vecY)), (int)((startY+20 * (vecX-vecY))));
+        return p;
+
     }
 
     public QuadCurve2D.Double getCurve(){
@@ -132,4 +182,12 @@ public class Edge implements Cloneable, DiagramObject {
 		cloned.setDirection(getDirection());
 		return cloned;
 	}
+
+    public void setCurrent(boolean val) {
+        _current = val;
+    }
+
+    public boolean getCurrent() {
+        return _current;
+    }
 }

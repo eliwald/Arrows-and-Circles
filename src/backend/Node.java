@@ -1,6 +1,7 @@
 package backend;
 
 import frontend.DrawingPanel;
+import frontend.MyDocListener;
 import java.util.Collection;
 import java.util.HashSet;
 import java.awt.geom.Point2D;
@@ -30,6 +31,7 @@ public class Node implements DiagramObject, Cloneable {
     private Point _offset;
     private boolean _selected;
     private boolean _resizing;
+    private boolean _current = false;
         
 	private DrawingPanel _container;
 	private JLabel _label;
@@ -63,8 +65,8 @@ public class Node implements DiagramObject, Cloneable {
 		_area.selectAll();
 		_area.setEditable(true);
 		_area.setEnabled(true);
-		_area.getDocument().addDocumentListener(new MyDocListener());
 		_label = new JLabel(s);
+		_area.getDocument().addDocumentListener(new MyDocListener(_label));
 		_label.setVisible(true);
 		_label.setOpaque(false);
 		_label.setSize((int)(dimension), 12);
@@ -190,6 +192,9 @@ public class Node implements DiagramObject, Cloneable {
 		_label.setLocation(new Point(p.x+1, (int)(_center.y-6)));
 		_circle = new Ellipse2D.Double(_center.x-_radius, _center.y-_radius, _radius*2, _radius*2);
         _container.repaint();
+        for (Edge e : _connected){
+            e.resetLine();
+        }
 		return _circle;
 	}
 
@@ -201,31 +206,14 @@ public class Node implements DiagramObject, Cloneable {
 		_selected = b;
 	}
 
-	private class MyDocListener implements DocumentListener{
+    public void setCurrent(boolean b) {
+        _current = b;
+    }
 
-		public void insertUpdate(DocumentEvent e) {
-			try {
-				_label.setText(e.getDocument().getText(0, e.getDocument().getLength()));
-			} catch (BadLocationException ex) {
-				Logger.getLogger(Node.class.getName()).log(Level.SEVERE, null, ex);
-			}
-		}
+    public boolean getCurrent() {
+        return _current;
+    }
 
-		public void removeUpdate(DocumentEvent e) {
-			try {
-				_label.setText(e.getDocument().getText(0, e.getDocument().getLength()));
-			} catch (BadLocationException ex) {
-				Logger.getLogger(Node.class.getName()).log(Level.SEVERE, null, ex);
-			}
-		}
-
-		public void changedUpdate(DocumentEvent e) {
-			try {
-				_label.setText(e.getDocument().getText(0, e.getDocument().getLength()));
-			} catch (BadLocationException ex) {
-				Logger.getLogger(Node.class.getName()).log(Level.SEVERE, null, ex);
-			}
-		}
-	}
+	
 
 }

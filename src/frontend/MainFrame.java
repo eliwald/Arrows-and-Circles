@@ -4,7 +4,9 @@
  */
 package frontend;
 
+import backend.DiagramObject;
 import backend.Edge;
+import backend.InvalidDFSMException;
 import backend.Node;
 import java.awt.AWTException;
 import java.awt.Point;
@@ -16,6 +18,8 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
@@ -41,6 +45,8 @@ public class MainFrame extends javax.swing.JFrame {
     private Robot _robot;
     private int _nodesSelected = 0;
     private int _edgesSelected = 0;
+    private List<DiagramObject> _sim;
+    private Iterator<DiagramObject> _iter;
 
     /**
      * Creates new form MainFram
@@ -82,10 +88,10 @@ public class MainFrame extends javax.swing.JFrame {
         jTextArea1 = new javax.swing.JTextArea();
         jTextField1 = new javax.swing.JTextField();
         jSlider1 = new javax.swing.JSlider();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        _rewindBtn = new javax.swing.JButton();
+        _stopBtn = new javax.swing.JButton();
+        _playPauseBtn = new javax.swing.JButton();
+        _forwardBtn = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jMenuBar2 = new javax.swing.JMenuBar();
         jMenu3 = new javax.swing.JMenu();
@@ -221,20 +227,25 @@ public class MainFrame extends javax.swing.JFrame {
         jPanel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
         jTextArea1.setColumns(20);
+        jTextArea1.setEditable(false);
         jTextArea1.setRows(5);
         jScrollPane2.setViewportView(jTextArea1);
 
         jTextField1.setText("jTextField1");
 
-        jButton1.setFont(new java.awt.Font("Bitstream Vera Sans", 0, 7)); // NOI18N
-        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/frontend/Rewind.png"))); // NOI18N
-        jButton1.setText("PLAY");
+        _rewindBtn.setFont(new java.awt.Font("Bitstream Vera Sans", 0, 7)); // NOI18N
+        _rewindBtn.setText("PLAY");
 
-        jButton2.setText("PLAY");
+        _stopBtn.setText("PLAY");
 
-        jButton4.setText("PLAY");
+        _playPauseBtn.setText("PLAY");
 
-        jButton3.setText("PLAY");
+        _forwardBtn.setText("PLAY");
+        _forwardBtn.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                _forwardBtnMouseClicked(evt);
+            }
+        });
 
         jLabel1.setHorizontalAlignment(SwingConstants.CENTER);
         jLabel1.setText("Simulation");
@@ -249,13 +260,13 @@ public class MainFrame extends javax.swing.JFrame {
                 .addGap(45, 45, 45)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(_rewindBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(_stopBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(_playPauseBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(_forwardBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jSlider1, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 222, Short.MAX_VALUE)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -267,10 +278,10 @@ public class MainFrame extends javax.swing.JFrame {
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(_rewindBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(_stopBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(_playPauseBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(_forwardBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addComponent(jSlider1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -744,6 +755,32 @@ public class MainFrame extends javax.swing.JFrame {
 
     }//GEN-LAST:event_drawingPanel1MouseReleased
 
+    private void _forwardBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event__forwardBtnMouseClicked
+        // TODO add your handling code here:
+        if (_sim == null) {
+            try {
+                _sim = drawingPanel1.getDiagram().deterministicSimulation(jTextField1.getText());
+                _iter = _sim.iterator();
+            } catch (InvalidDFSMException ex) {
+                jTextArea1.setText(ex.getMessage());
+                return;
+            }
+            _iter = _sim.iterator();
+        }
+        if (_iter.hasNext()) {
+            DiagramObject e = _iter.next();
+            e.setCurrent(true);
+        }
+        for (Node n : drawingPanel1.getDiagram().getNodes()) {
+            n.setCurrent(false);
+        }
+        for (Edge e : drawingPanel1.getDiagram().getEdges()) {
+            e.setCurrent(false);
+        }
+        drawingPanel1.repaint();
+
+}//GEN-LAST:event__forwardBtnMouseClicked
+
     /**
      * @param args the command line arguments
      */
@@ -786,11 +823,11 @@ public class MainFrame extends javax.swing.JFrame {
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton _forwardBtn;
+    private javax.swing.JButton _playPauseBtn;
+    private javax.swing.JButton _rewindBtn;
+    private javax.swing.JButton _stopBtn;
     private frontend.DrawingPanel drawingPanel1;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JMenu jMenu3;

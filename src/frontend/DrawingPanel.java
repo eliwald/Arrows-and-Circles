@@ -76,7 +76,7 @@ public class DrawingPanel extends JPanel {
 //					return null;
 //				}
 //			});
-    		Edge e = new Edge(n1,n2,n1.getCenter(),n2.getCenter());
+    		Edge e = new Edge(n1,n2,n1.getCenter(),n2.getCenter(), this);
             n1.addConnected(e);
             n2.addConnected(e);
     		_diagram.addEdge(e);
@@ -110,6 +110,9 @@ public class DrawingPanel extends JPanel {
                g2.setStroke(new BasicStroke(2));
            }
            g2.draw(e.resetLine());
+
+           g2.fill(e.getForward());
+
            g2.setColor(java.awt.Color.BLACK);
            g2.setStroke(new BasicStroke(1));
        }
