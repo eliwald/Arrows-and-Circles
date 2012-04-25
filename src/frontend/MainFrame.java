@@ -474,7 +474,7 @@ public class MainFrame extends javax.swing.JFrame {
             double newX = _resizing.getCenter().x - _resizing.getRadius();
             double newY = _resizing.getCenter().y - _resizing.getRadius();
             double newR = _resizing.getRadius() + dif/2;
-            if (newR < 10) {
+            if (newR < _resizing.MIN_RADIUS) {
                 return;
             }
 
