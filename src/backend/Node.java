@@ -45,7 +45,8 @@ public class Node implements DiagramObject, Cloneable {
 		double hypo = 2*_radius;
 		double temp = hypo*hypo;
 		double dimension = Math.sqrt(temp/2);
-		_area = new JTextField(){@Override public void setBorder(Border border) {}};
+		_area = new JTextField(){@Override public void
+			setBorder(Border border) {}};
 		String s = "n"+_container.getDiagram().getNodes().size();
 		_area.setText(s);
 		_area.setVisible(true);
@@ -160,9 +161,9 @@ public class Node implements DiagramObject, Cloneable {
 		dimension /= 2;
 		Point p = new Point((int)(_center.x-dimension), (int)(_center.y-dimension));
 		_area.setLocation(new Point(p.x+2, p.y+2));
+		_label.setLocation(new Point(p.x+1, p.y+1));
 		_circle = new Ellipse2D.Double(_center.x-_radius, _center.y-_radius, _radius*2, _radius*2);
 		return _circle;
-
 	}
 
 	public boolean selected() {
