@@ -8,8 +8,14 @@ import java.awt.Color;
 import java.awt.Point;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D.Double;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.BadLocationException;
 
 public class Node implements DiagramObject, Cloneable {
 	private Point2D.Double _center;
@@ -22,7 +28,7 @@ public class Node implements DiagramObject, Cloneable {
     private Point _offset;
     private boolean _selected;
     private DrawingPanel _container;
-
+    private JLabel _label;
 
     private java.awt.geom.Ellipse2D.Double _circle;
 
@@ -49,8 +55,15 @@ public class Node implements DiagramObject, Cloneable {
         _area.selectAll();
         _area.setEditable(true);
         _area.setEnabled(true);
-        _container.add(_area);
+        _area.getDocument().addDocumentListener(new MyDocListener());
+        _label = new JLabel(s);
+        _label.setVisible(true);
+        _label.setOpaque(false);
+        _label.setSize((int)(dimension), (int)(dimension));
+        _label.setHorizontalAlignment(JTextField.CENTER);
 
+        _container.add(_label);
+        _container.add(_area);
         _area.grabFocus();
 	}
 
@@ -119,6 +132,10 @@ public class Node implements DiagramObject, Cloneable {
         return _area;
     }
 
+    public JLabel getLabel(){
+        return _label;
+    }
+
 	public Object clone() throws CloneNotSupportedException {
 		Node clonedObject = (Node) super.clone();
 		clonedObject._center = (Double) _center.clone();
@@ -143,6 +160,7 @@ public class Node implements DiagramObject, Cloneable {
         dimension /= 2;
         Point p = new Point((int)(_center.x-dimension), (int)(_center.y-dimension));
         _area.setLocation(new Point(p.x+2, p.y+2));
+        _label.setLocation(new Point(p.x+1, p.y+1));
         _circle = new Ellipse2D.Double(_center.x-_radius, _center.y-_radius, _radius*2, _radius*2);
         return _circle;
             
@@ -154,5 +172,33 @@ public class Node implements DiagramObject, Cloneable {
 
     public void setSelected(boolean b){
         _selected = b;
-    }  
+    }
+
+    private class MyDocListener implements DocumentListener{
+
+        public void insertUpdate(DocumentEvent e) {
+            try {
+                _label.setText(e.getDocument().getText(0, e.getDocument().getLength()));
+            } catch (BadLocationException ex) {
+                Logger.getLogger(Node.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+        public void removeUpdate(DocumentEvent e) {
+            try {
+                _label.setText(e.getDocument().getText(0, e.getDocument().getLength()));
+            } catch (BadLocationException ex) {
+                Logger.getLogger(Node.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+        public void changedUpdate(DocumentEvent e) {
+            try {
+                _label.setText(e.getDocument().getText(0, e.getDocument().getLength()));
+            } catch (BadLocationException ex) {
+                Logger.getLogger(Node.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
+    }
 }
