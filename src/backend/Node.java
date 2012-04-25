@@ -5,8 +5,10 @@ import java.util.HashSet;
 import java.awt.geom.Point2D;
 import java.awt.Color;
 import java.awt.Point;
+import java.awt.event.MouseAdapter;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D.Double;
+import java.awt.geom.Rectangle2D;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JLabel;
@@ -28,6 +30,7 @@ public class Node implements DiagramObject, Cloneable {
 	private boolean _endState;
     private Point _offset;
     private boolean _selected;
+    private boolean _resizing;
         
     private java.awt.geom.Ellipse2D.Double _circle;
 
@@ -50,6 +53,7 @@ public class Node implements DiagramObject, Cloneable {
         _label = new JLabel("hi");
         _label.setVisible(true);
         _label.setOpaque(true);
+
 	}
 
 	public void setCenter(double x, double y){
@@ -160,6 +164,18 @@ public class Node implements DiagramObject, Cloneable {
 
     public void setSelected(boolean b){
         _selected = b;
+
+    }
+
+    public Rectangle2D getResize() {
+        return new Rectangle2D.Double(_circle.x + 2*_radius,_circle.y+2*_radius,8,8);
+    }
+
+    public boolean resizing() {
+        return _resizing;
+    }
+    public void setResizing(boolean r) {
+        _resizing = r;
     }
 
     private class NodeDocListener implements DocumentListener{
@@ -180,5 +196,6 @@ public class Node implements DiagramObject, Cloneable {
         }
         
     }
+
         
 }
