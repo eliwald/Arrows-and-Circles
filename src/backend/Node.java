@@ -36,6 +36,8 @@ public class Node implements DiagramObject, Cloneable {
 
 	private java.awt.geom.Ellipse2D.Double _circle;
 
+    public static final double MIN_RADIUS = 20;
+
 	public Node(double x, double y, DrawingPanel container) {
 		_container = container;
 		_center = new Point2D.Double(x, y);
