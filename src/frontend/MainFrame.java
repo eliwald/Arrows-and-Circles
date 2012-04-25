@@ -396,7 +396,6 @@ public class MainFrame extends javax.swing.JFrame {
         else{
             
             if (mod.equals("Ctrl+Button1")) {
-                System.out.println("ctrl click");
                 for (Node n : drawingPanel1.getDiagram().getNodes()){
                     if (n.getCircle().contains(evt.getPoint())){
                         if (n.selected()){
@@ -429,7 +428,6 @@ public class MainFrame extends javax.swing.JFrame {
                 drawingPanel1.repaint();
             }
         }
-        System.out.println("selected: " + _numSelected);
     }//GEN-LAST:event_drawingPanel1MouseClicked
 
     private void drawingPanel1MouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_drawingPanel1MouseDragged

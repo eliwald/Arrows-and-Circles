@@ -81,14 +81,14 @@ public class Diagram implements Cloneable {
 		for (Node n : _nodes) {
 			if (n.isStart()) {
 				start_nodes.add(n);
-				if (tempNode == null || (tempNode != null && tempNode.getLabel().equals("")))
+				if (tempNode == null || (tempNode != null && tempNode.getName().equals("")))
 					tempNode = n;
 			}
 		}
 
 		if (tempNode == null) {
 			for (Node n : _nodes) {
-				if (tempNode == null && !n.getLabel().equals("")) {
+				if (tempNode == null && !n.getName().equals("")) {
 					tempNode = n;
 					break;
 				}
@@ -138,16 +138,16 @@ public class Diagram implements Cloneable {
 
 			for (String s : edge_labels) {
 				if(!temp_edge_labels.remove(s)) {
-					if (!n.getLabel().equals(""))
-						message += "Node " + n.getLabel() + " doesn't have an edge labeled " + s + ".\n";
+					if (!n.getName().equals(""))
+						message += "Node " + n.getName() + " doesn't have an edge labeled " + s + ".\n";
 					else
 						message += "There is a node without label " + s + ".\n";
 				}
 			}
 
 			for (String s : temp_edge_labels) {
-				if (!n.getLabel().equals(""))
-					message += "Node " + n.getLabel() + " has edge labeled " + s + ", which is a duplicate or is not in input alphabet.\n";
+				if (!n.getName().equals(""))
+					message += "Node " + n.getName() + " has edge labeled " + s + ", which is a duplicate or is not in input alphabet.\n";
 				else
 					message += "There is a node with an edge labeled " + s + ", which is a duplicate or is not in input alphabet.\n";
 			}

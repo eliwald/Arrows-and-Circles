@@ -1,5 +1,6 @@
 package backend;
 
+import frontend.DrawingPanel;
 import java.util.Collection;
 import java.util.HashSet;
 import java.awt.geom.Point2D;
@@ -28,10 +29,13 @@ public class Node implements DiagramObject, Cloneable {
 	private boolean _endState;
     private Point _offset;
     private boolean _selected;
-        
+    private DrawingPanel _container;
+
+
     private java.awt.geom.Ellipse2D.Double _circle;
 
-	public Node(double x, double y) {
+	public Node(double x, double y, DrawingPanel container) {
+        _container = container;
 		_center = new Point2D.Double(x, y);
 		_radius = 30;
 		_name = "";
@@ -41,15 +45,26 @@ public class Node implements DiagramObject, Cloneable {
 		_endState = false;
         _offset = new Point(0,0);
         _selected = true;
+        double hypo = 2*_radius;
+        double temp = hypo*hypo;
+        double dimension = Math.sqrt(temp/2);
         _area = new JTextField();
         _area.setVisible(true);
         _area.setEnabled(true);
         _area.setOpaque(false);
-        _area.setSize((int)(1.5*_radius), (int)(_radius));
+        _area.setSize((int)dimension, (int)dimension);
         _area.getDocument().addDocumentListener(new NodeDocListener());
-        _label = new JLabel("hi");
+        _area.setHorizontalAlignment(JTextField.CENTER);
+        _label = new JLabel("");
         _label.setVisible(true);
-        _label.setOpaque(true);
+        _label.setSize((int)dimension, (int)dimension);
+        _label.setOpaque(false);
+        _label.setHorizontalAlignment(JTextField.CENTER);
+        _container.add(_area);
+        _container.add(_label);
+        String s = "n"+_container.getDiagram().getNodes().size();
+        _area.setText(s);
+        _label.setText(s);
 	}
 
 	public void setCenter(double x, double y){
@@ -84,7 +99,7 @@ public class Node implements DiagramObject, Cloneable {
 		_name = label;
 	}
 
-	public String getLabel() {
+	public String getName() {
 		return _name;
 	}
 
@@ -128,6 +143,10 @@ public class Node implements DiagramObject, Cloneable {
         return _area;
     }
 
+    public JLabel getLabel(){
+        return _label;
+    }
+
 	public Object clone() throws CloneNotSupportedException {
 		Node clonedObject = (Node) super.clone();
 		clonedObject._center = (Double) _center.clone();
@@ -148,7 +167,13 @@ public class Node implements DiagramObject, Cloneable {
     }
         
     public Ellipse2D.Double resetCircle() {
-        _area.setLocation(new Point((int)(_center.x-_radius), (int)(_center.y)));
+        double hypo = 2*_radius;
+        double temp = hypo*hypo;
+        double dimension = Math.sqrt(temp/2);
+        dimension /= 2;
+        Point p = new Point((int)(_center.x-dimension), (int)(_center.y-dimension));
+        _area.setLocation(p);
+        _label.setLocation(p);
         _circle = new Ellipse2D.Double(_center.x-_radius, _center.y-_radius, _radius*2, _radius*2);
         return _circle;
             
@@ -173,7 +198,8 @@ public class Node implements DiagramObject, Cloneable {
         public void changedUpdate(DocumentEvent e) {
             try {
                 _name = e.getDocument().getText(0, e.getDocument().getLength());
-                _label.setText(_name);
+                
+                _container.repaint();
             } catch (BadLocationException ex) {
                 Logger.getLogger(Node.class.getName()).log(Level.SEVERE, null, ex);
             }
