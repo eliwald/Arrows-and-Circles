@@ -1,5 +1,6 @@
 package backend;
 
+import java.awt.geom.Arc2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.QuadCurve2D;
@@ -14,17 +15,9 @@ public class Edge implements Cloneable, DiagramObject {
 	private EdgeDirection _direction;
 	private JTextField _area;
     private JLabel _label;
-    private QuadCurve2D.Double _curve;
-    private double _ctrl_x, _ctrl_y;
+    private Arc2D _curve;
+    private double _height; // from midpoint between two centers to center of the arc
     private boolean _selected;
-
-	public Edge(Point2D.Double start, Point2D.Double end) {
-		_area = new JTextField();
-        _label = new JLabel();
-		_point_start = start;
-		_point_end = end;
-		_direction = EdgeDirection.SINGLE;
-	}
 
 	public Edge(Node s, Node e, Point2D.Double start, Point2D.Double end) {
 		_start = s;
@@ -35,28 +28,46 @@ public class Edge implements Cloneable, DiagramObject {
 		_point_end = end;
         _selected = true;
 		_direction = EdgeDirection.SINGLE;
-        double difX = _end.getCenter().x - _start.getCenter().x;
-        double difY = _end.getCenter().y - _start.getCenter().y;
-        double vecX = difX/Math.sqrt((difX*difX+difY*difY));
-        double vecY = difY/Math.sqrt((difX*difX+difY*difY));
-        _ctrl_x = Math.min(_start.getCenter().x, _end.getCenter().x) + vecX/2;
-        _ctrl_y = Math.min(_start.getCenter().y, _end.getCenter().y) + vecY/2;
+		_curve = new Arc2D.Double(Arc2D.OPEN);
+		_height = -100000.0;
         this.resetLine();
 	}
 
-    public QuadCurve2D.Double resetLine() {
-        double difX = _end.getCenter().x - _start.getCenter().x;
-        double difY = _end.getCenter().y - _start.getCenter().y;
-        double vecX = difX/Math.sqrt((difX*difX+difY*difY));
-        double vecY = difY/Math.sqrt((difX*difX+difY*difY));
-        _point_start = new Point2D.Double(_start.getCenter().x+(_start.getRadius()*vecX),_start.getCenter().y+(_start.getRadius()*vecY));
-        _point_end = new Point2D.Double(_end.getCenter().x-(_end.getRadius()*vecX),_end.getCenter().y-(_end.getRadius()*vecY));
-        _curve = new QuadCurve2D.Double(_point_start.x,_point_start.y, _ctrl_x, _ctrl_y, _point_end.x, _point_end.y);
+    public Arc2D resetLine() {
+
+    	// Obtain the length of the chord.
+        double cx = (_end.getCenter().getX() - _start.getCenter().getX()) / 2;
+        double cy = (_end.getCenter().getY() - _start.getCenter().getY()) / 2;
+        double dc = Math.sqrt(cx*cx + cy*cy);
+               
+        // Obtain the height vector.
+        double hx = (-cy) / dc * _height;
+        double hy = (cx) / dc * _height;
+        
+        System.out.println(hx + " AAAAA " + hy);
+        
+        // Obtain the radius vector and size.
+        double rx = cx + hx;
+        double ry = cy + hy;
+        double dr = Math.sqrt(rx * rx + ry * ry);
+        
+        // Obtain the center of the arc.
+        double ax = _start.getCenter().getX() + rx;
+        double ay = _start.getCenter().getY() + ry;
+        
+        // Change the curve.
+        _curve.setArcByCenter(ax, ay, dr, -Math.PI/2, Math.PI/2, Arc2D.OPEN);
+        _curve.setAngles(_start.getCenter(), _end.getCenter());
+
         return _curve;
     }
 
-    public QuadCurve2D.Double getCurve(){
+    public Arc2D getCurve(){
         return _curve;
+    }
+    
+    public void setHeight(double h) {
+    	_height = h;
     }
 
     public boolean isSelected(){

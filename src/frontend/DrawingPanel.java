@@ -90,7 +90,6 @@ public class DrawingPanel extends JPanel {
        }
 
        for (Edge e: _diagram.getEdges()) {
-//           QuadCurve2D.Double q = e.resetLine();
            if(e.isSelected()){
                g2.setColor(java.awt.Color.BLUE);
                g2.setStroke(new BasicStroke(2));
