@@ -159,6 +159,9 @@ public class Node implements DiagramObject, Cloneable {
 
 
     public Rectangle2D getResize() {
+        if (_circle == null) {
+            resetCircle();
+        }
         return new Rectangle2D.Double(_circle.x + 2*_radius,_circle.y+2*_radius,8,8);
     }
 

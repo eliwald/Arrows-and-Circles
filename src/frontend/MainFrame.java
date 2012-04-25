@@ -14,11 +14,8 @@ import java.awt.event.MouseMotionListener;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
-<<<<<<< HEAD
+
 import java.awt.geom.Rectangle2D;
-import java.util.ArrayList;
-=======
->>>>>>> fc958f3df1d62d3345fab2a48eda0bb53afe8c57
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
@@ -391,12 +388,9 @@ public class MainFrame extends javax.swing.JFrame {
                 n.setSelected(false);
             }
             add.setSelected(true);
-<<<<<<< HEAD
 
-=======
             add.getTextField().setVisible(true);
             add.getLabel().setVisible(false);
->>>>>>> fc958f3df1d62d3345fab2a48eda0bb53afe8c57
             _numSelected++;
         }
         else{
@@ -481,11 +475,17 @@ public class MainFrame extends javax.swing.JFrame {
 
             double newX = _resizing.getCenter().x - _resizing.getRadius();
             double newY = _resizing.getCenter().y - _resizing.getRadius();
-            double newR = Math.max(dif - newX, dif - newY);
+            double newR = _resizing.getRadius() + dif/2;
+            if (newR < 10) {
+                return;
+            }
 
 
 
+
+            //_resizing.setCenter(_resizing.getCenter().x + dif, _resizing.getCenter().y + dif);
             _resizing.setRadius(newR);
+
             drawingPanel1.repaint();
         }
         
@@ -494,11 +494,8 @@ public class MainFrame extends javax.swing.JFrame {
     private void drawingPanel1MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_drawingPanel1MousePressed
         // TODO add your handling code here:
 
-<<<<<<< HEAD
-
-=======
         drawingPanel1.grabFocus();
->>>>>>> fc958f3df1d62d3345fab2a48eda0bb53afe8c57
+
         Point newp = new Point(evt.getX(),evt.getY());
         _selected = null;
         for (Node n : drawingPanel1.getDiagram().getNodes()) {
@@ -628,6 +625,7 @@ public class MainFrame extends javax.swing.JFrame {
             }
         }
         _edgePressed = false;
+        _resizing = null;
 
     }//GEN-LAST:event_drawingPanel1MouseReleased
 
