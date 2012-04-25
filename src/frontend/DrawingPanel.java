@@ -38,11 +38,18 @@ public class DrawingPanel extends JPanel {
     public Diagram getDiagram() {
         return _diagram;
     }
-    
-    public Node addNode(Point p) {
+
+    private void clearAll(){
         for (Node n : _diagram.getNodes()){
             n.setSelected(false);
         }
+        for (Edge e : _diagram.getEdges()){
+                e.setSelected(false);
+        }
+    }
+
+    public Node addNode(Point p) {
+        clearAll();
         Node n = new Node(p.x,p.y, this);
         _diagram.addNode(n);
         repaint();
@@ -52,9 +59,7 @@ public class DrawingPanel extends JPanel {
 
     public void addEdge(Node n1, Node n2) {
     	if (n1 != null && n2 != null) {
-    		for (Edge e : _diagram.getEdges()){
-                e.setSelected(false);
-            }
+    		clearAll();
 //    		DiagramProject dp = new DiagramProject();
 //    		dp.modify(new DiagramModifyAction() {
 //
