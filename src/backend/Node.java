@@ -170,10 +170,7 @@ public class Node implements DiagramObject, Cloneable {
     }
     public void setResizing(boolean r) {
         _resizing = r;
-    }
-
-
-        
+    }s   
 
 	public Ellipse2D.Double getCircle() {
 		return _circle;
