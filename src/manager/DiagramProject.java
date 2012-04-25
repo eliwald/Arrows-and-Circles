@@ -1,5 +1,7 @@
 package manager;
 
+import java.io.IOException;
+
 import backend.Diagram;
 
 /**
@@ -14,7 +16,8 @@ public class DiagramProject {
 	/** The number of maximum history. */
 	private static final int MAX_HISTORY = 42; 
 	
-	/** The filename of this project. */
+	/** The filename of this project. This could be null if it is a newly
+	 * created diagram that has never been saved yet. */
 	private String _filename; 
 	
 	/** The object that keeps track of recent changes to the diagram.
@@ -22,24 +25,40 @@ public class DiagramProject {
 	private DiagramHistory _history;
 
 	/**
-	 * Creates a new blank diagram project with initially a blank diagram.
+	 * The factory that a new diagram project object with blank diagram.
+	 * @return The diagram project.
+	 * @throws IOException
 	 */
-	public DiagramProject() {
-		_filename = null;
-		_history = new DiagramHistory(MAX_HISTORY);
+	public static DiagramProject newBlankProject() {
+		// TODO: implement opening the project file and populate data.
+		throw new UnsupportedOperationException("Not yet implemented.");
 	}
-	
+
 	/**
-	 * Creates a diagram project from the given file name.
+	 * The factory that opens an existing diagram project object by reading in
+	 * the file from the specified filename and populating the data.
+	 * @param filename The path to the project file.
+	 * @return The diagram project.
+	 * @throws IOException 
 	 */
-	public DiagramProject(String filename) {
-		// TODO: not yet implemented
+	public static DiagramProject openExistingProject(String filename) throws IOException {
+		// TODO: implement opening the project file and populate data.
+		throw new UnsupportedOperationException("Not yet implemented.");
+	}
+
+	/**
+	 * The factory that saves the current diagram project object by writing down 
+	 * the data to the file.
+	 * @param dp The current diagram project.
+	 * @return The diagram project.
+	 * @throws IOException 
+	 */
+	public static void saveCurrentProject(DiagramProject dp) throws IOException {
+		// TODO: implement opening the project file and populate data.
 		throw new UnsupportedOperationException("Not yet implemented.");
 	}
 	
-	/**
-	 * 
-	 */
+	
 	
 	/**
 	 * Modifies the current diagram object by using the specified action object

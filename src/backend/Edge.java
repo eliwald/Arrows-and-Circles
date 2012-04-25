@@ -28,7 +28,7 @@ public class Edge implements Cloneable, DiagramObject {
 		_label = new JTextField();
 		_point_start = start;
 		_point_end = end;
-        this.resetLine();
+        
 		_direction = EdgeDirection.SINGLE;
         double difX = _end.getCenter().x - _start.getCenter().x;
         double difY = _end.getCenter().y - _start.getCenter().y;
@@ -36,6 +36,7 @@ public class Edge implements Cloneable, DiagramObject {
         double vecY = difY/Math.sqrt((difX*difX+difY*difY));
         _ctrl_x = Math.min(_start.getCenter().x, _end.getCenter().x) + vecX/2;
         _ctrl_y = Math.min(_start.getCenter().y, _end.getCenter().y) + vecY/2;
+        this.resetLine();
 	}
 
     public QuadCurve2D.Double resetLine() {
