@@ -475,7 +475,6 @@ public class MainFrame extends javax.swing.JFrame {
                         else{
                             e.setSelected(true);
                             _edgesSelected.add(e);
-                            _edgeDragged = e;
                         }
                         drawingPanel1.repaint();
                     }
@@ -564,7 +563,7 @@ public class MainFrame extends javax.swing.JFrame {
             }
             _resizing.setRadius(newR);
         }
-        if (_edgesSelected.size() != 0) {
+        if (_edgeDragged != null) {
         	double ax = _edgeDragged.getStartNode().getCenter().getX() - _mouseLoc.getX();
         	double ay = _edgeDragged.getStartNode().getCenter().getY() - _mouseLoc.getY();
         	double bx = _edgeDragged.getEndNode().getCenter().getX() - _mouseLoc.getX();
@@ -603,8 +602,6 @@ public class MainFrame extends javax.swing.JFrame {
     private void drawingPanel1MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_drawingPanel1MousePressed
         // TODO add your handling code here:
         drawingPanel1.grabFocus();
-        _resizing = null;
-        _nodeDragged = null;
         for (Node n : drawingPanel1.getDiagram().getNodes()) {
             //n.getTextField().select(0, 0);
             if (n.isSelected()) {
@@ -614,11 +611,16 @@ public class MainFrame extends javax.swing.JFrame {
                 }
             }
             if (n.getCircle().contains(evt.getPoint())) {
-                _nodesSelected.add(n);
                 _nodeDragged = n;
                 n.setOffset(evt.getX() - n.getCenter().x, evt.getY() - n.getCenter().y);
                 break;
             }
+        }
+        for (Edge e : drawingPanel1.getDiagram().getEdges()) {
+        	if (e.getCurve().intersects(evt.getPoint().x,evt.getPoint().y, 2, 2)) {
+        		_edgeDragged = e;
+        		break;
+        	}
         }
         String mod = MouseEvent.getMouseModifiersText(evt.getModifiers());
         if (mod.contains("Shift")) {
