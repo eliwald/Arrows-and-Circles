@@ -506,11 +506,9 @@ public class MainFrame extends javax.swing.JFrame {
             }
             if (con != null) {
                 double difX = con.getCenter().x - _edgeStart.getCenter().x;
-                double difY = con.getCenter().x - _edgeStart.getCenter().y;
+                double difY = con.getCenter().y - _edgeStart.getCenter().y;
                 double vecX = difX/Math.sqrt((difX*difX+difY*difY));
-//                double vecX = Math.sqrt(con.getCenter().x*con.getCenter().x - _edgeStart.getCenter().x*_edgeStart.getCenter().x);
                 double vecY = difY/Math.sqrt((difX*difX+difY*difY));
-//                double vecY = Math.sqrt(con.getCenter().y*con.getCenter().y - _edgeStart.getCenter().y*_edgeStart.getCenter().y);
 
                 Point2D.Double point_start = new Point2D.Double(_edgeStart.getCenter().x+(_edgeStart.getRadius()*vecX),_edgeStart.getCenter().y+(_edgeStart.getRadius()*vecY));
                 Point2D.Double point_end = new Point2D.Double(con.getCenter().x-(con.getRadius()*vecX),con.getCenter().y-(con.getRadius()*vecY));
