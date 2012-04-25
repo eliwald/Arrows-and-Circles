@@ -55,22 +55,6 @@ public class DrawingPanel extends JPanel {
     		for (Edge e : _diagram.getEdges()){
                 e.setSelected(false);
             }
-//    		DiagramProject dp = new DiagramProject();
-//    		dp.modify(new DiagramModifyAction() {
-//
-//				@Override
-//				public boolean modify(Diagram diagram) {
-//					Edge e = new Edge(n1,n2,n1.getCenter(),n2.getCenter());
-//					diagram.addEdge(e);
-//					return false;
-//				}
-//
-//				@Override
-//				public String message() {
-//					// TODO Auto-generated method stub
-//					return null;
-//				}
-//			});
     		Edge e = new Edge(n1,n2,n1.getCenter(),n2.getCenter());
             n1.addConnected(e);
             n2.addConnected(e);
