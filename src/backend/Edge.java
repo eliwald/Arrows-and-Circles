@@ -2,6 +2,7 @@ package backend;
 
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
+import javax.swing.JTextField;
 
 public class Edge implements Cloneable, DiagramObject {
 	private Node _start;
@@ -9,10 +10,10 @@ public class Edge implements Cloneable, DiagramObject {
 	private Point2D.Double _point_start;
 	private Point2D.Double _point_end;
 	private EdgeDirection _direction;
-	private String _label;
+	private JTextField _label;
 
 	public Edge(Point2D.Double start, Point2D.Double end) {
-		_label = "";
+		_label = new JTextField();
 		_point_start = start;
 		_point_end = end;
 		_direction = EdgeDirection.SINGLE;
@@ -21,7 +22,7 @@ public class Edge implements Cloneable, DiagramObject {
 	public Edge(Node s, Node e, Point2D.Double start, Point2D.Double end) {
 		_start = s;
 		_end = e;
-		_label = "";
+		_label = new JTextField();
 		_point_start = start;
 		_point_end = end;
         this.resetLine();
@@ -39,12 +40,12 @@ public class Edge implements Cloneable, DiagramObject {
         return line;
     }
 
-	public void setLabel(String label) {
-		_label = label;
+	public JTextField getLabel(){
+		return _label;
 	}
 
-	public String getLabel(){
-		return _label;
+	public void setLabel(JTextField label) {
+		_label = label;
 	}
 
 	public void setStartNode(Node start) {
@@ -89,7 +90,6 @@ public class Edge implements Cloneable, DiagramObject {
 
 	public Object clone() throws CloneNotSupportedException {
 		Edge cloned = (Edge) super.clone();
-		cloned.setLabel(getLabel());
 		cloned.setStartNode((Node) getStartNode().clone());
 		cloned.setEndNode((Node) getEndNode().clone());
 		cloned.setStartPoint((Point2D.Double) getStartPoint().clone());
