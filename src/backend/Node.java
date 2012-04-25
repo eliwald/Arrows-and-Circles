@@ -58,7 +58,7 @@ public class Node implements DiagramObject, Cloneable {
 		_area.setText(s);
 		_area.setVisible(true);
 		_area.setOpaque(false);
-		_area.setSize((int)(dimension), (int)(dimension));
+		_area.setSize((int)(dimension), 12);
 		_area.setHorizontalAlignment(JTextField.CENTER);
 		_area.selectAll();
 		_area.setEditable(true);
@@ -67,7 +67,7 @@ public class Node implements DiagramObject, Cloneable {
 		_label = new JLabel(s);
 		_label.setVisible(true);
 		_label.setOpaque(false);
-		_label.setSize((int)(dimension), (int)(dimension));
+		_label.setSize((int)(dimension), 12);
 		_label.setHorizontalAlignment(JTextField.CENTER);
 
 		_container.add(_label);
@@ -186,11 +186,13 @@ public class Node implements DiagramObject, Cloneable {
 		double temp = hypo*hypo;
 		double dimension = Math.sqrt(temp/2);
 		Point p = new Point((int)(_center.x-(dimension/2)), (int)(_center.y-(dimension/2)));
-		_area.setSize((int)(dimension), (int)(dimension));
-		_label.setSize((int)(dimension), (int)(dimension));
-		_area.setLocation(new Point(p.x+2, p.y+2));
-		_label.setLocation(new Point(p.x+1, p.y+1));
+		_area.setSize((int)(dimension), _area.getHeight());
+		_label.setSize((int)(dimension), _label.getHeight());
+//		_area.setLocation(new Point(p.x+2, p.y+2));
+		_area.setLocation(new Point(p.x+2, (int)(_center.y-6)));
+		_label.setLocation(new Point(p.x+1, (int)(_center.y-6)));
 		_circle = new Ellipse2D.Double(_center.x-_radius, _center.y-_radius, _radius*2, _radius*2);
+        _container.repaint();
 		return _circle;
 	}
 
