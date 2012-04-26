@@ -47,6 +47,28 @@ public class Edge implements Cloneable, DiagramObject {
 		_height = 100000.0;
         this.resetLine();
         _area.setText("0");
+
+
+        String str = "fill this in";
+		_area.setText(str);
+		_area.setVisible(true);
+  		_area.setOpaque(false);
+ 		_area.setSize(150, 20);
+		_area.setHorizontalAlignment(JTextField.CENTER);
+		_area.selectAll();
+		_area.setEditable(true);
+		_area.setEnabled(true);
+		_label = new JLabel(str);
+		_area.getDocument().addDocumentListener(new MyDocListener(_label));
+		_label.setVisible(true);
+		_label.setOpaque(false);
+		_label.setSize(150, 20);
+		_label.setHorizontalAlignment(JTextField.CENTER);
+
+		_container.add(_label);
+		_container.add(_area);
+		_area.grabFocus();
+
 	}
 
     public Arc2D resetLine() {
@@ -105,37 +127,6 @@ public class Edge implements Cloneable, DiagramObject {
         
         return new Point2D.Double(ax, ay);
     }
-
-//    public Arc2D getCurve(){
-//        double difX = _end.getCenter().x - _start.getCenter().x;
-//        double difY = _end.getCenter().y - _start.getCenter().y;
-//        double vecX = difX/Math.sqrt((difX*difX+difY*difY));
-//        double vecY = difY/Math.sqrt((difX*difX+difY*difY));
-//        _ctrl_x = Math.min(_start.getCenter().x, _end.getCenter().x) + vecX/2;
-//        _ctrl_y = Math.min(_start.getCenter().y, _end.getCenter().y) + vecY/2;
-//        _area = new JTextField(){@Override public void
-//			setBorder(Border border) {}};
-//		String str = "fill this in";
-//		_area.setText(str);
-//		_area.setVisible(true);
-//		_area.setOpaque(false);
-//		_area.setSize(150, 12);
-//		_area.setHorizontalAlignment(JTextField.CENTER);
-//		_area.selectAll();
-//		_area.setEditable(true);
-//		_area.setEnabled(true);
-//		_label = new JLabel(str);
-//		_area.getDocument().addDocumentListener(new MyDocListener(_label));
-//		_label.setVisible(true);
-//		_label.setOpaque(false);
-//		_label.setSize(150, 12);
-//		_label.setHorizontalAlignment(JTextField.CENTER);
-//
-//		_container.add(_label);
-//		_container.add(_area);
-//		_area.grabFocus();
-//        this.resetLine();
-//	}
     
     public Arc2D getCurve() {
     	return _curve;

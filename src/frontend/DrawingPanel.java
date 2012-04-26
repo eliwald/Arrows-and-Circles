@@ -148,6 +148,7 @@ public class DrawingPanel extends JPanel {
            if (e.getCurrent()) {
                g2.setColor(java.awt.Color.PINK);
            }
+           g2.draw(e.getForward());
            g2.draw(e.resetLine());
            g2.setColor(java.awt.Color.BLACK);
            g2.setStroke(new BasicStroke(1));
