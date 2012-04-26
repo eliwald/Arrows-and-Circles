@@ -136,9 +136,9 @@ public class Diagram implements Cloneable {
 				if (e.getDirection() == EdgeDirection.SINGLE && e.getStartNode() == n)
 					if (temp_edge_labels.contains(e.getTextField().getText())) {
 						if (!n.getTextField().getText().equals(""))
-							message += "Node " + n.getTextField().getText() + " doesn't have an edge labeled " + e.getTextField().getText() + ".\n";
+							message += "Node " + n.getTextField().getText() + " has a duplicate edge labeled " + e.getTextField().getText() + ".\n";
 						else
-							message += "There is a node without label " + e.getTextField().getText() + ".\n";
+							message += "There is a node with a duplicate label " + e.getTextField().getText() + ".\n";
 					}						
 					else
 						temp_edge_labels.add(e.getTextField().getText());
