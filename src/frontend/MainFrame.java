@@ -729,6 +729,7 @@ public class MainFrame extends javax.swing.JFrame {
         if (_edgeStart != null) {
         	for (Node n : drawingPanel1.getDiagram().getNodes()) {
         		if (n.getCircle().contains(_mouseLoc)) {
+        			drawingPanel1.clearAll();
         			Edge newEdge = new Edge(_edgeStart,n,_edgeStart.getCenter(),_edgeStart.getCenter(),drawingPanel1);
         			for (Edge e : drawingPanel1.getDiagram().getEdges()){
                         e.setSelected(false);
