@@ -157,7 +157,7 @@ public class MainFrame extends javax.swing.JFrame {
         drawingPanel1.setLayout(drawingPanel1Layout);
         drawingPanel1Layout.setHorizontalGroup(
             drawingPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 617, Short.MAX_VALUE)
+            .addGap(0, 951, Short.MAX_VALUE)
         );
         drawingPanel1Layout.setVerticalGroup(
             drawingPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -342,11 +342,16 @@ public class MainFrame extends javax.swing.JFrame {
         jMenu3.add(jMenuItem7);
 
         jMenuItem6.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_W, java.awt.event.InputEvent.CTRL_MASK));
-        jMenuItem6.setText("Close");
+        jMenuItem6.setText("Close Tab");
         jMenu3.add(jMenuItem6);
 
         jMenuItem8.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Q, java.awt.event.InputEvent.CTRL_MASK));
         jMenuItem8.setText("Exit");
+        jMenuItem8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem8ActionPerformed(evt);
+            }
+        });
         jMenu3.add(jMenuItem8);
 
         jMenuBar2.add(jMenu3);
@@ -647,6 +652,8 @@ public class MainFrame extends javax.swing.JFrame {
                 for (Edge e : n.getConnected()){
                     drawingPanel1.getDiagram().getEdges().remove(e);
                     _edgesSelected.remove(e);
+                    drawingPanel1.remove(e.getLabel());
+                    drawingPanel1.remove(e.getTextField());
                 }
                 drawingPanel1.remove(n.getLabel());
                 drawingPanel1.remove(n.getTextField());
@@ -832,6 +839,17 @@ public class MainFrame extends javax.swing.JFrame {
             jTextField1.setText("");
         }
     }//GEN-LAST:event_jTextField1MouseClicked
+
+    private void jMenuItem8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem8ActionPerformed
+        // TODO add your handling code here:
+        exitPrompt();
+    }//GEN-LAST:event_jMenuItem8ActionPerformed
+
+    private void exitPrompt(){
+        //TODO fill this in to prompt for save
+
+        System.exit(0);
+    }
 
     /**
      * @param args the command line arguments

@@ -123,7 +123,8 @@ public class DrawingPanel extends JPanel {
                double y = n.getCenter().y;
                g2.draw(new Ellipse2D.Double(x-newRad,y-newRad,newRad*2,newRad*2));
            }
-           g2.draw(n.resetCircle());
+           Ellipse2D.Double ellipse = n.resetCircle();
+           g2.draw(ellipse);
 
        }
 
