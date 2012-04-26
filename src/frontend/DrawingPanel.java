@@ -95,25 +95,30 @@ public class DrawingPanel extends JPanel {
     public void paintComponent(Graphics g) {
        super.paintComponent(g); 
        Graphics2D g2 = (Graphics2D)g;
+
        for (Node n : _diagram.getNodes()){
     	   g2.setColor(java.awt.Color.BLACK);
            g2.setStroke(new BasicStroke(1));
            
+           
            if (n.isSelected()){
+               float dash1[] = {3.0f};
+               g2.setColor(java.awt.Color.BLACK);
+               g2.setStroke(new BasicStroke(1.0f,
+                        BasicStroke.CAP_BUTT,
+                        BasicStroke.JOIN_MITER,
+                        3.0f, dash1, 0.0f));
+               g2.draw(n.getStartSymbol());
                g2.setColor(java.awt.Color.BLUE);
                g2.setStroke(new BasicStroke(3));
                g2.fill(n.getResize());
                g2.draw(n.getResize());
-               g2.draw(n.getStartSymbol());
            }
            
            if (n.getCurrent()) {
                g2.setColor(java.awt.Color.PINK);
            }
 
-           if (n.isStart()) {
-                g2.draw(n.getStartSymbol());
-           }
            if (n.isEnd()) {
                double newRad = n.getRadius()-4;
                double x = n.getCenter().x;
@@ -122,6 +127,18 @@ public class DrawingPanel extends JPanel {
            }
            Ellipse2D.Double ellipse = n.resetCircle();
            g2.draw(ellipse);
+           if (n.isStart()) {
+               if (n.isSelected()){
+                   g2.setColor(java.awt.Color.BLUE);
+                   g2.setStroke(new BasicStroke(3));
+               }
+               else{
+                   g2.setColor(java.awt.Color.BLACK);
+                   g2.setStroke(new BasicStroke(1));
+               }
+               g2.draw(n.getStartSymbol());
+
+           }
 
        }
 

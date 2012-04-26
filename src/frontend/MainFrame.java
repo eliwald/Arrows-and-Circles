@@ -532,6 +532,12 @@ public class MainFrame extends javax.swing.JFrame {
                 drawingPanel1.repaint();
             }
             else{
+                for (Node n : drawingPanel1.getDiagram().getNodes()){
+                    if (n.getStartSymbol().contains(_mouseLoc) && n.isSelected()){
+                        n.setStart(!n.isStart());
+                        return;
+                    }
+                }
             	_edgesSelected = new HashSet<Edge>();
             	_nodesSelected = new HashSet<Node>();
                 for (Node n : drawingPanel1.getDiagram().getNodes()){

@@ -52,7 +52,14 @@ public class Edge implements Cloneable, DiagramObject {
         _selected = true;
 		_direction = EdgeDirection.SINGLE;
 		_curve = new Arc2D.Double(Arc2D.OPEN);
-		_height = 100000.0;
+
+        //added support for self loop
+        if (s == e) {
+            _height = 5;
+        }
+        else {
+            _height = 100000.0;
+        }
         this.resetArc();
 		_area.setText(DEFAULT_STRING);
 		_area.setVisible(true);
@@ -78,6 +85,7 @@ public class Edge implements Cloneable, DiagramObject {
 	}
 
     public Arc2D resetArc() {
+        //for self loop
         double cx = 0;
         double cy = 0;
         if (_start == _end) {
