@@ -215,4 +215,8 @@ public class Edge implements Cloneable, DiagramObject {
     public boolean getCurrent() {
         return _current;
     }
+
+    public String getName() {
+        return ("Edge: " + _area.getText());
+    }
 }

@@ -211,6 +211,10 @@ public class Node implements DiagramObject, Cloneable {
         return _current;
     }
 
+    public String getName() {
+        return ("Node: " + _label.getText());
+    }
+
 	
 
 }

@@ -15,6 +15,7 @@ import backend.*;
 
 import java.awt.BasicStroke;
 import java.awt.Graphics;
+import java.awt.Polygon;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.QuadCurve2D;
@@ -29,15 +30,11 @@ public class DrawingPanel extends JPanel {
     
     private Diagram _diagram;
     public Line2D.Double _progressLine;
-    private JLabel _startLabel;
+    private Polygon _startSymbol;
     
     public DrawingPanel() {
         _diagram = new Diagram();
         this.setBackground(Color.WHITE);
-        _startLabel = new JLabel("Start ->");
-        _startLabel.setSize(50,10);
-        _startLabel.setVisible(false);
-        this.add(_startLabel);
     }
     
     public Diagram getDiagram() {
@@ -89,17 +86,20 @@ public class DrawingPanel extends JPanel {
                g2.draw(n.getResize());
 
            }
-           if (n.isStart()) {
-               System.out.println("here");
-                _startLabel.setLocation((int)(n.getCircle().getX() - 20),(int)(n.getCircle().getY()));
-                _startLabel.setVisible(true);
-           }
+
            if (n.getCurrent()) {
                g2.setColor(java.awt.Color.PINK);
            }
            g2.draw(n.resetCircle());
            g2.setColor(java.awt.Color.BLACK);
            g2.setStroke(new BasicStroke(1));
+           if (n.isStart()) {
+                _startSymbol = new Polygon();
+                _startSymbol.addPoint((int)(n.getCenter().x - n.getRadius()),(int) (n.getCenter().y));
+                _startSymbol.addPoint((int)(n.getCenter().x - n.getRadius() - 20),(int) (n.getCenter().y + 10));
+                _startSymbol.addPoint((int)(n.getCenter().x - n.getRadius() - 20),(int) (n.getCenter().y - 10));
+                g2.draw(_startSymbol);
+           }
            if (n.isEnd()) {
                double newRad = n.getRadius()-4;
                double x = n.getCenter().x;

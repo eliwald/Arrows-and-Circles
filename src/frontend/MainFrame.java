@@ -736,7 +736,6 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void _forwardBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event__forwardBtnMouseClicked
         // TODO add your handling code here:
-        jTextArea1.setText("");
         if (_sim == null) {
             try {
                 _sim = drawingPanel1.getDiagram().deterministicSimulation(jTextField1.getText());
@@ -744,6 +743,7 @@ public class MainFrame extends javax.swing.JFrame {
                 jTextArea1.setText(ex.getMessage());
                 return;
             }
+            jTextArea1.setText("");
             _iter = _sim.listIterator();
         }
         for (Node n : drawingPanel1.getDiagram().getNodes()) {
@@ -755,6 +755,7 @@ public class MainFrame extends javax.swing.JFrame {
         if (_iter.hasNext()) {
             DiagramObject e = _iter.next();
             e.setCurrent(true);
+            jTextArea1.append(e.getName() + "\n");
         }
         else {
             jTextArea1.setText("FINISHED");
