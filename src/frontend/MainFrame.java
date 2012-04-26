@@ -471,7 +471,6 @@ public class MainFrame extends javax.swing.JFrame {
                             n.setSelected(true);
                             _nodesSelected.add(n);
                         }
-                        drawingPanel1.repaint();
                     }
                 }
                 for (Edge e : drawingPanel1.getDiagram().getEdges()){
@@ -483,11 +482,10 @@ public class MainFrame extends javax.swing.JFrame {
                         else{
                             e.setSelected(true);
                             _edgesSelected.add(e);
-                            _edgeDragged = e;
                         }
-                        drawingPanel1.repaint();
                     }
                 }
+                drawingPanel1.repaint();
             }
             else{
             	_edgesSelected = new HashSet<Edge>();
@@ -572,7 +570,7 @@ public class MainFrame extends javax.swing.JFrame {
             }
             _resizing.setRadius(newR);
         }
-        if (_edgesSelected.size() != 0) {
+        if (_edgeDragged != null) {
         	double ax = _edgeDragged.getStartNode().getCenter().getX() - _mouseLoc.getX();
         	double ay = _edgeDragged.getStartNode().getCenter().getY() - _mouseLoc.getY();
         	double bx = _edgeDragged.getEndNode().getCenter().getX() - _mouseLoc.getX();
@@ -591,17 +589,16 @@ public class MainFrame extends javax.swing.JFrame {
         		_edgeDragged.setHeight(0);
         	}
         	else {
-            	double r = da * db * dc / crossAB / 2;
-            	double h = Math.sqrt((dc/2)*(dc/2) + r*r);
+            	double r = (da * db * dc) / (Math.abs(crossAB) * 2);
+            	double h = Math.sqrt(r*r - (dc/2)*(dc/2));
             	
             	double lambda = da * da + db * db - dc * dc;
             	
-            	if(lambda * crossAB > 0) {
+            	_edgeDragged.setTurn(crossAB > 0);
+            	if(crossAB * lambda > 0)
             		_edgeDragged.setHeight(h);
-            	}
-            	else {
+            	else 
             		_edgeDragged.setHeight(-h);
-            	}
         	}
         }
         drawingPanel1.repaint();
@@ -611,8 +608,6 @@ public class MainFrame extends javax.swing.JFrame {
     private void drawingPanel1MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_drawingPanel1MousePressed
         // TODO add your handling code here:
         drawingPanel1.grabFocus();
-        _resizing = null;
-        _nodeDragged = null;
         for (Node n : drawingPanel1.getDiagram().getNodes()) {
             //n.getTextField().select(0, 0);
             if (n.isSelected()) {
@@ -622,11 +617,16 @@ public class MainFrame extends javax.swing.JFrame {
                 }
             }
             if (n.getCircle().contains(evt.getPoint())) {
-                _nodesSelected.add(n);
                 _nodeDragged = n;
                 n.setOffset(evt.getX() - n.getCenter().x, evt.getY() - n.getCenter().y);
                 break;
             }
+        }
+        for (Edge e : drawingPanel1.getDiagram().getEdges()) {
+        	if (e.getCurve().intersects(evt.getPoint().x,evt.getPoint().y, 2, 2)) {
+        		_edgeDragged = e;
+        		break;
+        	}
         }
         String mod = MouseEvent.getMouseModifiersText(evt.getModifiers());
         if (mod.contains("Shift")) {
@@ -747,7 +747,6 @@ public class MainFrame extends javax.swing.JFrame {
             if (_edgeEnd != null) {
                 drawingPanel1.addEdge(_edgeStart,_edgeEnd);
                 drawingPanel1._progressLine = null;
-                drawingPanel1.repaint();
                 _edgeEnd = null;
             }
             else {
@@ -755,12 +754,10 @@ public class MainFrame extends javax.swing.JFrame {
                     if (n.getCircle().contains(_mouseLoc)) {
                         drawingPanel1.addEdge(_edgeStart, n);
                         drawingPanel1._progressLine = null;
-                        drawingPanel1.repaint();
                         break;
                      }
                 }
                 drawingPanel1._progressLine = null;
-                drawingPanel1.repaint();
             }
         }
         _edgeStart = null;
@@ -768,6 +765,7 @@ public class MainFrame extends javax.swing.JFrame {
         _resizing = null;
         _nodeDragged = null;
         _edgeDragged = null;
+        drawingPanel1.repaint();
     }//GEN-LAST:event_drawingPanel1MouseReleased
 
     private void _forwardBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event__forwardBtnMouseClicked
@@ -799,7 +797,7 @@ public class MainFrame extends javax.swing.JFrame {
         }
         drawingPanel1.repaint();
 
-}//GEN-LAST:event__forwardBtnMouseClicked
+    }//GEN-LAST:event__forwardBtnMouseClicked
 
     /**
      * @param args the command line arguments
