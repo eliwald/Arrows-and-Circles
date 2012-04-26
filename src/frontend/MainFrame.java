@@ -494,7 +494,9 @@ public class MainFrame extends javax.swing.JFrame {
                     }
                 }
                 for (Edge e : drawingPanel1.getDiagram().getEdges()){
+//                    Rectangle2D r = new Rectangle2D.Double(evt.getPoint().x-1, evt.getPoint().y-1, 2, 2);
                     if (e.getCurve().intersects(evt.getPoint().x,evt.getPoint().y, 2, 2)){
+//                    if (e.getCurve().contains(r)){
                         if (e.isSelected()){
                             e.setSelected(false);
                             _edgesSelected.remove(e);

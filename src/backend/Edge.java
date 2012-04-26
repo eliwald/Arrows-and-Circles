@@ -46,7 +46,7 @@ public class Edge implements Cloneable, DiagramObject {
 		_direction = EdgeDirection.SINGLE;
 		_curve = new Arc2D.Double(Arc2D.OPEN);
 		_height = 100000.0;
-        this.resetLine();
+        this.resetArc();
 
         String str = DEFAULT_STRING;
 		_area.setText(str);
@@ -70,7 +70,7 @@ public class Edge implements Cloneable, DiagramObject {
 
 	}
 
-    public Arc2D resetLine() {
+    public Arc2D resetArc() {
 
     	// Obtain the length of the chord.
         double cx = (_end.getCenter().getX() - _start.getCenter().getX()) / 2;

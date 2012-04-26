@@ -139,7 +139,7 @@ public class DrawingPanel extends JPanel {
                g2.setColor(java.awt.Color.PINK);
            }
            g2.draw(e.getForward());
-           g2.draw(e.resetLine());
+           g2.draw(e.resetArc());
        }
 
        if (_progressLine != null) {
