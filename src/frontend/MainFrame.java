@@ -689,8 +689,10 @@ public class MainFrame extends javax.swing.JFrame {
             double difY = _mouseLoc.y - currNode.getCenter().y;
             double vecX = difX/Math.sqrt((difX*difX+difY*difY));
             double vecY = difY/Math.sqrt((difX*difX+difY*difY));
-            Point2D.Double curr = new Point2D.Double(currNode.getCenter().x+(currNode.getRadius()*vecX),currNode.getCenter().y+(currNode.getRadius()*vecY));
-            _robot.mouseMove(loc.x+(int)curr.x, loc.y+(int)curr.y);
+            if (difX == 0 && difY == 0)
+            	_robot.mouseMove(loc.x + (int) currNode.getCenter().x, loc.y + (int) (currNode.getCenter().y - currNode.getRadius()));
+            else
+            	_robot.mouseMove(loc.x + (int) (currNode.getCenter().x+(currNode.getRadius()*vecX)), loc.y + (int) (currNode.getCenter().y+(currNode.getRadius()*vecY)));
         }
         drawingPanel1.repaint();
     }//GEN-LAST:event_drawingPanel1KeyPressed
