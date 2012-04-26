@@ -130,6 +130,9 @@ public class DrawingPanel extends JPanel {
                double y = n.getCenter().y;
                g2.draw(new Ellipse2D.Double(x-newRad,y-newRad,newRad*2,newRad*2));
            }
+           if (n.getCurrent()) {
+               g2.setColor(java.awt.Color.PINK);
+           }
 
            g2.draw(n.resetCircle());
            g2.setColor(java.awt.Color.BLACK);
@@ -141,6 +144,9 @@ public class DrawingPanel extends JPanel {
            if(e.isSelected()){
                g2.setColor(java.awt.Color.BLUE);
                g2.setStroke(new BasicStroke(2));
+           }
+           if (e.getCurrent()) {
+               g2.setColor(java.awt.Color.PINK);
            }
            g2.draw(e.resetLine());
            g2.setColor(java.awt.Color.BLACK);
