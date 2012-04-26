@@ -35,7 +35,8 @@ public class Edge implements Cloneable, DiagramObject {
 		_start = s;
 		_end = e;
         _container = container;
-		_area = new JTextField();
+		_area = new JTextField(){@Override public void
+			setBorder(Border border) {}};
         _label = new JLabel();
 		_point_start = start;
 		_point_end = end;
@@ -51,7 +52,7 @@ public class Edge implements Cloneable, DiagramObject {
 		_area.setText(str);
 		_area.setVisible(true);
   		_area.setOpaque(false);
- 		_area.setSize(150, 20);
+ 		_area.setSize(100, 20);
 		_area.setHorizontalAlignment(JTextField.CENTER);
 		_area.selectAll();
 		_area.setEditable(true);
@@ -60,7 +61,7 @@ public class Edge implements Cloneable, DiagramObject {
 		_area.getDocument().addDocumentListener(new MyDocListener(_label));
 		_label.setVisible(true);
 		_label.setOpaque(false);
-		_label.setSize(150, 20);
+		_label.setSize(100, 20);
 		_label.setHorizontalAlignment(JTextField.CENTER);
 
 		_container.add(_label);
@@ -95,9 +96,6 @@ public class Edge implements Cloneable, DiagramObject {
         	_curve.setAngles(_start.getCenter(), _end.getCenter());
         else
         	_curve.setAngles(_end.getCenter(), _start.getCenter());
-
-        System.out.println(ax + " " + ay);
-
 
         _area.setLocation((int)(_start.getCenter().x + _end.getCenter().x)/2,(int)(_start.getCenter().y + _end.getCenter().y)/2);
         _label.setLocation((int)(_start.getCenter().x + _end.getCenter().x)/2,(int)(_start.getCenter().y + _end.getCenter().y)/2);

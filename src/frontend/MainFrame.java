@@ -781,7 +781,7 @@ public class MainFrame extends javax.swing.JFrame {
             jTextArea1.append(e.getName() + "\n");
         }
         else {
-            jTextArea1.setText("FINISHED");
+            jTextArea1.append("FINISHED");
             _sim = null;
             _iter = null;
         }
