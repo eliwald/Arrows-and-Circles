@@ -133,8 +133,9 @@ public class DrawingPanel extends JPanel {
            if (n.getCurrent()) {
                g2.setColor(java.awt.Color.PINK);
            }
-
-           g2.draw(n.resetCircle());
+           Ellipse2D.Double d = n.resetCircle();
+           g2.draw(d);
+           
            g2.setColor(java.awt.Color.BLACK);
            g2.setStroke(new BasicStroke(1));
 
