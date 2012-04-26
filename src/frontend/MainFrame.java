@@ -17,7 +17,6 @@ import java.awt.event.MouseMotionListener;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -38,11 +37,8 @@ import javax.swing.event.ChangeListener;
 public class MainFrame extends javax.swing.JFrame {
 
     private Node _edgeStart;
-    private Node _edgeEnd;
     private Node _resizing;
     private Point _mouseLoc;
-    private boolean _edgePressed = false;
-    private boolean _shift = false;
     private Robot _robot;
     private Collection<Node> _nodesSelected;
     private Collection<Edge> _edgesSelected;
@@ -443,8 +439,6 @@ public class MainFrame extends javax.swing.JFrame {
                     return;
                 }
             }
-
-
             _nodesSelected = new HashSet<Node>();
             _edgesSelected = new HashSet<Edge>();
             Node add = drawingPanel1.addNode(evt.getPoint());
@@ -527,7 +521,7 @@ public class MainFrame extends javax.swing.JFrame {
     private void drawingPanel1MouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_drawingPanel1MouseDragged
         // TODO add your handling code here:
         _mouseLoc = evt.getPoint();
-        if (_edgePressed && _edgeStart != null) {
+        if (_edgeStart != null) {
             Node con = null;
             for (Node n : drawingPanel1.getDiagram().getNodes()) {
                 if (n.getCircle().contains(_mouseLoc)) {
@@ -628,45 +622,29 @@ public class MainFrame extends javax.swing.JFrame {
         		break;
         	}
         }
-        String mod = MouseEvent.getMouseModifiersText(evt.getModifiers());
-        if (mod.contains("Shift")) {
-            _edgePressed = true;
-        }
     }//GEN-LAST:event_drawingPanel1MousePressed
 
     private void drawingPanel1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_drawingPanel1KeyPressed
         // TODO add your handling code here:
         drawingPanel1.grabFocus();
         if(evt.getKeyCode() == KeyEvent.VK_DELETE || evt.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
-            ArrayList<Node> toRemoveNodes = new ArrayList<Node>();
-            for (Node n : drawingPanel1.getDiagram().getNodes()){
-                if (n.isSelected()){
-                    toRemoveNodes.add(n);
-                }
-            }
-            for (Node n : toRemoveNodes){
+            for (Node n : _nodesSelected){
                 for (Edge e : n.getConnected()){
                     drawingPanel1.getDiagram().getEdges().remove(e);
+                    _edgesSelected.remove(e);
                 }
                 drawingPanel1.remove(n.getLabel());
                 drawingPanel1.remove(n.getTextField());
                 drawingPanel1.getDiagram().getNodes().remove(n);
             }
-            ArrayList<Edge> toRemoveEdges = new ArrayList<Edge>();
-            for (Edge e : drawingPanel1.getDiagram().getEdges()){
-                if (e.isSelected()){
-                    toRemoveEdges.add(e);
-                }
-            }
-            for (Edge e : toRemoveEdges){
+            for (Edge e : _edgesSelected){
                 drawingPanel1.remove(e.getLabel());
                 drawingPanel1.remove(e.getTextField());
                 drawingPanel1.getDiagram().getEdges().remove(e);
             }
 
         }
-        if(evt.getKeyCode() == KeyEvent.VK_SHIFT) {
-            _shift = true;
+        if(drawingPanel1._progressLine == null && evt.getKeyCode() == KeyEvent.VK_SHIFT) {
             Node currNode = null;
 
             int dist;
@@ -683,12 +661,7 @@ public class MainFrame extends javax.swing.JFrame {
             if (currNode == null) {
                 return;
             }
-            if (_edgePressed) {
-                _edgeEnd = currNode;
-            }
-            else {
-                _edgeStart = currNode;
-            }
+            _edgeStart = currNode;
             Point loc = drawingPanel1.getLocationOnScreen();
             double difX = _mouseLoc.x - currNode.getCenter().x;
             double difY = _mouseLoc.y - currNode.getCenter().y;
@@ -696,17 +669,20 @@ public class MainFrame extends javax.swing.JFrame {
             double vecY = difY/Math.sqrt((difX*difX+difY*difY));
             Point2D.Double curr = new Point2D.Double(currNode.getCenter().x+(currNode.getRadius()*vecX),currNode.getCenter().y+(currNode.getRadius()*vecY));
             _robot.mouseMove(loc.x+(int)curr.x, loc.y+(int)curr.y);
-            drawingPanel1.repaint();
         }
-        else {
-            _shift = false;
-        }
+        drawingPanel1.repaint();
     }//GEN-LAST:event_drawingPanel1KeyPressed
+    
+    private void drawingPanel1KeyReleased(java.awt.event.KeyEvent evt) {
+    	if (drawingPanel1._progressLine == null && evt.getKeyCode() == KeyEvent.VK_SHIFT)
+    		_edgeStart = null;
+    }
 
     private void drawingPanel1MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_drawingPanel1MouseMoved
         // TODO add your handling code here:
         _mouseLoc = evt.getPoint();
-        if (_shift) {
+        String mod = MouseEvent.getMouseModifiersText(evt.getModifiers());
+        if (mod.contains("Shift") && drawingPanel1._progressLine == null) {
             Node currNode = null;
             int dist;
             int mindist = Integer.MAX_VALUE;
@@ -732,36 +708,20 @@ public class MainFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_drawingPanel1MouseMoved
 
-    private void drawingPanel1KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_drawingPanel1KeyReleased
-        // TODO add your handling code here:
-        if(evt.getKeyCode() == KeyEvent.VK_SHIFT) {
-            _shift = false;
-            _edgeEnd = null;
-        }
-    }//GEN-LAST:event_drawingPanel1KeyReleased
-
     private void drawingPanel1MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_drawingPanel1MouseReleased
         // TODO add your handling code here:
-        if (_edgePressed) {
-            _edgePressed = false;
-            if (_edgeEnd != null) {
-                drawingPanel1.addEdge(_edgeStart,_edgeEnd);
-                drawingPanel1._progressLine = null;
-                _edgeEnd = null;
-            }
-            else {
-                for (Node n : drawingPanel1.getDiagram().getNodes()) {
-                    if (n.getCircle().contains(_mouseLoc)) {
-                        drawingPanel1.addEdge(_edgeStart, n);
-                        drawingPanel1._progressLine = null;
-                        break;
-                     }
-                }
-                drawingPanel1._progressLine = null;
-            }
+        if (_edgeStart != null) {
+        	for (Node n : drawingPanel1.getDiagram().getNodes()) {
+        		if (n.getCircle().contains(_mouseLoc)) {
+        			Edge e = new Edge(_edgeStart,n,_edgeStart.getCenter(),_edgeStart.getCenter(),drawingPanel1);
+        			drawingPanel1.addEdge(_edgeStart, n);
+        			drawingPanel1._progressLine = null;
+        			break;
+        		}
+        	}
+        	drawingPanel1._progressLine = null;
         }
         _edgeStart = null;
-        _edgePressed = false;
         _resizing = null;
         _nodeDragged = null;
         _edgeDragged = null;
