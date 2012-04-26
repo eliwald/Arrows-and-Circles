@@ -90,7 +90,6 @@ public class DrawingPanel extends JPanel {
 
            }
            if (n.isStart()) {
-               System.out.println("here");
                 _startLabel.setLocation((int)(n.getCircle().getX() - 20),(int)(n.getCircle().getY()));
                 _startLabel.setVisible(true);
            }
