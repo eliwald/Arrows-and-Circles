@@ -311,7 +311,7 @@ public class MainFrame extends javax.swing.JFrame {
 
         jMenu3.setText("File");
 
-        jMenuItem3.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.CTRL_MASK));
+        jMenuItem3.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_T, java.awt.event.InputEvent.CTRL_MASK));
         jMenuItem3.setText("New");
         jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -343,6 +343,11 @@ public class MainFrame extends javax.swing.JFrame {
 
         jMenuItem6.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_W, java.awt.event.InputEvent.CTRL_MASK));
         jMenuItem6.setText("Close Tab");
+        jMenuItem6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem6ActionPerformed(evt);
+            }
+        });
         jMenu3.add(jMenuItem6);
 
         jMenuItem8.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Q, java.awt.event.InputEvent.CTRL_MASK));
@@ -845,12 +850,23 @@ public class MainFrame extends javax.swing.JFrame {
     private void jMenuItem8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem8ActionPerformed
         // TODO add your handling code here:
         exitPrompt();
+        System.exit(0);
     }//GEN-LAST:event_jMenuItem8ActionPerformed
+
+    private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
+        // TODO add your handling code here:
+        exitPrompt();
+        int currIndex = jTabbedPane1.getSelectedIndex();
+        jTabbedPane1.remove(currIndex);
+        if (jTabbedPane1.getSelectedComponent() != null){
+            jScrollPane1 = (JScrollPane)(jTabbedPane1.getSelectedComponent());
+            drawingPanel1 = (DrawingPanel)jScrollPane1.getViewport().getView();
+        }
+    }//GEN-LAST:event_jMenuItem6ActionPerformed
 
     private void exitPrompt(){
         //TODO fill this in to prompt for save
 
-        System.exit(0);
     }
 
     /**
