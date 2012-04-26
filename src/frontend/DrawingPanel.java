@@ -66,7 +66,6 @@ public class DrawingPanel extends JPanel {
 
     public void addEdge(Node n1, Node n2) {
     	if (n1 != null && n2 != null) {
-
     		for (Edge e : _diagram.getEdges()){
                 e.setSelected(false);
             }
