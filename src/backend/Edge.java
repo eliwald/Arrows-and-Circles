@@ -5,15 +5,20 @@ import java.awt.geom.Arc2D;
 
 import frontend.DrawingPanel;
 import frontend.MyDocListener;
-import java.awt.Point;
+
+import java.awt.Color;
 import java.awt.Polygon;
-import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
-import java.awt.geom.QuadCurve2D;
+
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
 
+/**
+ * 
+ * @author ewald
+ *
+ */
 public class Edge implements Cloneable, DiagramObject {
 	private Node _start;
 	private Node _end;
@@ -28,14 +33,18 @@ public class Edge implements Cloneable, DiagramObject {
     private boolean _selected;
     private DrawingPanel _container;
     private boolean _current = false;
-    private final int ARROW_SIZE = 5;
-
+    private static final int ARROW_SIZE = 5;
+    private static final int TEXTBOX_HEIGHT = 25;
+    private static final int TEXTBOX_WIDTH = 40;
+    private static final int TEXTBOX_OFFSET = 25;
+    private static final String DEFAULT_STRING = "0";
+    
 
 	public Edge(Node s, Node e, Point2D.Double start, Point2D.Double end, DrawingPanel container) {
 		_start = s;
 		_end = e;
         _container = container;
-		_area = new JTextField(){@Override public void
+        _area = new JTextField(){@Override public void
 			setBorder(Border border) {}};
         _label = new JLabel();
 		_point_start = start;
@@ -44,66 +53,67 @@ public class Edge implements Cloneable, DiagramObject {
 		_direction = EdgeDirection.SINGLE;
 		_curve = new Arc2D.Double(Arc2D.OPEN);
 		_height = 100000.0;
-        this.resetLine();
-        _area.setText("0");
-
-
-        String str = "fill this in";
-		_area.setText(str);
+        this.resetArc();
+		_area.setText(DEFAULT_STRING);
 		_area.setVisible(true);
   		_area.setOpaque(false);
  		_area.setSize(100, 20);
+		_area.setBackground(new Color(0,0,0,0));
+ 		_area.setSize(TEXTBOX_WIDTH, TEXTBOX_HEIGHT);
 		_area.setHorizontalAlignment(JTextField.CENTER);
 		_area.selectAll();
 		_area.setEditable(true);
 		_area.setEnabled(true);
-		_label = new JLabel(str);
+		_label = new JLabel(DEFAULT_STRING);
 		_area.getDocument().addDocumentListener(new MyDocListener(_label));
 		_label.setVisible(true);
 		_label.setOpaque(false);
 		_label.setSize(100, 20);
+		_label.setBackground(new Color(0,0,0,0));
+		_label.setSize(TEXTBOX_WIDTH, TEXTBOX_HEIGHT);
 		_label.setHorizontalAlignment(JTextField.CENTER);
-
 		_container.add(_label);
 		_container.add(_area);
-		_area.grabFocus();
 
 	}
 
-    public Arc2D resetLine() {
+    public Arc2D resetArc() {
 
     	// Obtain the length of the chord.
         double cx = (_end.getCenter().getX() - _start.getCenter().getX()) / 2;
         double cy = (_end.getCenter().getY() - _start.getCenter().getY()) / 2;
         double dc = Math.sqrt(cx*cx + cy*cy);
-               
-        // Obtain the height vector.
-        double hx = (-cy) / dc * _height;
-        double hy = (cx) / dc * _height;
         
         // Obtain the radius vector and size.
-        double rx = cx + hx;
-        double ry = cy + hy;
+        double rx = (-cy) / dc * _height + cx;
+        double ry = (cx) / dc * _height + cy;
         double dr = Math.sqrt(rx * rx + ry * ry);
-        
+       
         // Obtain the center of the arc.
         double ax = _start.getCenter().getX() + rx;
         double ay = _start.getCenter().getY() + ry;
         
+        // Location
+        double lx, ly;
+        
         // Change the curve.
         _curve.setArcByCenter(ax, ay, dr, -Math.PI/2, Math.PI/2, Arc2D.OPEN);
-        if(_turn)
+        if(_turn) {
         	_curve.setAngles(_start.getCenter(), _end.getCenter());
-        else
+        	lx = (-cy) / dc * (dr + _height + TEXTBOX_OFFSET) + cx;
+        	ly = (cx) / dc * (dr + _height + TEXTBOX_OFFSET) + cy;
+        }
+        else {
         	_curve.setAngles(_end.getCenter(), _start.getCenter());
+        	lx = (cy) / dc * (dr - _height + TEXTBOX_OFFSET) + cx;
+        	ly = (-cx) / dc * (dr - _height + TEXTBOX_OFFSET) + cy;
+        }
 
-        _area.setLocation((int)(_start.getCenter().x + _end.getCenter().x)/2,(int)(_start.getCenter().y + _end.getCenter().y)/2);
-        _label.setLocation((int)(_start.getCenter().x + _end.getCenter().x)/2,(int)(_start.getCenter().y + _end.getCenter().y)/2);
+        _area.setLocation((int) (_start.getCenter().getX() + lx) - TEXTBOX_WIDTH / 2, (int) (_start.getCenter().getY() + ly) - TEXTBOX_HEIGHT / 2);
+        _label.setLocation((int) (_start.getCenter().getX() + lx) - TEXTBOX_WIDTH / 2, (int) (_start.getCenter().getY() + ly) - TEXTBOX_HEIGHT / 2);
         
         return _curve;
     }
-
-
     
     public Arc2D getCurve() {
     	return _curve;

@@ -19,7 +19,6 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.logging.Level;
@@ -157,7 +156,7 @@ public class MainFrame extends javax.swing.JFrame {
         drawingPanel1.setLayout(drawingPanel1Layout);
         drawingPanel1Layout.setHorizontalGroup(
             drawingPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 617, Short.MAX_VALUE)
+            .addGap(0, 951, Short.MAX_VALUE)
         );
         drawingPanel1Layout.setVerticalGroup(
             drawingPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -231,7 +230,17 @@ public class MainFrame extends javax.swing.JFrame {
         jTextArea1.setRows(5);
         jScrollPane2.setViewportView(jTextArea1);
 
-        jTextField1.setText("jTextField1");
+        jTextField1.setText("Input string here");
+        jTextField1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTextField1MouseClicked(evt);
+            }
+        });
+        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField1ActionPerformed(evt);
+            }
+        });
 
         _rewindBtn.setFont(new java.awt.Font("Bitstream Vera Sans", 0, 7));
         _rewindBtn.setText("PLAY");
@@ -301,7 +310,7 @@ public class MainFrame extends javax.swing.JFrame {
 
         jMenu3.setText("File");
 
-        jMenuItem3.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.CTRL_MASK));
+        jMenuItem3.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_T, java.awt.event.InputEvent.CTRL_MASK));
         jMenuItem3.setText("New");
         jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -332,11 +341,21 @@ public class MainFrame extends javax.swing.JFrame {
         jMenu3.add(jMenuItem7);
 
         jMenuItem6.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_W, java.awt.event.InputEvent.CTRL_MASK));
-        jMenuItem6.setText("Close");
+        jMenuItem6.setText("Close Tab");
+        jMenuItem6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem6ActionPerformed(evt);
+            }
+        });
         jMenu3.add(jMenuItem6);
 
         jMenuItem8.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Q, java.awt.event.InputEvent.CTRL_MASK));
         jMenuItem8.setText("Exit");
+        jMenuItem8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem8ActionPerformed(evt);
+            }
+        });
         jMenu3.add(jMenuItem8);
 
         jMenuBar2.add(jMenu3);
@@ -474,7 +493,9 @@ public class MainFrame extends javax.swing.JFrame {
                     }
                 }
                 for (Edge e : drawingPanel1.getDiagram().getEdges()){
+//                    Rectangle2D r = new Rectangle2D.Double(evt.getPoint().x-1, evt.getPoint().y-1, 2, 2);
                     if (e.getCurve().intersects(evt.getPoint().x,evt.getPoint().y, 2, 2)){
+//                    if (e.getCurve().contains(r)){
                         if (e.isSelected()){
                             e.setSelected(false);
                             _edgesSelected.remove(e);
@@ -514,6 +535,7 @@ public class MainFrame extends javax.swing.JFrame {
                     if (e.getCurve().intersects(evt.getPoint().x,evt.getPoint().y, 2, 2)){
                         e.setSelected(true);
                         e.getTextField().setVisible(true);
+                        e.getTextField().grabFocus();
                         e.getLabel().setVisible(false);
                         _edgesSelected.add(e);
                         drawingPanel1.repaint();
@@ -637,6 +659,8 @@ public class MainFrame extends javax.swing.JFrame {
                 for (Edge e : n.getConnected()){
                     drawingPanel1.getDiagram().getEdges().remove(e);
                     _edgesSelected.remove(e);
+                    drawingPanel1.remove(e.getLabel());
+                    drawingPanel1.remove(e.getTextField());
                 }
                 drawingPanel1.remove(n.getLabel());
                 drawingPanel1.remove(n.getTextField());
@@ -672,8 +696,10 @@ public class MainFrame extends javax.swing.JFrame {
             double difY = _mouseLoc.y - currNode.getCenter().y;
             double vecX = difX/Math.sqrt((difX*difX+difY*difY));
             double vecY = difY/Math.sqrt((difX*difX+difY*difY));
-            Point2D.Double curr = new Point2D.Double(currNode.getCenter().x+(currNode.getRadius()*vecX),currNode.getCenter().y+(currNode.getRadius()*vecY));
-            _robot.mouseMove(loc.x+(int)curr.x, loc.y+(int)curr.y);
+            if (difX == 0 && difY == 0)
+            	_robot.mouseMove(loc.x + (int) currNode.getCenter().x, loc.y + (int) (currNode.getCenter().y - currNode.getRadius()));
+            else
+            	_robot.mouseMove(loc.x + (int) (currNode.getCenter().x+(currNode.getRadius()*vecX)), loc.y + (int) (currNode.getCenter().y+(currNode.getRadius()*vecY)));
         }
         drawingPanel1.repaint();
     }//GEN-LAST:event_drawingPanel1KeyPressed
@@ -719,6 +745,7 @@ public class MainFrame extends javax.swing.JFrame {
         if (_edgeStart != null) {
         	for (Node n : drawingPanel1.getDiagram().getNodes()) {
         		if (n.getCircle().contains(_mouseLoc)) {
+        			drawingPanel1.clearAll();
         			Edge newEdge = new Edge(_edgeStart,n,_edgeStart.getCenter(),_edgeStart.getCenter(),drawingPanel1);
         			for (Edge e : drawingPanel1.getDiagram().getEdges()){
                         e.setSelected(false);
@@ -810,6 +837,39 @@ public class MainFrame extends javax.swing.JFrame {
         }
         drawingPanel1.repaint();
     }//GEN-LAST:event__rewindBtnMouseClicked
+
+    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField1ActionPerformed
+
+    private void jTextField1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextField1MouseClicked
+        // TODO add your handling code here:
+        if (jTextField1.getText().equals("Input string here")){
+            jTextField1.setText("");
+        }
+    }//GEN-LAST:event_jTextField1MouseClicked
+
+    private void jMenuItem8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem8ActionPerformed
+        // TODO add your handling code here:
+        exitPrompt();
+        System.exit(0);
+    }//GEN-LAST:event_jMenuItem8ActionPerformed
+
+    private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
+        // TODO add your handling code here:
+        exitPrompt();
+        int currIndex = jTabbedPane1.getSelectedIndex();
+        jTabbedPane1.remove(currIndex);
+        if (jTabbedPane1.getSelectedComponent() != null){
+            jScrollPane1 = (JScrollPane)(jTabbedPane1.getSelectedComponent());
+            drawingPanel1 = (DrawingPanel)jScrollPane1.getViewport().getView();
+        }
+    }//GEN-LAST:event_jMenuItem6ActionPerformed
+
+    private void exitPrompt(){
+        //TODO fill this in to prompt for save
+
+    }
 
     /**
      * @param args the command line arguments
