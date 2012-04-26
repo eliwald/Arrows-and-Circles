@@ -18,6 +18,7 @@ import java.awt.Graphics;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.QuadCurve2D;
+import javax.swing.JLabel;
 
 /**
  *
@@ -27,13 +28,16 @@ import java.awt.geom.QuadCurve2D;
 public class DrawingPanel extends JPanel {
     
     private Diagram _diagram;
-
-
     public Line2D.Double _progressLine;
+    private JLabel _startLabel;
     
     public DrawingPanel() {
         _diagram = new Diagram();
         this.setBackground(Color.WHITE);
+        _startLabel = new JLabel("Start ->");
+        _startLabel.setSize(50,10);
+        _startLabel.setVisible(false);
+        this.add(_startLabel);
     }
     
     public Diagram getDiagram() {
@@ -85,6 +89,11 @@ public class DrawingPanel extends JPanel {
                g2.fill(n.getResize());
                g2.draw(n.getResize());
 
+           }
+           if (n.isStart()) {
+               System.out.println("here");
+                _startLabel.setLocation((int)(n.getCircle().getX() - 20),(int)(n.getCircle().getY()));
+                _startLabel.setVisible(true);
            }
            if (n.getCurrent()) {
                g2.setColor(java.awt.Color.PINK);

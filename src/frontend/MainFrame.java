@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
@@ -49,7 +50,7 @@ public class MainFrame extends javax.swing.JFrame {
     private Node _nodeDragged;
     private Edge _edgeDragged;
     private List<DiagramObject> _sim;
-    private Iterator<DiagramObject> _iter;
+    private ListIterator<DiagramObject> _iter;
 
     /**
      * Creates new form MainFram
@@ -70,7 +71,7 @@ public class MainFrame extends javax.swing.JFrame {
      */
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
-    	
+
         jMenuItem2 = new javax.swing.JMenuItem();
         jMenu6 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -235,9 +236,14 @@ public class MainFrame extends javax.swing.JFrame {
         jScrollPane2.setViewportView(jTextArea1);
 
         jTextField1.setText("jTextField1");
-        
-        _rewindBtn.setFont(new java.awt.Font("Bitstream Vera Sans", 0, 7)); // NOI18N
+
+        _rewindBtn.setFont(new java.awt.Font("Bitstream Vera Sans", 0, 7));
         _rewindBtn.setText("PLAY");
+        _rewindBtn.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                _rewindBtnMouseClicked(evt);
+            }
+        });
 
         _stopBtn.setText("PLAY");
 
@@ -774,14 +780,12 @@ public class MainFrame extends javax.swing.JFrame {
         if (_sim == null) {
             try {
                 _sim = drawingPanel1.getDiagram().deterministicSimulation(jTextField1.getText());
-                _iter = _sim.iterator();
             } catch (InvalidDFSMException ex) {
                 jTextArea1.setText(ex.getMessage());
                 return;
             }
-            _iter = _sim.iterator();
+            _iter = _sim.listIterator();
         }
-        System.out.println("size:" + _sim.size());
         for (Node n : drawingPanel1.getDiagram().getNodes()) {
             n.setCurrent(false);
         }
@@ -794,10 +798,34 @@ public class MainFrame extends javax.swing.JFrame {
         }
         else {
             jTextArea1.setText("FINISHED");
+            _sim = null;
+            _iter = null;
         }
         drawingPanel1.repaint();
 
     }//GEN-LAST:event__forwardBtnMouseClicked
+
+    private void _rewindBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event__rewindBtnMouseClicked
+        // TODO add your handling code here:
+        if (_iter == null || _sim == null) {
+            jTextArea1.setText("NOT IN SIMULATION");
+            return;
+        }
+        for (Node n : drawingPanel1.getDiagram().getNodes()) {
+            n.setCurrent(false);
+        }
+        for (Edge e : drawingPanel1.getDiagram().getEdges()) {
+            e.setCurrent(false);
+        }
+        if (_iter.hasPrevious()) {
+            DiagramObject e = _iter.previous();
+            e.setCurrent(true);
+        }
+        else {
+            jTextArea1.setText("BACK TO START");
+        }
+        drawingPanel1.repaint();
+    }//GEN-LAST:event__rewindBtnMouseClicked
 
     /**
      * @param args the command line arguments
