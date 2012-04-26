@@ -132,7 +132,7 @@ public class Diagram implements Cloneable {
 					edge_labels.add(e.getTextField().getText());
 				else {
 					if (!already_seen.contains(e.getTextField().getText()))
-						message += "Node has multiple edges labeled " + e.getTextField().getText() + ".\n";
+						message += "Start node (if exists) has multiple edges labeled " + e.getTextField().getText() + ".\n";
 					already_seen.add(e.getTextField().getText());
 				}
 			}

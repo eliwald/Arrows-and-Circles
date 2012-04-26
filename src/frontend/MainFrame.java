@@ -730,7 +730,11 @@ public class MainFrame extends javax.swing.JFrame {
             		_edgesSelected.add(newEdge);
             		_edgeStart = null;
         			drawingPanel1._progressLine = null;
-        			break;
+        			_resizing = null;
+        	        _nodeDragged = null;
+        	        _edgeDragged = null;
+        	        drawingPanel1.repaint();
+        			return;
         		}
         	}
         	if (mod.contains("Shift")) {
