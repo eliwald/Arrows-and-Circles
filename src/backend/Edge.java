@@ -4,7 +4,7 @@ package backend;
 import java.awt.geom.Arc2D;
 
 import frontend.DrawingPanel;
-//import frontend.MyDocListener;
+import frontend.MyDocListener;
 import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.geom.Line2D;
@@ -43,6 +43,7 @@ public class Edge implements Cloneable, DiagramObject {
 		_curve = new Arc2D.Double(Arc2D.OPEN);
 		_height = -100000.0;
         this.resetLine();
+        _area.setText("0");
 	}
 
     public Arc2D resetLine() {

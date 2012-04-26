@@ -437,6 +437,14 @@ public class MainFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
         String mod = MouseEvent.getMouseModifiersText(evt.getModifiers());
         if (evt.getClickCount() >=2 && mod.equals("Button1")){
+            for (Node n : drawingPanel1.getDiagram().getNodes()){
+                if (n.getCircle().contains(evt.getPoint())){
+                    n.setEnd(!n.isEnd());
+                    return;
+                }
+            }
+
+
             _nodesSelected = new HashSet<Node>();
             _edgesSelected = new HashSet<Edge>();
             Node add = drawingPanel1.addNode(evt.getPoint());
@@ -764,6 +772,7 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void _forwardBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event__forwardBtnMouseClicked
         // TODO add your handling code here:
+        jTextArea1.setText("");
         if (_sim == null) {
             try {
                 _sim = drawingPanel1.getDiagram().deterministicSimulation(jTextField1.getText());
@@ -774,15 +783,19 @@ public class MainFrame extends javax.swing.JFrame {
             }
             _iter = _sim.iterator();
         }
-        if (_iter.hasNext()) {
-            DiagramObject e = _iter.next();
-            e.setCurrent(true);
-        }
+        System.out.println("size:" + _sim.size());
         for (Node n : drawingPanel1.getDiagram().getNodes()) {
             n.setCurrent(false);
         }
         for (Edge e : drawingPanel1.getDiagram().getEdges()) {
             e.setCurrent(false);
+        }
+        if (_iter.hasNext()) {
+            DiagramObject e = _iter.next();
+            e.setCurrent(true);
+        }
+        else {
+            jTextArea1.setText("FINISHED");
         }
         drawingPanel1.repaint();
 

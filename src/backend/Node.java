@@ -2,6 +2,7 @@ package backend;
 
 import frontend.DrawingPanel;
 //import frontend.MyDocListener;
+import frontend.MyDocListener;
 import java.util.Collection;
 import java.util.HashSet;
 import java.awt.geom.Point2D;
@@ -66,7 +67,7 @@ public class Node implements DiagramObject, Cloneable {
 		_area.setEditable(true);
 		_area.setEnabled(true);
 		_label = new JLabel(s);
-		//_area.getDocument().addDocumentListener(new MyDocListener(_label));
+		_area.getDocument().addDocumentListener(new MyDocListener(_label));
 		_label.setVisible(true);
 		_label.setOpaque(false);
 		_label.setSize((int)(dimension), 12);

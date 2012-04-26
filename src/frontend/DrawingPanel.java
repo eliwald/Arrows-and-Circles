@@ -15,6 +15,7 @@ import backend.*;
 
 import java.awt.BasicStroke;
 import java.awt.Graphics;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.QuadCurve2D;
 
@@ -52,6 +53,9 @@ public class DrawingPanel extends JPanel {
         clearAll();
         Node n = new Node(p.x,p.y, this);
         _diagram.addNode(n);
+        if (_diagram.getNodes().size() == 1) {
+            n.setStart(true);
+        }
         repaint();
         return n;
         
@@ -86,15 +90,27 @@ public class DrawingPanel extends JPanel {
                g2.draw(n.getResize());
 
            }
+           if (n.getCurrent()) {
+               g2.setColor(java.awt.Color.PINK);
+           }
            g2.draw(n.resetCircle());
            g2.setColor(java.awt.Color.BLACK);
            g2.setStroke(new BasicStroke(1));
+           if (n.isEnd()) {
+               double newRad = n.getRadius()-4;
+               double x = n.getCenter().x;
+               double y = n.getCenter().y;
+               g2.draw(new Ellipse2D.Double(x-newRad,y-newRad,newRad*2,newRad*2));
+           }
        }
 
        for (Edge e: _diagram.getEdges()) {
            if(e.isSelected()){
                g2.setColor(java.awt.Color.BLUE);
                g2.setStroke(new BasicStroke(2));
+           }
+           if (e.getCurrent()) {
+               g2.setColor(java.awt.Color.PINK);
            }
            g2.draw(e.resetLine());
 
