@@ -59,6 +59,9 @@ public class DrawingPanel extends JPanel {
         clearAll();
         Node n = new Node(p.x,p.y, this);
         _diagram.addNode(n);
+        if (_diagram.getNodes().size() == 1) {
+            n.setStart(true);
+        }
         repaint();
         return n;
         
