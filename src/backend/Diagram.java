@@ -75,6 +75,7 @@ public class Diagram implements Cloneable {
 		HashSet<Node> start_nodes = new HashSet<Node>();
 		HashSet<String> edge_labels = new HashSet<String>();
 		HashSet<String> temp_edge_labels = new HashSet<String>();
+		HashSet<String> already_seen = new HashSet<String>();
 
 		if (_nodes.size() == 0)
 			throw new InvalidDFSMException("There are no nodes in the FSM.\n");
@@ -107,11 +108,14 @@ public class Diagram implements Cloneable {
 			message += "There is no start node.\n";
 		else if (start_nodes.size() > 1)
 			message += "There are multiple start nodes.\n";
-
+		
+		int no_label_count = 0;
 		for (Edge e : _edges) {
 			if (e.getTextField().getText().equals(""))
-				message += "There is an edge without a label.\n";
+				no_label_count ++;
 		}
+		if (no_label_count > 0)
+			message += "There are " + no_label_count + " edges without a label.\n";
 		
 		for (Edge e : _edges) {
 			if (e.getDirection() != EdgeDirection.SINGLE)
@@ -126,39 +130,51 @@ public class Diagram implements Cloneable {
 			if (e.getDirection() == EdgeDirection.SINGLE && e.getStartNode() == tempNode && !e.getTextField().getText().equals("")) {
 				if (!edge_labels.contains(e.getTextField().getText()))
 					edge_labels.add(e.getTextField().getText());
-				else
-					message += "Node has two edges labeled " + e.getTextField().getText() + ".\n";
-			}
-		}
-
-		for (Node n : _nodes) {
-			for (Edge e : n.getConnected()) {
-				if (e.getDirection() == EdgeDirection.SINGLE && e.getStartNode() == n)
-					if (temp_edge_labels.contains(e.getTextField().getText())) {
-						if (!n.getTextField().getText().equals(""))
-							message += "Node " + n.getTextField().getText() + " has a duplicate edge labeled " + e.getTextField().getText() + ".\n";
-						else
-							message += "There is a node with a duplicate label " + e.getTextField().getText() + ".\n";
-					}						
-					else
-						temp_edge_labels.add(e.getTextField().getText());
-			}
-
-			for (String s : edge_labels) {
-				if(!temp_edge_labels.remove(s)) {
-					if (!n.getTextField().getText().equals(""))
-						message += "Node " + n.getTextField().getText() + " doesn't have an edge labeled " + s + ".\n";
-					else
-						message += "There is a node without label " + s + ".\n";
+				else {
+					if (!already_seen.contains(e.getTextField().getText()))
+						message += "Node has multiple edges labeled " + e.getTextField().getText() + ".\n";
+					already_seen.add(e.getTextField().getText());
 				}
 			}
+		}
+		
+		for (Node n : _nodes) {
+			if (n != tempNode) {
+				already_seen = new HashSet<String>();
+				for (Edge e : n.getConnected()) {
+					if (e.getDirection() == EdgeDirection.SINGLE && e.getStartNode() == n)
+						if (temp_edge_labels.contains(e.getTextField().getText())) {
+							if (!already_seen.contains(e.getTextField().getText())) {
+								if (!n.getTextField().getText().equals(""))
+									message += "Node " + n.getTextField().getText() + " has a duplicate edge labeled " + e.getTextField().getText() + ".\n";
+								else
+									message += "There is a node with a duplicate label " + e.getTextField().getText() + ".\n";
+								already_seen.add(e.getTextField().getText());
+							}
+						}						
+						else
+							temp_edge_labels.add(e.getTextField().getText());
+				}
+				already_seen = new HashSet<String>();
+				for (String s : edge_labels) {
+					if(!temp_edge_labels.remove(s)) {
+						if (!already_seen.contains(s)) {
+							if (!n.getTextField().getText().equals(""))
+								message += "Node " + n.getTextField().getText() + " doesn't have an edge labeled " + s + ".\n";
+							else
+								message += "There is a node without label " + s + ".\n";
+							already_seen.add(s);
+						}
+					}
+				}
 
-			for (String s : temp_edge_labels) {
-				if (!n.getTextField().getText().equals(""))
-					message += "Node " + n.getTextField().getText() + " has edge labeled " + s + ", which is not in input alphabet.\n";
-				else
-					message += "There is a node with an edge labeled " + s + ", which is not in input alphabet.\n";
-				temp_edge_labels.remove(s);
+				for (String s : temp_edge_labels) {
+					if (!n.getTextField().getText().equals(""))
+						message += "Node " + n.getTextField().getText() + " has edge labeled " + s + ", which is not in input alphabet.\n";
+					else
+						message += "There is a node with an edge labeled " + s + ", which is not in input alphabet.\n";
+					temp_edge_labels.remove(s);
+				}
 			}
 		}
 
