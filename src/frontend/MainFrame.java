@@ -716,6 +716,7 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void drawingPanel1MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_drawingPanel1MouseReleased
         // TODO add your handling code here:
+    	String mod = MouseEvent.getMouseModifiersText(evt.getModifiers());
         if (_edgeStart != null) {
         	for (Node n : drawingPanel1.getDiagram().getNodes()) {
         		if (n.getCircle().contains(_mouseLoc)) {
@@ -727,13 +728,26 @@ public class MainFrame extends javax.swing.JFrame {
                     n.addConnected(newEdge);
             		drawingPanel1.getDiagram().addEdge(newEdge);
             		_edgesSelected.add(newEdge);
+            		_edgeStart = null;
         			drawingPanel1._progressLine = null;
         			break;
         		}
         	}
-        	drawingPanel1._progressLine = null;
+        	if (mod.contains("Shift")) {
+        		Point loc = drawingPanel1.getLocationOnScreen();
+        		double difX = _mouseLoc.x - _edgeStart.getCenter().x;
+        		double difY = _mouseLoc.y - _edgeStart.getCenter().y;
+        		double vecX = difX/Math.sqrt((difX*difX+difY*difY));
+        		double vecY = difY/Math.sqrt((difX*difX+difY*difY));
+        		Point2D.Double curr = new Point2D.Double(_edgeStart.getCenter().x+(_edgeStart.getRadius()*vecX),_edgeStart.getCenter().y+(_edgeStart.getRadius()*vecY));
+        		_robot.mouseMove(loc.x+(int)curr.x, loc.y+(int)curr.y);
+        		drawingPanel1._progressLine = null;
+        	}
+        	else {
+        		drawingPanel1._progressLine = null;
+        		_edgeStart = null;
+        	}
         }
-        _edgeStart = null;
         _resizing = null;
         _nodeDragged = null;
         _edgeDragged = null;
