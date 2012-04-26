@@ -78,10 +78,17 @@ public class Edge implements Cloneable, DiagramObject {
 	}
 
     public Arc2D resetArc() {
+        double cx = 0;
+        double cy = 0;
+        if (_start == _end) {
+            cx = _start.getRadius() * .5;
+            cy = _start.getRadius() * .5;
+        }
 
-    	// Obtain the length of the chord.
-        double cx = (_end.getCenter().getX() - _start.getCenter().getX()) / 2;
-        double cy = (_end.getCenter().getY() - _start.getCenter().getY()) / 2;
+        else {// Obtain the length of the chord.
+            cx = (_end.getCenter().getX() - _start.getCenter().getX()) / 2;
+            cy = (_end.getCenter().getY() - _start.getCenter().getY()) / 2;
+        }
         double dc = Math.sqrt(cx*cx + cy*cy);
         
         // Obtain the radius vector and size.

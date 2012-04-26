@@ -114,9 +114,6 @@ public class DrawingPanel extends JPanel {
            if (n.isStart()) {
                 g2.draw(n.getStartSymbol());
            }
-           else if (n.isSelected()){
-               
-           }
            if (n.isEnd()) {
                double newRad = n.getRadius()-4;
                double x = n.getCenter().x;
