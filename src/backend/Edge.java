@@ -10,6 +10,8 @@ import java.awt.Polygon;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.QuadCurve2D;
+import java.awt.geom.Point2D.Double;
+
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
@@ -49,7 +51,41 @@ public class Edge implements Cloneable, DiagramObject {
 
     public Arc2D resetLine() {
 
+    	double radius = getArcRadius();
+    	Point2D.Double center = getArcCenter();
+        
+        // Change the curve.
+        _curve.setArcByCenter(center.getX(), center.getY(), radius, -Math.PI/2, Math.PI/2, Arc2D.OPEN);
+        if(_turn)
+        	_curve.setAngles(_start.getCenter(), _end.getCenter());
+        else
+        	_curve.setAngles(_end.getCenter(), _start.getCenter());
+        
+        return _curve;
+    }
+    
+    public double getArcRadius() {
+
     	// Obtain the length of the chord.
+        double cx = (_end.getCenter().getX() - _start.getCenter().getX()) / 2;
+        double cy = (_end.getCenter().getY() - _start.getCenter().getY()) / 2;
+        double dc = Math.sqrt(cx*cx + cy*cy);
+               
+        // Obtain the height vector.
+        double hx = (-cy) / dc * _height;
+        double hy = (cx) / dc * _height;
+        
+        // Obtain the radius vector and size.
+        double rx = cx + hx;
+        double ry = cy + hy;
+        double dr = Math.sqrt(rx * rx + ry * ry);
+        
+        return dr;
+    }
+    
+    public Point2D.Double getArcCenter() {
+    	
+       	// Obtain the length of the chord.
         double cx = (_end.getCenter().getX() - _start.getCenter().getX()) / 2;
         double cy = (_end.getCenter().getY() - _start.getCenter().getY()) / 2;
         double dc = Math.sqrt(cx*cx + cy*cy);
@@ -67,14 +103,7 @@ public class Edge implements Cloneable, DiagramObject {
         double ax = _start.getCenter().getX() + rx;
         double ay = _start.getCenter().getY() + ry;
         
-        // Change the curve.
-        _curve.setArcByCenter(ax, ay, dr, -Math.PI/2, Math.PI/2, Arc2D.OPEN);
-        if(_turn)
-        	_curve.setAngles(_start.getCenter(), _end.getCenter());
-        else
-        	_curve.setAngles(_end.getCenter(), _start.getCenter());
-        
-        return _curve;
+        return new Point2D.Double(ax, ay);
     }
 
 //    public Arc2D getCurve(){
