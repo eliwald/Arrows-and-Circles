@@ -52,10 +52,19 @@ public class Edge implements Cloneable, DiagramObject {
         _selected = true;
 		_direction = EdgeDirection.SINGLE;
 		_curve = new Arc2D.Double(Arc2D.OPEN);
-		_height = 100000.0;
+
+        //added support for self loop
+        if (s == e) {
+            _height = 5;
+        }
+        else {
+            _height = 100000.0;
+        }
         this.resetArc();
 		_area.setText(DEFAULT_STRING);
 		_area.setVisible(true);
+  		_area.setOpaque(false);
+ 		_area.setSize(100, 20);
 		_area.setBackground(new Color(0,0,0,0));
  		_area.setSize(TEXTBOX_WIDTH, TEXTBOX_HEIGHT);
 		_area.setHorizontalAlignment(JTextField.CENTER);
@@ -65,6 +74,8 @@ public class Edge implements Cloneable, DiagramObject {
 		_label = new JLabel(DEFAULT_STRING);
 		_area.getDocument().addDocumentListener(new MyDocListener(_label));
 		_label.setVisible(true);
+		_label.setOpaque(false);
+		_label.setSize(100, 20);
 		_label.setBackground(new Color(0,0,0,0));
 		_label.setSize(TEXTBOX_WIDTH, TEXTBOX_HEIGHT);
 		_label.setHorizontalAlignment(JTextField.CENTER);
@@ -74,10 +85,18 @@ public class Edge implements Cloneable, DiagramObject {
 	}
 
     public Arc2D resetArc() {
+        //for self loop
+        double cx = 0;
+        double cy = 0;
+        if (_start == _end) {
+            cx = _start.getRadius() * .5;
+            cy = _start.getRadius() * .5;
+        }
 
-    	// Obtain the length of the chord.
-        double cx = (_end.getCenter().getX() - _start.getCenter().getX()) / 2;
-        double cy = (_end.getCenter().getY() - _start.getCenter().getY()) / 2;
+        else {// Obtain the length of the chord.
+            cx = (_end.getCenter().getX() - _start.getCenter().getX()) / 2;
+            cy = (_end.getCenter().getY() - _start.getCenter().getY()) / 2;
+        }
         double dc = Math.sqrt(cx*cx + cy*cy);
         
         // Obtain the radius vector and size.

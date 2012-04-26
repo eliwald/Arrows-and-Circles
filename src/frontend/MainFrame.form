@@ -349,7 +349,7 @@
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="_forwardBtn" min="-2" pref="35" max="-2" attributes="0"/>
                               </Group>
-                              <Component id="jSlider1" alignment="2" min="-2" pref="163" max="-2" attributes="0"/>
+                              <Component id="_slider" alignment="2" min="-2" pref="163" max="-2" attributes="0"/>
                               <Component id="jTextField1" alignment="2" pref="222" max="32767" attributes="0"/>
                               <Component id="jScrollPane2" alignment="2" min="-2" max="-2" attributes="0"/>
                           </Group>
@@ -368,7 +368,7 @@
                               <Component id="_playPauseBtn" alignment="3" min="-2" pref="31" max="-2" attributes="0"/>
                               <Component id="_forwardBtn" alignment="3" min="-2" pref="31" max="-2" attributes="0"/>
                           </Group>
-                          <Component id="jSlider1" min="-2" max="-2" attributes="0"/>
+                          <Component id="_slider" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="jTextField1" min="-2" max="-2" attributes="0"/>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
@@ -404,7 +404,14 @@
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jTextField1ActionPerformed"/>
                   </Events>
                 </Component>
-                <Component class="javax.swing.JSlider" name="jSlider1">
+                <Component class="javax.swing.JSlider" name="_slider">
+                  <Properties>
+                    <Property name="maximum" type="int" value="5000"/>
+                    <Property name="value" type="int" value="2000"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="_sliderStateChanged"/>
+                  </Events>
                 </Component>
                 <Component class="javax.swing.JButton" name="_rewindBtn">
                   <Properties>
@@ -414,25 +421,31 @@
                     <Property name="text" type="java.lang.String" value="PLAY"/>
                   </Properties>
                   <Events>
-                    <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="_rewindBtnMouseClicked"/>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="_rewindBtnActionPerformed"/>
                   </Events>
                 </Component>
                 <Component class="javax.swing.JButton" name="_stopBtn">
                   <Properties>
                     <Property name="text" type="java.lang.String" value="PLAY"/>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="_stopBtnActionPerformed"/>
+                  </Events>
                 </Component>
                 <Component class="javax.swing.JButton" name="_playPauseBtn">
                   <Properties>
                     <Property name="text" type="java.lang.String" value="PLAY"/>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="_playPauseBtnActionPerformed"/>
+                  </Events>
                 </Component>
                 <Component class="javax.swing.JButton" name="_forwardBtn">
                   <Properties>
                     <Property name="text" type="java.lang.String" value="PLAY"/>
                   </Properties>
                   <Events>
-                    <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="_forwardBtnMouseClicked"/>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="_forwardBtnActionPerformed"/>
                   </Events>
                 </Component>
                 <Component class="javax.swing.JLabel" name="jLabel1">

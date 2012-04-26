@@ -118,6 +118,7 @@ public class DrawingPanel extends JPanel {
            if (n.getCurrent()) {
                g2.setColor(java.awt.Color.PINK);
            }
+
            if (n.isEnd()) {
                double newRad = n.getRadius()-4;
                double x = n.getCenter().x;
@@ -151,7 +152,7 @@ public class DrawingPanel extends JPanel {
            if (e.getCurrent()) {
                g2.setColor(java.awt.Color.PINK);
            }
-           g2.draw(e.getForward());
+           g2.fill(e.getForward());
            g2.draw(e.resetArc());
        }
 

@@ -11,6 +11,8 @@ import backend.Node;
 import java.awt.AWTException;
 import java.awt.Point;
 import java.awt.Robot;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
@@ -29,6 +31,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.Timer;
 
 /**
  *
@@ -46,11 +49,13 @@ public class MainFrame extends javax.swing.JFrame {
     private Edge _edgeDragged;
     private List<DiagramObject> _sim;
     private ListIterator<DiagramObject> _iter;
+    private Timer _simTimer;
 
     /**
      * Creates new form MainFram
      */
     public MainFrame() {
+        _simTimer = new Timer(2000, new SimListener());
         try {
             _robot = new Robot();
         } catch (AWTException ex) {
@@ -86,7 +91,7 @@ public class MainFrame extends javax.swing.JFrame {
         jScrollPane2 = new javax.swing.JScrollPane();
         jTextArea1 = new javax.swing.JTextArea();
         jTextField1 = new javax.swing.JTextField();
-        jSlider1 = new javax.swing.JSlider();
+        _slider = new javax.swing.JSlider();
         _rewindBtn = new javax.swing.JButton();
         _stopBtn = new javax.swing.JButton();
         _playPauseBtn = new javax.swing.JButton();
@@ -242,22 +247,40 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
-        _rewindBtn.setFont(new java.awt.Font("Bitstream Vera Sans", 0, 7));
+        _slider.setMaximum(5000);
+        _slider.setValue(2000);
+        _slider.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                _sliderStateChanged(evt);
+            }
+        });
+
+        _rewindBtn.setFont(new java.awt.Font("Bitstream Vera Sans", 0, 7)); // NOI18N
         _rewindBtn.setText("PLAY");
-        _rewindBtn.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                _rewindBtnMouseClicked(evt);
+        _rewindBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                _rewindBtnActionPerformed(evt);
             }
         });
 
         _stopBtn.setText("PLAY");
+        _stopBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                _stopBtnActionPerformed(evt);
+            }
+        });
 
         _playPauseBtn.setText("PLAY");
+        _playPauseBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                _playPauseBtnActionPerformed(evt);
+            }
+        });
 
         _forwardBtn.setText("PLAY");
-        _forwardBtn.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                _forwardBtnMouseClicked(evt);
+        _forwardBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                _forwardBtnActionPerformed(evt);
             }
         });
 
@@ -281,7 +304,7 @@ public class MainFrame extends javax.swing.JFrame {
                         .addComponent(_playPauseBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(_forwardBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jSlider1, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(_slider, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 222, Short.MAX_VALUE)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(48, 48, 48))
@@ -296,7 +319,7 @@ public class MainFrame extends javax.swing.JFrame {
                     .addComponent(_stopBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(_playPauseBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(_forwardBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addComponent(jSlider1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(_slider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -792,60 +815,6 @@ public class MainFrame extends javax.swing.JFrame {
         drawingPanel1.repaint();
     }//GEN-LAST:event_drawingPanel1MouseReleased
 
-    private void _forwardBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event__forwardBtnMouseClicked
-        // TODO add your handling code here:
-        if (_sim == null) {
-            try {
-                _sim = drawingPanel1.getDiagram().deterministicSimulation(jTextField1.getText());
-            } catch (InvalidDFSMException ex) {
-                jTextArea1.setText(ex.getMessage());
-                return;
-            }
-            jTextArea1.setText("");
-            _iter = _sim.listIterator();
-        }
-        for (Node n : drawingPanel1.getDiagram().getNodes()) {
-            n.setCurrent(false);
-        }
-        for (Edge e : drawingPanel1.getDiagram().getEdges()) {
-            e.setCurrent(false);
-        }
-        if (_iter.hasNext()) {
-            DiagramObject e = _iter.next();
-            e.setCurrent(true);
-            jTextArea1.append(e.getName() + "\n");
-        }
-        else {
-            jTextArea1.setText("FINISHED");
-            _sim = null;
-            _iter = null;
-        }
-        drawingPanel1.repaint();
-
-    }//GEN-LAST:event__forwardBtnMouseClicked
-
-    private void _rewindBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event__rewindBtnMouseClicked
-        // TODO add your handling code here:
-        if (_iter == null || _sim == null) {
-            jTextArea1.setText("NOT IN SIMULATION");
-            return;
-        }
-        for (Node n : drawingPanel1.getDiagram().getNodes()) {
-            n.setCurrent(false);
-        }
-        for (Edge e : drawingPanel1.getDiagram().getEdges()) {
-            e.setCurrent(false);
-        }
-        if (_iter.hasPrevious()) {
-            DiagramObject e = _iter.previous();
-            e.setCurrent(true);
-        }
-        else {
-            jTextArea1.setText("BACK TO START");
-        }
-        drawingPanel1.repaint();
-    }//GEN-LAST:event__rewindBtnMouseClicked
-
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField1ActionPerformed
@@ -873,6 +842,100 @@ public class MainFrame extends javax.swing.JFrame {
             drawingPanel1 = (DrawingPanel)jScrollPane1.getViewport().getView();
         }
     }//GEN-LAST:event_jMenuItem6ActionPerformed
+
+    private void _stopBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event__stopBtnActionPerformed
+        // TODO add your handling code here:
+        _sim = null;
+        _iter = null;
+        _simTimer.stop();
+        jTextArea1.setText("STOPPED");
+        for (Node n : drawingPanel1.getDiagram().getNodes()) {
+            n.setCurrent(false);
+        }
+        for (Edge e : drawingPanel1.getDiagram().getEdges()) {
+            e.setCurrent(false);
+        }
+    }//GEN-LAST:event__stopBtnActionPerformed
+
+    private void _playPauseBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event__playPauseBtnActionPerformed
+        // TODO add your handling code here:
+        if (!_simTimer.isRunning()) {
+            _simTimer.start();
+        }
+        else {
+            _simTimer.stop();
+        }
+    }//GEN-LAST:event__playPauseBtnActionPerformed
+
+    private void _forwardBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event__forwardBtnActionPerformed
+        // TODO add your handling code here:
+        if (_sim == null) {
+            try {
+                _sim = drawingPanel1.getDiagram().deterministicSimulation(jTextField1.getText());
+            } catch (InvalidDFSMException ex) {
+                jTextArea1.setText(ex.getMessage());
+                return;
+            }
+            jTextArea1.setText("");
+            _iter = _sim.listIterator();
+        }
+        for (Node n : drawingPanel1.getDiagram().getNodes()) {
+            n.setCurrent(false);
+        }
+        for (Edge e : drawingPanel1.getDiagram().getEdges()) {
+            e.setCurrent(false);
+        }
+        if (_iter.hasNext()) {
+            DiagramObject e = _iter.next();
+            e.setCurrent(true);
+            jTextArea1.append(e.getName() + "\n");
+        }
+        else {
+            jTextArea1.append("FINISHED");
+            _sim = null;
+            _iter = null;
+            if (_simTimer.isRunning()) {
+                _simTimer.stop();
+            }
+        }
+        drawingPanel1.repaint();
+    }//GEN-LAST:event__forwardBtnActionPerformed
+
+    private void _rewindBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event__rewindBtnActionPerformed
+        // TODO add your handling code here:
+        if (_simTimer.isRunning()) {
+            _simTimer.stop();
+        }
+        if (_iter == null || _sim == null) {
+            jTextArea1.setText("NOT IN SIMULATION");
+            return;
+        }
+        for (Node n : drawingPanel1.getDiagram().getNodes()) {
+            n.setCurrent(false);
+        }
+        for (Edge e : drawingPanel1.getDiagram().getEdges()) {
+            e.setCurrent(false);
+        }
+        if (_iter.hasPrevious()) {
+            DiagramObject e = _iter.previous();
+            e.setCurrent(true);
+        }
+        else {
+            jTextArea1.setText("BACK TO START");
+        }
+        drawingPanel1.repaint();
+    }//GEN-LAST:event__rewindBtnActionPerformed
+
+    private void _sliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event__sliderStateChanged
+        // TODO add your handling code here:
+        _simTimer.setDelay(_slider.getValue());
+}//GEN-LAST:event__sliderStateChanged
+
+    private class SimListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            _forwardBtn.doClick();
+        }
+    }
 
     private void exitPrompt(){
         //TODO fill this in to prompt for save
@@ -924,6 +987,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JButton _forwardBtn;
     private javax.swing.JButton _playPauseBtn;
     private javax.swing.JButton _rewindBtn;
+    private javax.swing.JSlider _slider;
     private javax.swing.JButton _stopBtn;
     private frontend.DrawingPanel drawingPanel1;
     private javax.swing.JLabel jLabel1;
@@ -951,7 +1015,6 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JRadioButton jRadioButton3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JSlider jSlider1;
     private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JSplitPane jSplitPane2;
     private javax.swing.JSplitPane jSplitPane3;
