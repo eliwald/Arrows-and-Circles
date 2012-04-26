@@ -559,7 +559,7 @@ public class MainFrame extends javax.swing.JFrame {
             _nodeDragged.resetCircle();
         }
         
-        if (_resizing != null) {
+        else if (_resizing != null) {
             Rectangle2D rec = _resizing.getResize();
 
             double dif = Math.max(evt.getPoint().x - rec.getCenterX(),evt.getPoint().y - rec.getCenterY());
@@ -570,7 +570,7 @@ public class MainFrame extends javax.swing.JFrame {
             }
             _resizing.setRadius(newR);
         }
-        if (_edgeDragged != null) {
+        else if (_edgeDragged != null) {
         	double ax = _edgeDragged.getStartNode().getCenter().getX() - _mouseLoc.getX();
         	double ay = _edgeDragged.getStartNode().getCenter().getY() - _mouseLoc.getY();
         	double bx = _edgeDragged.getEndNode().getCenter().getX() - _mouseLoc.getX();
@@ -632,7 +632,6 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void drawingPanel1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_drawingPanel1KeyPressed
         // TODO add your handling code here:
-        drawingPanel1.grabFocus();
         if(evt.getKeyCode() == KeyEvent.VK_DELETE || evt.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
             for (Node n : _nodesSelected){
                 for (Edge e : n.getConnected()){
