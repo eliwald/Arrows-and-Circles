@@ -5,12 +5,8 @@ import java.awt.geom.Arc2D;
 
 import frontend.DrawingPanel;
 import frontend.MyDocListener;
-import java.awt.Point;
 import java.awt.Polygon;
-import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
-import java.awt.geom.QuadCurve2D;
-import java.awt.geom.Point2D.Double;
 
 import javax.swing.JLabel;
 import javax.swing.JTextField;
