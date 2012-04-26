@@ -52,7 +52,6 @@ public class DrawingPanel extends JPanel {
         clearAll();
         Node n = new Node(p.x,p.y, this);
         _diagram.addNode(n);
-        repaint();
         return n;
         
     }
@@ -68,11 +67,8 @@ public class DrawingPanel extends JPanel {
             n1.addConnected(e);
             n2.addConnected(e);
     		_diagram.addEdge(e);
-	        repaint();
     	}
     }
-
-    
     
     @Override
     public void paintComponent(Graphics g) {

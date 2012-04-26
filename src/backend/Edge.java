@@ -4,7 +4,7 @@ package backend;
 import java.awt.geom.Arc2D;
 
 import frontend.DrawingPanel;
-//import frontend.MyDocListener;
+import frontend.MyDocListener;
 import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.geom.Line2D;
@@ -24,6 +24,7 @@ public class Edge implements Cloneable, DiagramObject {
     private JLabel _label;
     private Arc2D _curve;
     private double _height; // from midpoint between two centers to center of the arc
+    private boolean _turn = false; // false for negative, true for positive
     private boolean _selected;
     private DrawingPanel _container;
     private boolean _current = false;
@@ -41,7 +42,7 @@ public class Edge implements Cloneable, DiagramObject {
         _selected = true;
 		_direction = EdgeDirection.SINGLE;
 		_curve = new Arc2D.Double(Arc2D.OPEN);
-		_height = -100000.0;
+		_height = 100000.0;
         this.resetLine();
 	}
 
@@ -56,8 +57,6 @@ public class Edge implements Cloneable, DiagramObject {
         double hx = (-cy) / dc * _height;
         double hy = (cx) / dc * _height;
         
-        System.out.println(hx + " AAAAA " + hy);
-        
         // Obtain the radius vector and size.
         double rx = cx + hx;
         double ry = cy + hy;
@@ -69,8 +68,11 @@ public class Edge implements Cloneable, DiagramObject {
         
         // Change the curve.
         _curve.setArcByCenter(ax, ay, dr, -Math.PI/2, Math.PI/2, Arc2D.OPEN);
-        _curve.setAngles(_start.getCenter(), _end.getCenter());
-
+        if(_turn)
+        	_curve.setAngles(_start.getCenter(), _end.getCenter());
+        else
+        	_curve.setAngles(_end.getCenter(), _start.getCenter());
+        
         return _curve;
     }
 
@@ -125,6 +127,10 @@ public class Edge implements Cloneable, DiagramObject {
     
     public void setHeight(double h) {
     	_height = h;
+    }
+    
+    public void setTurn(boolean t) {
+    	_turn = t;
     }
 
     public boolean isSelected(){
