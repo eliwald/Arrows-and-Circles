@@ -12,6 +12,11 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
 
+/**
+ * 
+ * @author ewald
+ *
+ */
 public class Edge implements Cloneable, DiagramObject {
 	private Node _start;
 	private Node _end;
@@ -47,7 +52,6 @@ public class Edge implements Cloneable, DiagramObject {
 		_curve = new Arc2D.Double(Arc2D.OPEN);
 		_height = 100000.0;
         this.resetLine();
-
         String str = DEFAULT_STRING;
 		_area.setText(str);
 		_area.setVisible(true);
@@ -63,7 +67,6 @@ public class Edge implements Cloneable, DiagramObject {
 		_label.setOpaque(false);
 		_label.setSize(TEXTBOX_WIDTH, TEXTBOX_HEIGHT);
 		_label.setHorizontalAlignment(JTextField.CENTER);
-
 		_container.add(_label);
 		_container.add(_area);
 		_area.grabFocus();
@@ -113,16 +116,7 @@ public class Edge implements Cloneable, DiagramObject {
     }
 
     public Polygon getForward() {
-        double difX = _end.getCenter().x - _start.getCenter().x;
-        double difY = _end.getCenter().y - _start.getCenter().y;
-        double vecX = difX/Math.sqrt((difX*difX+difY*difY));
-        double vecY = difY/Math.sqrt((difX*difX+difY*difY));
-        Polygon p = new Polygon();
-        int startX = (int)(_end.getCenter().x-(_end.getRadius()*vecX));
-        int startY = (int)(_end.getCenter().y-(_end.getRadius()*vecY));
-        p.addPoint(startX,startY);
-        p.addPoint((int)(startX+20 * (vecX-vecY)), (int)((startY+20 * (vecX-vecY))));
-        p.addPoint((int)(startX-20 * (vecX-vecY)), (int)((startY+20 * (vecX-vecY))));
+
         return p;
     }
     
