@@ -134,7 +134,14 @@ public class Diagram implements Cloneable {
 		for (Node n : _nodes) {
 			for (Edge e : n.getConnected()) {
 				if (e.getDirection() == EdgeDirection.SINGLE && e.getStartNode() == n)
-					temp_edge_labels.add(e.getTextField().getText());
+					if (temp_edge_labels.contains(e.getTextField().getText())) {
+						if (!n.getTextField().getText().equals(""))
+							message += "Node " + n.getTextField().getText() + " doesn't have an edge labeled " + e.getTextField().getText() + ".\n";
+						else
+							message += "There is a node without label " + e.getTextField().getText() + ".\n";
+					}						
+					else
+						temp_edge_labels.add(e.getTextField().getText());
 			}
 
 			for (String s : edge_labels) {
@@ -148,9 +155,10 @@ public class Diagram implements Cloneable {
 
 			for (String s : temp_edge_labels) {
 				if (!n.getTextField().getText().equals(""))
-					message += "Node " + n.getTextField().getText() + " has edge labeled " + s + ", which is a duplicate or is not in input alphabet.\n";
+					message += "Node " + n.getTextField().getText() + " has edge labeled " + s + ", which is not in input alphabet.\n";
 				else
-					message += "There is a node with an edge labeled " + s + ", which is a duplicate or is not in input alphabet.\n";
+					message += "There is a node with an edge labeled " + s + ", which is not in input alphabet.\n";
+				temp_edge_labels.remove(s);
 			}
 		}
 

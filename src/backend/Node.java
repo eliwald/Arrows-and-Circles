@@ -75,8 +75,6 @@ public class Node implements DiagramObject, Cloneable {
 
 		_container.add(_label);
 		_container.add(_area);
-		_area.grabFocus();
-
 	}
 
 	public void setCenter(double x, double y){

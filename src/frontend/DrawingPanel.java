@@ -87,6 +87,7 @@ public class DrawingPanel extends JPanel {
 
            }
 
+
            if (n.getCurrent()) {
                g2.setColor(java.awt.Color.PINK);
            }
