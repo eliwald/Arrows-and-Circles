@@ -5,6 +5,8 @@ import java.awt.geom.Arc2D;
 
 import frontend.DrawingPanel;
 import frontend.MyDocListener;
+
+import java.awt.Color;
 import java.awt.Polygon;
 import java.awt.geom.Point2D;
 
@@ -12,6 +14,11 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
 
+/**
+ * 
+ * @author ewald
+ *
+ */
 public class Edge implements Cloneable, DiagramObject {
 	private Node _start;
 	private Node _end;
@@ -29,7 +36,7 @@ public class Edge implements Cloneable, DiagramObject {
     private static final int ARROW_SIZE = 5;
     private static final int TEXTBOX_HEIGHT = 25;
     private static final int TEXTBOX_WIDTH = 40;
-    private static final int TEXTBOX_OFFSET = 20;
+    private static final int TEXTBOX_OFFSET = 25;
     private static final String DEFAULT_STRING = "0";
     
 
@@ -47,26 +54,22 @@ public class Edge implements Cloneable, DiagramObject {
 		_curve = new Arc2D.Double(Arc2D.OPEN);
 		_height = 100000.0;
         this.resetArc();
-
-        String str = DEFAULT_STRING;
-		_area.setText(str);
+		_area.setText(DEFAULT_STRING);
 		_area.setVisible(true);
-		_area.setOpaque(false);
+		_area.setBackground(new Color(0,0,0,0));
  		_area.setSize(TEXTBOX_WIDTH, TEXTBOX_HEIGHT);
 		_area.setHorizontalAlignment(JTextField.CENTER);
 		_area.selectAll();
 		_area.setEditable(true);
 		_area.setEnabled(true);
-		_label = new JLabel(str);
+		_label = new JLabel(DEFAULT_STRING);
 		_area.getDocument().addDocumentListener(new MyDocListener(_label));
 		_label.setVisible(true);
-		_label.setOpaque(false);
+		_label.setBackground(new Color(0,0,0,0));
 		_label.setSize(TEXTBOX_WIDTH, TEXTBOX_HEIGHT);
 		_label.setHorizontalAlignment(JTextField.CENTER);
-
 		_container.add(_label);
 		_container.add(_area);
-		_area.grabFocus();
 
 	}
 

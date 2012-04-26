@@ -104,6 +104,7 @@ public class DrawingPanel extends JPanel {
                g2.setStroke(new BasicStroke(3));
                g2.fill(n.getResize());
                g2.draw(n.getResize());
+               g2.draw(n.getStartSymbol());
            }
            
            if (n.getCurrent()) {
@@ -111,11 +112,10 @@ public class DrawingPanel extends JPanel {
            }
 
            if (n.isStart()) {
-                Polygon _startSymbol = new Polygon();
-                _startSymbol.addPoint((int)(n.getCenter().x - n.getRadius()),(int) (n.getCenter().y));
-                _startSymbol.addPoint((int)(n.getCenter().x - n.getRadius() - 20),(int) (n.getCenter().y + 10));
-                _startSymbol.addPoint((int)(n.getCenter().x - n.getRadius() - 20),(int) (n.getCenter().y - 10));
-                g2.draw(_startSymbol);
+                g2.draw(n.getStartSymbol());
+           }
+           else if (n.isSelected()){
+               
            }
            if (n.isEnd()) {
                double newRad = n.getRadius()-4;

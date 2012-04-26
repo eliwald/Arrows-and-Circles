@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.awt.geom.Point2D;
 import java.awt.Color;
 import java.awt.Point;
+import java.awt.Polygon;
 import java.awt.event.MouseAdapter;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D.Double;
@@ -33,10 +34,9 @@ public class Node implements DiagramObject, Cloneable {
     private boolean _selected;
     private boolean _resizing;
     private boolean _current = false;
-        
 	private DrawingPanel _container;
 	private JLabel _label;
-
+    private Polygon _startSymbol;
 	private java.awt.geom.Ellipse2D.Double _circle;
 
     public static final double MIN_RADIUS = 20;
@@ -75,7 +75,20 @@ public class Node implements DiagramObject, Cloneable {
 
 		_container.add(_label);
 		_container.add(_area);
-	}
+
+        _startSymbol = new Polygon();
+        _startSymbol.addPoint((int)(this.getCenter().x - this.getRadius()),(int) (this.getCenter().y));
+        _startSymbol.addPoint((int)(this.getCenter().x - this.getRadius() - 20),(int) (this.getCenter().y + 10));
+        _startSymbol.addPoint((int)(this.getCenter().x - this.getRadius() - 20),(int) (this.getCenter().y - 10));
+    }
+
+    public Polygon getStartSymbol(){
+        return _startSymbol;
+    }
+
+    public void newStartSymbol(){
+        _startSymbol = new Polygon();
+    }
 
 	public void setCenter(double x, double y){
 		_center.setLocation(x, y);
@@ -190,6 +203,10 @@ public class Node implements DiagramObject, Cloneable {
 		_area.setLocation(new Point(p.x+2, (int)(_center.y-6)));
 		_label.setLocation(new Point(p.x+1, (int)(_center.y-6)));
 		_circle = new Ellipse2D.Double(_center.x-_radius, _center.y-_radius, _radius*2, _radius*2);
+        _startSymbol = new Polygon();
+        _startSymbol.addPoint((int)(this.getCenter().x - this.getRadius()),(int) (this.getCenter().y));
+        _startSymbol.addPoint((int)(this.getCenter().x - this.getRadius() - 20),(int) (this.getCenter().y + 10));
+        _startSymbol.addPoint((int)(this.getCenter().x - this.getRadius() - 20),(int) (this.getCenter().y - 10));
 		return _circle;
 	}
 
