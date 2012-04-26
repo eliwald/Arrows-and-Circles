@@ -19,7 +19,6 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.logging.Level;
@@ -534,6 +533,7 @@ public class MainFrame extends javax.swing.JFrame {
                     if (e.getCurve().intersects(evt.getPoint().x,evt.getPoint().y, 2, 2)){
                         e.setSelected(true);
                         e.getTextField().setVisible(true);
+                        e.getTextField().grabFocus();
                         e.getLabel().setVisible(false);
                         _edgesSelected.add(e);
                         drawingPanel1.repaint();
