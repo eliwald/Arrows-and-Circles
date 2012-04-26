@@ -15,10 +15,8 @@ import backend.*;
 
 import java.awt.BasicStroke;
 import java.awt.Graphics;
-import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.QuadCurve2D;
-import javax.swing.JLabel;
 
 /**
  *
@@ -28,16 +26,13 @@ import javax.swing.JLabel;
 public class DrawingPanel extends JPanel {
     
     private Diagram _diagram;
+
+
     public Line2D.Double _progressLine;
-    private JLabel _startLabel;
     
     public DrawingPanel() {
         _diagram = new Diagram();
         this.setBackground(Color.WHITE);
-        _startLabel = new JLabel("Start ->");
-        _startLabel.setSize(50,10);
-        _startLabel.setVisible(false);
-        this.add(_startLabel);
     }
     
     public Diagram getDiagram() {
@@ -57,25 +52,39 @@ public class DrawingPanel extends JPanel {
         clearAll();
         Node n = new Node(p.x,p.y, this);
         _diagram.addNode(n);
-        if (_diagram.getNodes().size() == 1) {
-            n.setStart(true);
-        }
+        repaint();
         return n;
         
     }
 
     public void addEdge(Node n1, Node n2) {
     	if (n1 != null && n2 != null) {
-    		for (Edge e : _diagram.getEdges()){
-                e.setSelected(false);
-            }
-    		Edge e = new Edge(n1,n2,n1.getCenter(),n2.getCenter(),this);
-
+    		clearAll();
+//    		DiagramProject dp = new DiagramProject();
+//    		dp.modify(new DiagramModifyAction() {
+//
+//				@Override
+//				public boolean modify(Diagram diagram) {
+//					Edge e = new Edge(n1,n2,n1.getCenter(),n2.getCenter());
+//					diagram.addEdge(e);
+//					return false;
+//				}
+//
+//				@Override
+//				public String message() {
+//					// TODO Auto-generated method stub
+//					return null;
+//				}
+//			});
+    		Edge e = new Edge(n1,n2,n1.getCenter(),n2.getCenter(), this);
             n1.addConnected(e);
             n2.addConnected(e);
     		_diagram.addEdge(e);
+	        repaint();
     	}
     }
+
+    
     
     @Override
     public void paintComponent(Graphics g) {
@@ -89,22 +98,9 @@ public class DrawingPanel extends JPanel {
                g2.draw(n.getResize());
 
            }
-           if (n.isStart()) {
-                _startLabel.setLocation((int)(n.getCircle().getX() - 20),(int)(n.getCircle().getY()));
-                _startLabel.setVisible(true);
-           }
-           if (n.getCurrent()) {
-               g2.setColor(java.awt.Color.PINK);
-           }
            g2.draw(n.resetCircle());
            g2.setColor(java.awt.Color.BLACK);
            g2.setStroke(new BasicStroke(1));
-           if (n.isEnd()) {
-               double newRad = n.getRadius()-4;
-               double x = n.getCenter().x;
-               double y = n.getCenter().y;
-               g2.draw(new Ellipse2D.Double(x-newRad,y-newRad,newRad*2,newRad*2));
-           }
        }
 
        for (Edge e: _diagram.getEdges()) {
@@ -112,13 +108,7 @@ public class DrawingPanel extends JPanel {
                g2.setColor(java.awt.Color.BLUE);
                g2.setStroke(new BasicStroke(2));
            }
-           if (e.getCurrent()) {
-               g2.setColor(java.awt.Color.PINK);
-           }
            g2.draw(e.resetLine());
-
-           g2.fill(e.getForward());
-
            g2.setColor(java.awt.Color.BLACK);
            g2.setStroke(new BasicStroke(1));
        }
