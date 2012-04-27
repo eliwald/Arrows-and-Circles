@@ -433,7 +433,7 @@ public class MainFrame extends javax.swing.JFrame {
         );
 
         pack();
-    }// </editor-fold>//GEN-END:initComponents
+    }// </editor-fold>                        
 
     
   
@@ -599,9 +599,10 @@ public class MainFrame extends javax.swing.JFrame {
                 _nodeDragged.setCenter(evt.getX()-_nodeDragged.getOffset().x, evt.getY()-_nodeDragged.getOffset().y);
                 _nodeDragged.resetCircle();
             }
-            else {
+            else {;
                 for (Node n : drawingPanel1.getDiagram().getNodes()){
                     if (n.isSelected()) {
+                        System.out.println("here");
                         int difX = evt.getPoint().x - _mouseLoc.x;
                         int difY = evt.getPoint().y - _mouseLoc.y;
                         n.setCenter(n.getCenter().x + difX, n.getCenter().y + difY);
