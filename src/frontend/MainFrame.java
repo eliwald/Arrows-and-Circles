@@ -62,7 +62,7 @@ public class MainFrame extends javax.swing.JFrame {
      */
     public MainFrame() {
         _edgeType = EdgeDirection.SINGLE;
-        _simTimer = new Timer(2000, new SimListener());
+        _simTimer = new Timer(1000, new SimListener());
         try {
             _robot = new Robot();
         } catch (AWTException ex) {
@@ -270,7 +270,7 @@ public class MainFrame extends javax.swing.JFrame {
         });
 
         _slider.setMaximum(5000);
-        _slider.setValue(2000);
+        _slider.setValue(1000);
         _slider.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 _sliderStateChanged(evt);
@@ -909,7 +909,9 @@ public class MainFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
         if (!_simTimer.isRunning()) {
             _forwardBtn.doClick();
+            _simTimer.setDelay(_slider.getValue());
             _simTimer.start();
+            return;
         }
         else {
             _simTimer.stop();
@@ -999,6 +1001,7 @@ public class MainFrame extends javax.swing.JFrame {
 
     private class SimListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
+            System.out.println("yo");
             _forwardBtn.doClick();
         }
     }

@@ -422,7 +422,7 @@
                 <Component class="javax.swing.JSlider" name="_slider">
                   <Properties>
                     <Property name="maximum" type="int" value="5000"/>
-                    <Property name="value" type="int" value="2000"/>
+                    <Property name="value" type="int" value="1000"/>
                   </Properties>
                   <Events>
                     <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="_sliderStateChanged"/>
