@@ -76,7 +76,7 @@ public class Edge implements Cloneable, DiagramObject {
 		_area.selectAll();
 		_area.setEditable(true);
 		_area.setEnabled(true);
-        _area.addKeyListener(new EnterListener(_container));
+        _area.addKeyListener(new EnterListener(_container, _area));
 		_label = new JLabel(DEFAULT_STRING);
 		_area.getDocument().addDocumentListener(new MyDocListener(_label));
 		_label.setVisible(true);
