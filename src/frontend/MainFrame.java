@@ -55,6 +55,8 @@ public class MainFrame extends javax.swing.JFrame {
     private Timer _simTimer;
     private EdgeDirection _edgeType;
     private boolean _shift = false;
+    private static final String PLAY_FILEPATH = "./src/img/play.png";
+    private static final String PAUSE_FILEPATH = "./src/img/pause.png";
 
 
     /**
@@ -890,6 +892,7 @@ public class MainFrame extends javax.swing.JFrame {
         _iter = null;
         _simTimer.stop();
         jTextArea1.setText("STOPPED");
+        _playPauseBtn.setIcon(new ImageIcon(PLAY_FILEPATH));
         for (Node n : drawingPanel1.getDiagram().getNodes()) {
             n.setCurrent(false);
         }
@@ -901,14 +904,14 @@ public class MainFrame extends javax.swing.JFrame {
     private void _playPauseBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event__playPauseBtnActionPerformed
         // TODO add your handling code here:
         if (!_simTimer.isRunning()) {
-        	_playPauseBtn.setIcon(new ImageIcon("./img/pause.png"));
+        	_playPauseBtn.setIcon(new ImageIcon(PAUSE_FILEPATH));
             _forwardBtn.doClick();
             _simTimer.setDelay(_slider.getValue());
             _simTimer.start();
             return;
         }
         else {
-        	_playPauseBtn.setIcon(new ImageIcon("./img/play.png"));
+        	_playPauseBtn.setIcon(new ImageIcon(PLAY_FILEPATH));
             _simTimer.stop();
         }
     }//GEN-LAST:event__playPauseBtnActionPerformed
@@ -919,7 +922,7 @@ public class MainFrame extends javax.swing.JFrame {
             try {
                 _sim = drawingPanel1.getDiagram().deterministicSimulation(jTextField1.getText());
             } catch (InvalidDFSMException ex) {
-            	_playPauseBtn.setIcon(new ImageIcon("./img/play.png"));
+            	_playPauseBtn.setIcon(new ImageIcon(PLAY_FILEPATH));
                 jTextArea1.setText(ex.getMessage());
                 if (_simTimer.isRunning()) {
                     _simTimer.stop();
@@ -938,11 +941,13 @@ public class MainFrame extends javax.swing.JFrame {
         if (_iter.hasNext()) {
             DiagramObject e = _iter.next();
             e.setCurrent(true);
+            if (jTextArea1.getText().equals("BACK TO START"))
+            	jTextArea1.setText("");
             if (e instanceof Node && ((Node)e).isStart())
             	jTextArea1.append("Start ");
             jTextArea1.append(e.getName() + "\n");
             if (!_iter.hasNext()) {
-            	_playPauseBtn.setIcon(new ImageIcon("./img/play.png"));
+            	_playPauseBtn.setIcon(new ImageIcon(PLAY_FILEPATH));
             	jTextArea1.append("FINISHED: Ended at node " + e.getName() + ".\n");
             	if (((Node)e).isEnd())
             		jTextArea1.append("FSM Accepted the input string.\n");
@@ -993,6 +998,7 @@ public class MainFrame extends javax.swing.JFrame {
             DiagramObject e = _iter.previous();
             e.setCurrent(true);
         } else {
+        	_playPauseBtn.setIcon(new ImageIcon(PLAY_FILEPATH));
             jTextArea1.setText("BACK TO START");
         }
         drawingPanel1.repaint();

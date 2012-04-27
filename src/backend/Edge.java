@@ -215,21 +215,6 @@ public class Edge implements Cloneable, DiagramObject {
         }
     }
     
-
-//    public Polygon getForward() {
-//        double difX = _end.getCenter().x - _start.getCenter().x;
-//        double difY = _end.getCenter().y - _start.getCenter().y;
-//        double vecX = difX/Math.sqrt((difX*difX+difY*difY));
-//        double vecY = difY/Math.sqrt((difX*difX+difY*difY));
-//        Polygon p = new Polygon();
-//        int startX = (int)(_end.getCenter().x-(_end.getRadius()*vecX));
-//        int startY = (int)(_end.getCenter().y-(_end.getRadius()*vecY));
-//        p.addPoint(startX,startY);
-//        p.addPoint((int)(startX+20 * (vecX-vecY)), (int)((startY+20 * (vecX-vecY))));
-//        p.addPoint((int)(startX-20 * (vecX-vecY)), (int)((startY+20 * (vecX-vecY))));
-//        return p;
-//    }
-    
     public Arc2D getCurve() {
     	return _curve;
     }
