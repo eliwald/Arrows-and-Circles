@@ -257,7 +257,7 @@
               <Layout>
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="jLabel2" alignment="0" pref="315" max="32767" attributes="0"/>
+                      <Component id="jLabel2" alignment="0" pref="355" max="32767" attributes="0"/>
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace min="-2" pref="29" max="-2" attributes="0"/>
                           <Component id="_singlyBtn" min="-2" max="-2" attributes="0"/>
@@ -265,7 +265,7 @@
                           <Component id="_doublyBtn" min="-2" max="-2" attributes="0"/>
                           <EmptySpace type="separate" max="-2" attributes="0"/>
                           <Component id="_undirectedBtn" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace pref="31" max="32767" attributes="0"/>
+                          <EmptySpace pref="66" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -279,7 +279,7 @@
                               <Component id="_singlyBtn" alignment="0" min="-2" max="-2" attributes="0"/>
                               <Component id="_undirectedBtn" alignment="0" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace pref="170" max="32767" attributes="0"/>
+                          <EmptySpace pref="135" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -351,7 +351,7 @@
               <Layout>
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="jLabel1" alignment="1" pref="315" max="32767" attributes="0"/>
+                      <Component id="jLabel1" alignment="1" pref="355" max="32767" attributes="0"/>
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace min="-2" pref="45" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="2" attributes="0">
@@ -365,7 +365,7 @@
                                   <Component id="_forwardBtn" min="-2" pref="35" max="-2" attributes="0"/>
                               </Group>
                               <Component id="_slider" alignment="2" min="-2" pref="163" max="-2" attributes="0"/>
-                              <Component id="jTextField1" alignment="2" pref="222" max="32767" attributes="0"/>
+                              <Component id="jTextField1" alignment="2" pref="262" max="32767" attributes="0"/>
                               <Component id="jScrollPane2" alignment="2" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace min="-2" pref="48" max="-2" attributes="0"/>
@@ -388,7 +388,7 @@
                           <Component id="jTextField1" min="-2" max="-2" attributes="0"/>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
                           <Component id="jScrollPane2" min="-2" pref="122" max="-2" attributes="0"/>
-                          <EmptySpace pref="108" max="32767" attributes="0"/>
+                          <EmptySpace pref="136" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -433,7 +433,9 @@
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                       <Font name="Bitstream Vera Sans" size="10" style="0"/>
                     </Property>
-                    <Property name="text" type="java.lang.String" value="RW"/>
+                    <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                      <Image iconType="3" name="/img/bwd.png"/>
+                    </Property>
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="_rewindBtnActionPerformed"/>
@@ -441,7 +443,9 @@
                 </Component>
                 <Component class="javax.swing.JButton" name="_stopBtn">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="S"/>
+                    <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                      <Image iconType="3" name="/img/stop.png"/>
+                    </Property>
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="_stopBtnActionPerformed"/>
@@ -449,7 +453,9 @@
                 </Component>
                 <Component class="javax.swing.JButton" name="_playPauseBtn">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="P"/>
+                    <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                      <Image iconType="3" name="/img/play.png"/>
+                    </Property>
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="_playPauseBtnActionPerformed"/>
@@ -457,7 +463,9 @@
                 </Component>
                 <Component class="javax.swing.JButton" name="_forwardBtn">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="FF"/>
+                    <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+                      <Image iconType="3" name="/img/fwd.png"/>
+                    </Property>
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="_forwardBtnActionPerformed"/>
