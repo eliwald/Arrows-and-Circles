@@ -1001,7 +1001,6 @@ public class MainFrame extends javax.swing.JFrame {
 
     private class SimListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            System.out.println("yo");
             _forwardBtn.doClick();
         }
     }
