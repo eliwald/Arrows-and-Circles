@@ -22,6 +22,7 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
@@ -508,8 +509,8 @@ public class MainFrame extends javax.swing.JFrame {
                     return;
                 }
             }
-            _nodesSelected = new HashSet<Node>();
-            _edgesSelected = new HashSet<Edge>();
+            _nodesSelected = Collections.synchronizedSet(new HashSet<Node>());
+            _edgesSelected = Collections.synchronizedSet(new HashSet<Edge>());
             Node add = drawingPanel1.addNode(evt.getPoint());
             for (Node n : drawingPanel1.getDiagram().getNodes()){
                 n.setSelected(false);
@@ -559,8 +560,8 @@ public class MainFrame extends javax.swing.JFrame {
                         return;
                     }
                 }
-            	_edgesSelected = new HashSet<Edge>();
-            	_nodesSelected = new HashSet<Node>();
+            	_edgesSelected = Collections.synchronizedSet(new HashSet<Edge>());
+            	_nodesSelected = Collections.synchronizedSet(new HashSet<Node>());
                 for (Node n : drawingPanel1.getDiagram().getNodes()){
                     n.setSelected(false);
                     n.getTextField().setVisible(false);
@@ -740,6 +741,8 @@ public class MainFrame extends javax.swing.JFrame {
                 drawingPanel1.getDiagram().getNodes().remove(n);
             }
             for (Edge e : _edgesSelected){
+            	for (Node n : drawingPanel1.getDiagram().getNodes())
+            		n.removeConnected(e);
                 drawingPanel1.remove(e.getLabel());
                 drawingPanel1.remove(e.getTextField());
                 drawingPanel1.getDiagram().getEdges().remove(e);
@@ -826,8 +829,8 @@ public class MainFrame extends javax.swing.JFrame {
         			_edgeStart.addConnected(newEdge);
                     n.addConnected(newEdge);
             		drawingPanel1.getDiagram().addEdge(newEdge);
-                    _nodesSelected = new HashSet<Node>();
-                    _edgesSelected = new HashSet<Edge>();
+                    _nodesSelected = Collections.synchronizedSet(new HashSet<Node>());
+                    _edgesSelected = Collections.synchronizedSet(new HashSet<Edge>());
             		_edgesSelected.add(newEdge);
             		_edgeStart = null;
         			drawingPanel1._progressLine = null;
