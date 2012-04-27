@@ -62,8 +62,9 @@ public class Edge implements Cloneable, DiagramObject {
             _height = 5;
         }
         else {
-            _height = 100000.0;
+            _height = -100000.0;
         }
+        _turn = true;
         this.resetArc();
 		_area.setText(DEFAULT_STRING);
 		_area.setVisible(true);
@@ -157,7 +158,7 @@ public class Edge implements Cloneable, DiagramObject {
         return _curve;
     }
     
-    private double theta(double x, double y) {
+    private static double theta(double x, double y) {
     	double theta = y / (Math.abs(x) + Math.abs(y));
         if(x < 0) {
         	theta = 2 - theta;
@@ -172,7 +173,7 @@ public class Edge implements Cloneable, DiagramObject {
     	
     	// In case of the self loop, use the usual intersects 
         if (_start == _end) {
-            return _curve.intersects(x - 2, y - 2, 4, 4);
+            return _curve.intersects(x - 4, y - 4, 8, 8);
         }
 
         // Obtain the half vector from the start to the end.
@@ -196,16 +197,16 @@ public class Edge implements Cloneable, DiagramObject {
         
         // Obtain the virtual angle
         double thetaMouse = theta(mx, my);
-        double thetaP = theta(_start.getCenter().getX() - rx, _start.getCenter().getY() - ry);
-        double thetaQ = theta(_end.getCenter().getX() - rx, _end.getCenter().getX() - ry);
-        if(!_turn) { // needs to reverse
+        double thetaP = theta(_start.getCenter().getX() - ax, _start.getCenter().getY() - ay);
+        double thetaQ = theta(_end.getCenter().getX() - ax, _end.getCenter().getY() - ay);
+        if(_turn) { // needs to reverse
         	double tmp = thetaP;
         	thetaP = thetaQ;
         	thetaQ = tmp;
         }
         
         // Check if mouse is in the range.
-        if(Math.abs(dm - dr) < 2 && (thetaP < thetaQ && thetaP < thetaMouse && thetaMouse < thetaQ || 
+        if(Math.abs(dm - dr) < 6 && (thetaP < thetaQ && thetaP < thetaMouse && thetaMouse < thetaQ || 
         		thetaP > thetaQ && (thetaMouse < thetaQ || thetaMouse > thetaP))) {
         	return true;
         }

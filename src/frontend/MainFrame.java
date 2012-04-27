@@ -597,6 +597,7 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void drawingPanel1MouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_drawingPanel1MouseDragged
         // TODO add your handling code here:
+    	_mouseLoc = evt.getPoint();
         if (!_shift && _nodeDragged != null && drawingPanel1.contains(evt.getPoint())){
             if (this._nodesSelected.size() <= 1){
                 _nodeDragged.setCenter(evt.getX()-_nodeDragged.getOffset().x, evt.getY()-_nodeDragged.getOffset().y);
@@ -614,8 +615,7 @@ public class MainFrame extends javax.swing.JFrame {
             }
             
         }
-        _mouseLoc = evt.getPoint();
-        if (_edgeStart != null) {
+        else if (_edgeStart != null) {
             Node con = null;
             for (Node n : drawingPanel1.getDiagram().getNodes()) {
                 if (n.getCircle().contains(_mouseLoc)) {
@@ -647,8 +647,6 @@ public class MainFrame extends javax.swing.JFrame {
                 drawingPanel1._progressLine = new Line2D.Double(point_start, _mouseLoc);
             }
         }
-
-        
         else if (_resizing != null) {
             Rectangle2D rec = _resizing.getResize();
 
@@ -702,24 +700,27 @@ public class MainFrame extends javax.swing.JFrame {
             _shift = true;
         }
         drawingPanel1.grabFocus();
+        _edgeDragged = null;
+        _nodeDragged = null;
+        _resizing = null;
         for (Node n : drawingPanel1.getDiagram().getNodes()) {
             //n.getTextField().select(0, 0);
             if (n.isSelected()) {
                 if (n.getResize().contains(evt.getPoint())) {
                     _resizing = n;
-                    break;
+                    return;
                 }
             }
             if (n.getCircle().contains(evt.getPoint())) {
                 _nodeDragged = n;
                 n.setOffset(evt.getX() - n.getCenter().x, evt.getY() - n.getCenter().y);
-                break;
+                return;
             }
         }
         for (Edge e : drawingPanel1.getDiagram().getEdges()) {
         	if (e.intersects(evt.getPoint().x,evt.getPoint().y)) {
         		_edgeDragged = e;
-        		break;
+        		return;
         	}
         }
     }//GEN-LAST:event_drawingPanel1MousePressed
