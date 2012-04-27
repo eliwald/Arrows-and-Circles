@@ -6,6 +6,7 @@ package frontend;
 
 import backend.DiagramObject;
 import backend.Edge;
+import backend.EdgeDirection;
 import backend.InvalidDFSMException;
 import backend.Node;
 import java.awt.AWTException;
@@ -21,6 +22,7 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
@@ -51,12 +53,15 @@ public class MainFrame extends javax.swing.JFrame {
     private List<DiagramObject> _sim;
     private ListIterator<DiagramObject> _iter;
     private Timer _simTimer;
+    private EdgeDirection _edgeType;
     private boolean _shift = false;
+
 
     /**
      * Creates new form MainFram
      */
     public MainFrame() {
+        _edgeType = EdgeDirection.SINGLE;
         _simTimer = new Timer(2000, new SimListener());
         try {
             _robot = new Robot();
@@ -79,16 +84,16 @@ public class MainFrame extends javax.swing.JFrame {
         jMenuItem1 = new javax.swing.JMenuItem();
         jTabbedPane2 = new javax.swing.JTabbedPane();
         jSplitPane1 = new javax.swing.JSplitPane();
-        buttonGroup1 = new javax.swing.ButtonGroup();
+        _edgeTypeGrp = new javax.swing.ButtonGroup();
         jSplitPane2 = new javax.swing.JSplitPane();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jScrollPane1 = new javax.swing.JScrollPane();
         drawingPanel1 = new frontend.DrawingPanel();
         jSplitPane3 = new javax.swing.JSplitPane();
         jPanel1 = new javax.swing.JPanel();
-        jRadioButton1 = new javax.swing.JRadioButton();
-        jRadioButton2 = new javax.swing.JRadioButton();
-        jRadioButton3 = new javax.swing.JRadioButton();
+        _singlyBtn = new javax.swing.JRadioButton();
+        _doublyBtn = new javax.swing.JRadioButton();
+        _undirectedBtn = new javax.swing.JRadioButton();
         jLabel2 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
@@ -187,23 +192,28 @@ public class MainFrame extends javax.swing.JFrame {
 
         jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
-        buttonGroup1.add(jRadioButton1);
-        jRadioButton1.setSelected(true);
-        jRadioButton1.setText("Singly");
-
-        buttonGroup1.add(jRadioButton2);
-        jRadioButton2.setText("Doubly");
-        jRadioButton2.addActionListener(new java.awt.event.ActionListener() {
+        _edgeTypeGrp.add(_singlyBtn);
+        _singlyBtn.setSelected(true);
+        _singlyBtn.setText("Singly");
+        _singlyBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jRadioButton2ActionPerformed(evt);
+                _singlyBtnActionPerformed(evt);
             }
         });
 
-        buttonGroup1.add(jRadioButton3);
-        jRadioButton3.setText("Undirected");
-        jRadioButton3.addActionListener(new java.awt.event.ActionListener() {
+        _edgeTypeGrp.add(_doublyBtn);
+        _doublyBtn.setText("Doubly");
+        _doublyBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jRadioButton3ActionPerformed(evt);
+                _doublyBtnActionPerformed(evt);
+            }
+        });
+
+        _edgeTypeGrp.add(_undirectedBtn);
+        _undirectedBtn.setText("Undirected");
+        _undirectedBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                _undirectedBtnActionPerformed(evt);
             }
         });
 
@@ -219,11 +229,11 @@ public class MainFrame extends javax.swing.JFrame {
             .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 315, Short.MAX_VALUE)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(29, 29, 29)
-                .addComponent(jRadioButton1)
+                .addComponent(_singlyBtn)
                 .addGap(18, 18, 18)
-                .addComponent(jRadioButton2)
+                .addComponent(_doublyBtn)
                 .addGap(18, 18, 18)
-                .addComponent(jRadioButton3)
+                .addComponent(_undirectedBtn)
                 .addContainerGap(31, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -232,9 +242,9 @@ public class MainFrame extends javax.swing.JFrame {
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jRadioButton2)
-                    .addComponent(jRadioButton1)
-                    .addComponent(jRadioButton3))
+                    .addComponent(_doublyBtn)
+                    .addComponent(_singlyBtn)
+                    .addComponent(_undirectedBtn))
                 .addContainerGap(170, Short.MAX_VALUE))
         );
 
@@ -267,7 +277,7 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
-        _rewindBtn.setFont(new java.awt.Font("Bitstream Vera Sans", 0, 10)); // NOI18N
+        _rewindBtn.setFont(new java.awt.Font("Bitstream Vera Sans", 0, 10));
         _rewindBtn.setText("RW");
         _rewindBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -499,8 +509,8 @@ public class MainFrame extends javax.swing.JFrame {
                     return;
                 }
             }
-            _nodesSelected = new HashSet<Node>();
-            _edgesSelected = new HashSet<Edge>();
+            _nodesSelected = Collections.synchronizedSet(new HashSet<Node>());
+            _edgesSelected = Collections.synchronizedSet(new HashSet<Edge>());
             Node add = drawingPanel1.addNode(evt.getPoint());
             for (Node n : drawingPanel1.getDiagram().getNodes()){
                 n.setSelected(false);
@@ -550,8 +560,8 @@ public class MainFrame extends javax.swing.JFrame {
                         return;
                     }
                 }
-            	_edgesSelected = new HashSet<Edge>();
-            	_nodesSelected = new HashSet<Node>();
+            	_edgesSelected = Collections.synchronizedSet(new HashSet<Edge>());
+            	_nodesSelected = Collections.synchronizedSet(new HashSet<Node>());
                 for (Node n : drawingPanel1.getDiagram().getNodes()){
                     n.setSelected(false);
                     n.getTextField().setVisible(false);
@@ -731,6 +741,8 @@ public class MainFrame extends javax.swing.JFrame {
                 drawingPanel1.getDiagram().getNodes().remove(n);
             }
             for (Edge e : _edgesSelected){
+            	for (Node n : drawingPanel1.getDiagram().getNodes())
+            		n.removeConnected(e);
                 drawingPanel1.remove(e.getLabel());
                 drawingPanel1.remove(e.getTextField());
                 drawingPanel1.getDiagram().getEdges().remove(e);
@@ -810,15 +822,15 @@ public class MainFrame extends javax.swing.JFrame {
         	for (Node n : drawingPanel1.getDiagram().getNodes()) {
         		if (n.getCircle().contains(_mouseLoc)) {
         			drawingPanel1.clearAll();
-        			Edge newEdge = new Edge(_edgeStart,n,_edgeStart.getCenter(),_edgeStart.getCenter(),drawingPanel1);
+        			Edge newEdge = new Edge(_edgeStart,n,_edgeStart.getCenter(),_edgeStart.getCenter(),drawingPanel1,_edgeType);
         			for (Edge e : drawingPanel1.getDiagram().getEdges()){
                         e.setSelected(false);
                     }
         			_edgeStart.addConnected(newEdge);
                     n.addConnected(newEdge);
             		drawingPanel1.getDiagram().addEdge(newEdge);
-                    _nodesSelected = new HashSet<Node>();
-                    _edgesSelected = new HashSet<Edge>();
+                    _nodesSelected = Collections.synchronizedSet(new HashSet<Node>());
+                    _edgesSelected = Collections.synchronizedSet(new HashSet<Edge>());
             		_edgesSelected.add(newEdge);
             		_edgeStart = null;
         			drawingPanel1._progressLine = null;
@@ -945,13 +957,15 @@ public class MainFrame extends javax.swing.JFrame {
         _simTimer.setDelay(_slider.getValue());
 }//GEN-LAST:event__sliderStateChanged
 
-    private void jRadioButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton2ActionPerformed
+    private void _doublyBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event__doublyBtnActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jRadioButton2ActionPerformed
+        _edgeType = EdgeDirection.DOUBLE;
+}//GEN-LAST:event__doublyBtnActionPerformed
 
-    private void jRadioButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton3ActionPerformed
+    private void _undirectedBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event__undirectedBtnActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jRadioButton3ActionPerformed
+        _edgeType = EdgeDirection.NONE;
+}//GEN-LAST:event__undirectedBtnActionPerformed
 
     private void _rewindBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event__rewindBtnActionPerformed
         // TODO add your handling code here:
@@ -976,6 +990,11 @@ public class MainFrame extends javax.swing.JFrame {
         }
         drawingPanel1.repaint();
 }//GEN-LAST:event__rewindBtnActionPerformed
+
+    private void _singlyBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event__singlyBtnActionPerformed
+        // TODO add your handling code here:
+        _edgeType = EdgeDirection.SINGLE;
+}//GEN-LAST:event__singlyBtnActionPerformed
 
     private class SimListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
@@ -1030,12 +1049,15 @@ public class MainFrame extends javax.swing.JFrame {
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JRadioButton _doublyBtn;
+    private javax.swing.ButtonGroup _edgeTypeGrp;
     private javax.swing.JButton _forwardBtn;
     private javax.swing.JButton _playPauseBtn;
     private javax.swing.JButton _rewindBtn;
+    private javax.swing.JRadioButton _singlyBtn;
     private javax.swing.JSlider _slider;
     private javax.swing.JButton _stopBtn;
-    private javax.swing.ButtonGroup buttonGroup1;
+    private javax.swing.JRadioButton _undirectedBtn;
     private frontend.DrawingPanel drawingPanel1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -1057,9 +1079,6 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JRadioButton jRadioButton1;
-    private javax.swing.JRadioButton jRadioButton2;
-    private javax.swing.JRadioButton jRadioButton3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSplitPane jSplitPane1;
