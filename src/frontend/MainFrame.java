@@ -741,6 +741,8 @@ public class MainFrame extends javax.swing.JFrame {
                 drawingPanel1.getDiagram().getNodes().remove(n);
             }
             for (Edge e : _edgesSelected){
+            	for (Node n : drawingPanel1.getDiagram().getNodes())
+            		n.removeConnected(e);
                 drawingPanel1.remove(e.getLabel());
                 drawingPanel1.remove(e.getTextField());
                 drawingPanel1.getDiagram().getEdges().remove(e);
