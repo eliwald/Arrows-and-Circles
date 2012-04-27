@@ -111,9 +111,10 @@ public class Edge implements Cloneable, DiagramObject {
     }
 
     public Arc2D resetArc() {
-        //for self loop
+
         double cx = 0;
         double cy = 0;
+        
         if (_start == _end) {
             cx = _start.getRadius() * .6;
             cy = _start.getRadius() * .6;
@@ -156,9 +157,63 @@ public class Edge implements Cloneable, DiagramObject {
         return _curve;
     }
     
-    public Arc2D getCurve() {
-    	return _curve;
+    private double theta(double x, double y) {
+    	double theta = y / (Math.abs(x) + Math.abs(y));
+        if(x < 0) {
+        	theta = 2 - theta;
+        }
+        else if(y < 0) {
+        	theta = theta + 4;
+        }
+		return theta;
     }
+    
+    public boolean intersects(double x, double y) {
+    	
+    	// In case of the self loop, use the usual intersects 
+        if (_start == _end) {
+            return _curve.intersects(x - 2, y - 2, 4, 4);
+        }
+
+        // Obtain the half vector from the start to the end.
+        double cx = (_end.getCenter().getX() - _start.getCenter().getX()) / 2;
+        double cy = (_end.getCenter().getY() - _start.getCenter().getY()) / 2;
+        double dc = Math.sqrt(cx*cx + cy*cy);
+        
+        // Obtain the radius vector and size.
+        double rx = (-cy) / dc * _height + cx;
+        double ry = (cx) / dc * _height + cy;
+        double dr = Math.sqrt(rx * rx + ry * ry);
+       
+        // Obtain the center of the arc.
+        double ax = _start.getCenter().getX() + rx;
+        double ay = _start.getCenter().getY() + ry;
+        
+        // Find the distance from the center of the circle to the mouse.
+        double mx = x - ax;
+        double my = y - ay;
+        double dm = Math.sqrt(mx*mx + my*my);
+        
+        // Obtain the virtual angle
+        double thetaMouse = theta(mx, my);
+        double thetaP = theta(_start.getCenter().getX() - rx, _start.getCenter().getY() - ry);
+        double thetaQ = theta(_end.getCenter().getX() - rx, _end.getCenter().getX() - ry);
+        if(!_turn) { // needs to reverse
+        	double tmp = thetaP;
+        	thetaP = thetaQ;
+        	thetaQ = tmp;
+        }
+        
+        // Check if mouse is in the range.
+        if(Math.abs(dm - dr) < 2 && (thetaP < thetaQ && thetaP < thetaMouse && thetaMouse < thetaQ || 
+        		thetaP > thetaQ && (thetaMouse < thetaQ || thetaMouse > thetaP))) {
+        	return true;
+        }
+        else {
+        	return false;
+        }
+    }
+    
 
 //    public Polygon getForward() {
 //        double difX = _end.getCenter().x - _start.getCenter().x;
@@ -173,6 +228,10 @@ public class Edge implements Cloneable, DiagramObject {
 //        p.addPoint((int)(startX-20 * (vecX-vecY)), (int)((startY+20 * (vecX-vecY))));
 //        return p;
 //    }
+    
+    public Arc2D getCurve() {
+    	return _curve;
+    }
 
     public Ellipse2D.Double getForward() {
         double difX = _end.getCenter().x - _start.getCenter().x;

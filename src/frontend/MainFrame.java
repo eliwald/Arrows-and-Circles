@@ -522,9 +522,7 @@ public class MainFrame extends javax.swing.JFrame {
                     }
                 }
                 for (Edge e : drawingPanel1.getDiagram().getEdges()){
-//                    Rectangle2D r = new Rectangle2D.Double(evt.getPoint().x-1, evt.getPoint().y-1, 2, 2);
-                    if (e.getCurve().intersects(evt.getPoint().x,evt.getPoint().y, 2, 2)){
-//                    if (e.getCurve().contains(r)){
+                    if (e.intersects(evt.getPoint().x,evt.getPoint().y)){
                         if (e.isSelected()){
                             e.setSelected(false);
                             _edgesSelected.remove(e);
@@ -567,7 +565,7 @@ public class MainFrame extends javax.swing.JFrame {
                     }
                 }
                 for (Edge e : drawingPanel1.getDiagram().getEdges()){
-                    if (e.getCurve().intersects(evt.getPoint().x,evt.getPoint().y, 2, 2)){
+                    if (e.intersects(evt.getPoint().x,evt.getPoint().y)){
                         e.setSelected(true);
                         e.getTextField().setVisible(true);
                         e.getTextField().grabFocus();
@@ -685,7 +683,7 @@ public class MainFrame extends javax.swing.JFrame {
             }
         }
         for (Edge e : drawingPanel1.getDiagram().getEdges()) {
-        	if (e.getCurve().intersects(evt.getPoint().x,evt.getPoint().y, 2, 2)) {
+        	if (e.intersects(evt.getPoint().x,evt.getPoint().y)) {
         		_edgeDragged = e;
         		break;
         	}

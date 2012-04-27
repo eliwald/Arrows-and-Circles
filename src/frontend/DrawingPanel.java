@@ -9,7 +9,6 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import javax.swing.JPanel;
 
-import manager.DiagramModifyAction;
 import manager.DiagramProject;
 import backend.*;
 
