@@ -199,7 +199,6 @@ public class Node implements DiagramObject, Cloneable {
 		Point p = new Point((int)(_center.x-(dimension/2)), (int)(_center.y-(dimension/2)));
 		_area.setSize((int)(dimension), _area.getHeight());
 		_label.setSize((int)(dimension), _label.getHeight());
-		_area.setLocation(new Point(p.x+2, p.y+2));
 		_area.setLocation(new Point(p.x+2, (int)(_center.y-6)));
 		_label.setLocation(new Point(p.x+1, (int)(_center.y-6)));
 		_circle = new Ellipse2D.Double(_center.x-_radius, _center.y-_radius, _radius*2, _radius*2);

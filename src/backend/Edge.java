@@ -1,6 +1,7 @@
 package backend;
 
 
+import java.awt.event.KeyEvent;
 import java.awt.geom.Arc2D;
 
 import frontend.DrawingPanel;
@@ -8,6 +9,7 @@ import frontend.MyDocListener;
 
 import java.awt.Color;
 import java.awt.Polygon;
+import java.awt.event.KeyListener;
 import java.awt.geom.Point2D;
 
 import javax.swing.JLabel;
@@ -71,6 +73,7 @@ public class Edge implements Cloneable, DiagramObject {
 		_area.selectAll();
 		_area.setEditable(true);
 		_area.setEnabled(true);
+        _area.addKeyListener(new EdgeKeyListener());
 		_label = new JLabel(DEFAULT_STRING);
 		_area.getDocument().addDocumentListener(new MyDocListener(_label));
 		_label.setVisible(true);
@@ -241,4 +244,23 @@ public class Edge implements Cloneable, DiagramObject {
     public String getName() {
         return ("Edge: " + _area.getText());
     }
+
+    private class EdgeKeyListener implements KeyListener{
+
+        public void keyTyped(KeyEvent e) {
+            if (e.getKeyChar() == '\n'){
+                _container.grabFocus();
+            }
+        }
+
+        public void keyPressed(KeyEvent e) {
+//            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        public void keyReleased(KeyEvent e) {
+//            throw new UnsupportedOperationException("Not supported yet.");
+        }
+        
+    }
+
 }

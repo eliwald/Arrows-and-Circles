@@ -95,8 +95,24 @@ public class DrawingPanel extends JPanel {
     public void paintComponent(Graphics g) {
        super.paintComponent(g); 
        Graphics2D g2 = (Graphics2D)g;
-
+       for (Edge e: _diagram.getEdges()) {
+    	   g2.setColor(java.awt.Color.BLACK);
+           g2.setStroke(new BasicStroke(1));
+           if(e.isSelected()){
+               g2.setColor(java.awt.Color.BLUE);
+               g2.setStroke(new BasicStroke(2));
+           }
+           if (e.getCurrent()) {
+               g2.setColor(java.awt.Color.PINK);
+           }
+           g2.fill(e.getForward());
+           g2.draw(e.resetArc());
+       }
        for (Node n : _diagram.getNodes()){
+    	   g2.setColor(java.awt.Color.WHITE);
+           g2.setStroke(new BasicStroke(1));
+           Ellipse2D.Double ellipse = n.resetCircle();
+           g2.fill(ellipse);
     	   g2.setColor(java.awt.Color.BLACK);
            g2.setStroke(new BasicStroke(1));
            
@@ -125,7 +141,8 @@ public class DrawingPanel extends JPanel {
                double y = n.getCenter().y;
                g2.draw(new Ellipse2D.Double(x-newRad,y-newRad,newRad*2,newRad*2));
            }
-           Ellipse2D.Double ellipse = n.resetCircle();
+
+
            g2.draw(ellipse);
            if (n.isStart()) {
                if (n.isSelected()){
@@ -142,19 +159,7 @@ public class DrawingPanel extends JPanel {
 
        }
 
-       for (Edge e: _diagram.getEdges()) {
-    	   g2.setColor(java.awt.Color.BLACK);
-           g2.setStroke(new BasicStroke(1));
-           if(e.isSelected()){
-               g2.setColor(java.awt.Color.BLUE);
-               g2.setStroke(new BasicStroke(2));
-           }
-           if (e.getCurrent()) {
-               g2.setColor(java.awt.Color.PINK);
-           }
-           g2.fill(e.getForward());
-           g2.draw(e.resetArc());
-       }
+       
 
        if (_progressLine != null) {
     	   g2.setColor(java.awt.Color.BLACK);
