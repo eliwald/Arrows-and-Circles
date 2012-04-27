@@ -16,6 +16,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
+import java.awt.geom.Arc2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -260,29 +261,29 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
-        _rewindBtn.setFont(new java.awt.Font("Bitstream Vera Sans", 0, 7));
-        _rewindBtn.setText("PLAY");
+        _rewindBtn.setFont(new java.awt.Font("Bitstream Vera Sans", 0, 10)); // NOI18N
+        _rewindBtn.setText("RW");
         _rewindBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 _rewindBtnActionPerformed(evt);
             }
         });
 
-        _stopBtn.setText("PLAY");
+        _stopBtn.setText("S");
         _stopBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 _stopBtnActionPerformed(evt);
             }
         });
 
-        _playPauseBtn.setText("PLAY");
+        _playPauseBtn.setText("P");
         _playPauseBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 _playPauseBtnActionPerformed(evt);
             }
         });
 
-        _forwardBtn.setText("PLAY");
+        _forwardBtn.setText("FF");
         _forwardBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 _forwardBtnActionPerformed(evt);
@@ -329,7 +330,7 @@ public class MainFrame extends javax.swing.JFrame {
                 .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(77, Short.MAX_VALUE))
+                .addContainerGap(78, Short.MAX_VALUE))
         );
 
         jSplitPane3.setLeftComponent(jPanel2);
@@ -598,7 +599,12 @@ public class MainFrame extends javax.swing.JFrame {
 
                 Point2D.Double point_start = new Point2D.Double(_edgeStart.getCenter().x+(_edgeStart.getRadius()*vecX),_edgeStart.getCenter().y+(_edgeStart.getRadius()*vecY));
                 Point2D.Double point_end = new Point2D.Double(con.getCenter().x-(con.getRadius()*vecX),con.getCenter().y-(con.getRadius()*vecY));
-                drawingPanel1._progressLine = new Line2D.Double(point_start, point_end);
+                if (_edgeStart == con) {
+                    drawingPanel1._progressLine = Edge.getSelfLoop(_edgeStart);
+                }
+                else {
+                    drawingPanel1._progressLine = new Line2D.Double(point_start, point_end);
+                }
             }
             
             else {
@@ -879,6 +885,9 @@ public class MainFrame extends javax.swing.JFrame {
                 _sim = drawingPanel1.getDiagram().deterministicSimulation(jTextField1.getText());
             } catch (InvalidDFSMException ex) {
                 jTextArea1.setText(ex.getMessage());
+                if (_simTimer.isRunning()) {
+                    _simTimer.stop();
+                }
                 return;
             }
             jTextArea1.setText("");
@@ -906,6 +915,19 @@ public class MainFrame extends javax.swing.JFrame {
         drawingPanel1.repaint();
     }//GEN-LAST:event__forwardBtnActionPerformed
 
+    private void _sliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event__sliderStateChanged
+        // TODO add your handling code here:
+        _simTimer.setDelay(_slider.getValue());
+}//GEN-LAST:event__sliderStateChanged
+
+    private void jRadioButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton2ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jRadioButton2ActionPerformed
+
+    private void jRadioButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton3ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jRadioButton3ActionPerformed
+
     private void _rewindBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event__rewindBtnActionPerformed
         // TODO add your handling code here:
         if (_simTimer.isRunning()) {
@@ -924,25 +946,11 @@ public class MainFrame extends javax.swing.JFrame {
         if (_iter.hasPrevious()) {
             DiagramObject e = _iter.previous();
             e.setCurrent(true);
-        }
-        else {
+        } else {
             jTextArea1.setText("BACK TO START");
         }
         drawingPanel1.repaint();
-    }//GEN-LAST:event__rewindBtnActionPerformed
-
-    private void _sliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event__sliderStateChanged
-        // TODO add your handling code here:
-        _simTimer.setDelay(_slider.getValue());
-}//GEN-LAST:event__sliderStateChanged
-
-    private void jRadioButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jRadioButton2ActionPerformed
-
-    private void jRadioButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton3ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jRadioButton3ActionPerformed
+}//GEN-LAST:event__rewindBtnActionPerformed
 
     private class SimListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {

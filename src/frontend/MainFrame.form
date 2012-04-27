@@ -373,7 +373,7 @@
                           <Component id="jTextField1" min="-2" max="-2" attributes="0"/>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
                           <Component id="jScrollPane2" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace pref="77" max="32767" attributes="0"/>
+                          <EmptySpace pref="78" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -416,9 +416,9 @@
                 <Component class="javax.swing.JButton" name="_rewindBtn">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                      <Font name="Bitstream Vera Sans" size="7" style="0"/>
+                      <Font name="Bitstream Vera Sans" size="10" style="0"/>
                     </Property>
-                    <Property name="text" type="java.lang.String" value="PLAY"/>
+                    <Property name="text" type="java.lang.String" value="RW"/>
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="_rewindBtnActionPerformed"/>
@@ -426,7 +426,7 @@
                 </Component>
                 <Component class="javax.swing.JButton" name="_stopBtn">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="PLAY"/>
+                    <Property name="text" type="java.lang.String" value="S"/>
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="_stopBtnActionPerformed"/>
@@ -434,7 +434,7 @@
                 </Component>
                 <Component class="javax.swing.JButton" name="_playPauseBtn">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="PLAY"/>
+                    <Property name="text" type="java.lang.String" value="P"/>
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="_playPauseBtnActionPerformed"/>
@@ -442,7 +442,7 @@
                 </Component>
                 <Component class="javax.swing.JButton" name="_forwardBtn">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="PLAY"/>
+                    <Property name="text" type="java.lang.String" value="FF"/>
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="_forwardBtnActionPerformed"/>
