@@ -184,11 +184,21 @@ public class MainFrame extends javax.swing.JFrame {
 
         jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
-        jRadioButton1.setText("jRadioButton1");
+        jRadioButton1.setText("Singly");
 
-        jRadioButton2.setText("jRadioButton2");
+        jRadioButton2.setText("Doubly");
+        jRadioButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jRadioButton2ActionPerformed(evt);
+            }
+        });
 
-        jRadioButton3.setText("jRadioButton3");
+        jRadioButton3.setText("Undirected");
+        jRadioButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jRadioButton3ActionPerformed(evt);
+            }
+        });
 
         jLabel1.setHorizontalAlignment(SwingConstants.CENTER);
         jLabel2.setText("Toolbox");
@@ -199,31 +209,26 @@ public class MainFrame extends javax.swing.JFrame {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(50, 50, 50)
-                .addComponent(jRadioButton1)
-                .addContainerGap(153, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(191, Short.MAX_VALUE)
-                .addComponent(jRadioButton2)
-                .addContainerGap())
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(99, 99, 99)
-                .addComponent(jRadioButton3)
-                .addContainerGap(104, Short.MAX_VALUE))
             .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 315, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap(48, Short.MAX_VALUE)
+                .addComponent(jRadioButton1)
+                .addGap(18, 18, 18)
+                .addComponent(jRadioButton2)
+                .addGap(18, 18, 18)
+                .addComponent(jRadioButton3)
+                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jRadioButton1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jRadioButton2)
-                .addGap(18, 18, 18)
-                .addComponent(jRadioButton3)
-                .addContainerGap(177, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jRadioButton2)
+                    .addComponent(jRadioButton1)
+                    .addComponent(jRadioButton3))
+                .addGap(251, 251, 251))
         );
 
         jSplitPane3.setRightComponent(jPanel1);
@@ -255,7 +260,7 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
-        _rewindBtn.setFont(new java.awt.Font("Bitstream Vera Sans", 0, 7)); // NOI18N
+        _rewindBtn.setFont(new java.awt.Font("Bitstream Vera Sans", 0, 7));
         _rewindBtn.setText("PLAY");
         _rewindBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -930,6 +935,14 @@ public class MainFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
         _simTimer.setDelay(_slider.getValue());
 }//GEN-LAST:event__sliderStateChanged
+
+    private void jRadioButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton2ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jRadioButton2ActionPerformed
+
+    private void jRadioButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton3ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jRadioButton3ActionPerformed
 
     private class SimListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {

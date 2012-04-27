@@ -105,7 +105,8 @@ public class DrawingPanel extends JPanel {
            if (e.getCurrent()) {
                g2.setColor(java.awt.Color.PINK);
            }
-           g2.fill(e.getForward());
+           Ellipse2D.Double end = e.getForward();
+           g2.fill(end);
            g2.draw(e.resetArc());
        }
        for (Node n : _diagram.getNodes()){

@@ -5,11 +5,13 @@ import java.awt.event.KeyEvent;
 import java.awt.geom.Arc2D;
 
 import frontend.DrawingPanel;
+import frontend.EnterListener;
 import frontend.MyDocListener;
 
 import java.awt.Color;
 import java.awt.Polygon;
 import java.awt.event.KeyListener;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 
 import javax.swing.JLabel;
@@ -73,7 +75,7 @@ public class Edge implements Cloneable, DiagramObject {
 		_area.selectAll();
 		_area.setEditable(true);
 		_area.setEnabled(true);
-        _area.addKeyListener(new EdgeKeyListener());
+        _area.addKeyListener(new EnterListener(_container));
 		_label = new JLabel(DEFAULT_STRING);
 		_area.getDocument().addDocumentListener(new MyDocListener(_label));
 		_label.setVisible(true);
@@ -137,18 +139,30 @@ public class Edge implements Cloneable, DiagramObject {
     	return _curve;
     }
 
-    public Polygon getForward() {
+//    public Polygon getForward() {
+//        double difX = _end.getCenter().x - _start.getCenter().x;
+//        double difY = _end.getCenter().y - _start.getCenter().y;
+//        double vecX = difX/Math.sqrt((difX*difX+difY*difY));
+//        double vecY = difY/Math.sqrt((difX*difX+difY*difY));
+//        Polygon p = new Polygon();
+//        int startX = (int)(_end.getCenter().x-(_end.getRadius()*vecX));
+//        int startY = (int)(_end.getCenter().y-(_end.getRadius()*vecY));
+//        p.addPoint(startX,startY);
+//        p.addPoint((int)(startX+20 * (vecX-vecY)), (int)((startY+20 * (vecX-vecY))));
+//        p.addPoint((int)(startX-20 * (vecX-vecY)), (int)((startY+20 * (vecX-vecY))));
+//        return p;
+//    }
+
+    public Ellipse2D.Double getForward() {
         double difX = _end.getCenter().x - _start.getCenter().x;
         double difY = _end.getCenter().y - _start.getCenter().y;
         double vecX = difX/Math.sqrt((difX*difX+difY*difY));
         double vecY = difY/Math.sqrt((difX*difX+difY*difY));
-        Polygon p = new Polygon();
+        Ellipse2D.Double toReturn = new Ellipse2D.Double();
         int startX = (int)(_end.getCenter().x-(_end.getRadius()*vecX));
         int startY = (int)(_end.getCenter().y-(_end.getRadius()*vecY));
-        p.addPoint(startX,startY);
-        p.addPoint((int)(startX+20 * (vecX-vecY)), (int)((startY+20 * (vecX-vecY))));
-        p.addPoint((int)(startX-20 * (vecX-vecY)), (int)((startY+20 * (vecX-vecY))));
-        return p;
+        toReturn.setFrame(startX-6, startY-6, 12, 12);
+        return toReturn;
     }
     
     public void setHeight(double h) {
@@ -245,22 +259,6 @@ public class Edge implements Cloneable, DiagramObject {
         return ("Edge: " + _area.getText());
     }
 
-    private class EdgeKeyListener implements KeyListener{
-
-        public void keyTyped(KeyEvent e) {
-            if (e.getKeyChar() == '\n'){
-                _container.grabFocus();
-            }
-        }
-
-        public void keyPressed(KeyEvent e) {
-//            throw new UnsupportedOperationException("Not supported yet.");
-        }
-
-        public void keyReleased(KeyEvent e) {
-//            throw new UnsupportedOperationException("Not supported yet.");
-        }
-        
-    }
+    
 
 }

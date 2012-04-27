@@ -2,6 +2,7 @@ package backend;
 
 import frontend.DrawingPanel;
 
+import frontend.EnterListener;
 import frontend.MyDocListener;
 import java.util.Collection;
 import java.util.HashSet;
@@ -68,6 +69,7 @@ public class Node implements DiagramObject, Cloneable {
 		_area.setEnabled(true);
 		_label = new JLabel(s);
 		_area.getDocument().addDocumentListener(new MyDocListener(_label));
+        _area.addKeyListener(new EnterListener(_container));
 		_label.setVisible(true);
 		_label.setOpaque(false);
 		_label.setSize((int)(dimension), 12);
