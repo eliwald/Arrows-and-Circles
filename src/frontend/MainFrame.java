@@ -51,6 +51,7 @@ public class MainFrame extends javax.swing.JFrame {
     private List<DiagramObject> _sim;
     private ListIterator<DiagramObject> _iter;
     private Timer _simTimer;
+    private boolean _shift = false;
 
     /**
      * Creates new form MainFram
@@ -588,12 +589,12 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void drawingPanel1MouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_drawingPanel1MouseDragged
         // TODO add your handling code here:
-        if (_nodeDragged != null && drawingPanel1.contains(evt.getPoint())){
-            if (!_nodeDragged.isSelected()){
+        if (!_shift && _nodeDragged != null && drawingPanel1.contains(evt.getPoint())){
+            if (this._nodesSelected.size() <= 1){
                 _nodeDragged.setCenter(evt.getX()-_nodeDragged.getOffset().x, evt.getY()-_nodeDragged.getOffset().y);
                 _nodeDragged.resetCircle();
             }
-            else if (this._nodesSelected.size() > 1){
+            else {
                 for (Node n : drawingPanel1.getDiagram().getNodes()){
                     if (n.isSelected()) {
                         int difX = evt.getPoint().x - _mouseLoc.x;
@@ -688,6 +689,10 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void drawingPanel1MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_drawingPanel1MousePressed
         // TODO add your handling code here:
+        String mod = MouseEvent.getMouseModifiersText(evt.getModifiers());
+        if (mod.contains("Shift")){
+            _shift = true;
+        }
         drawingPanel1.grabFocus();
         for (Node n : drawingPanel1.getDiagram().getNodes()) {
             //n.getTextField().select(0, 0);
@@ -843,6 +848,7 @@ public class MainFrame extends javax.swing.JFrame {
         _nodeDragged = null;
         _edgeDragged = null;
         drawingPanel1.repaint();
+        _shift = false;
     }//GEN-LAST:event_drawingPanel1MouseReleased
 
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
