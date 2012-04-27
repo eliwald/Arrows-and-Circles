@@ -938,6 +938,8 @@ public class MainFrame extends javax.swing.JFrame {
         if (_iter.hasNext()) {
             DiagramObject e = _iter.next();
             e.setCurrent(true);
+            if (e instanceof Node && ((Node)e).isStart())
+            	jTextArea1.append("Start ");
             jTextArea1.append(e.getName() + "\n");
             if (!_iter.hasNext()) {
             	_playPauseBtn.setIcon(new ImageIcon("./img/play.png"));
