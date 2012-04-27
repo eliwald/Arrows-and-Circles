@@ -17,6 +17,7 @@ import java.awt.BasicStroke;
 import java.awt.Graphics;
 
 import java.awt.Polygon;
+import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
 
 import java.awt.geom.Line2D;
@@ -30,7 +31,7 @@ import java.awt.geom.QuadCurve2D;
 public class DrawingPanel extends JPanel {
     
     private Diagram _diagram;
-    public Line2D.Double _progressLine;
+    public Shape _progressLine;
 
     public DrawingPanel() {
         _diagram = new Diagram();
@@ -108,6 +109,11 @@ public class DrawingPanel extends JPanel {
            g2.fill(e.getForward());
            g2.draw(e.resetArc());
        }
+       if (_progressLine != null) {
+    	   g2.setColor(java.awt.Color.BLACK);
+           g2.setStroke(new BasicStroke(1));
+           g2.draw(_progressLine);
+       }
        for (Node n : _diagram.getNodes()){
     	   g2.setColor(java.awt.Color.WHITE);
            g2.setStroke(new BasicStroke(1));
@@ -161,11 +167,7 @@ public class DrawingPanel extends JPanel {
 
        
 
-       if (_progressLine != null) {
-    	   g2.setColor(java.awt.Color.BLACK);
-           g2.setStroke(new BasicStroke(1));
-           g2.draw(_progressLine);
-       }
+      
        
     }
     
