@@ -279,7 +279,7 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
-        _rewindBtn.setFont(new java.awt.Font("Bitstream Vera Sans", 0, 10)); // NOI18N
+        _rewindBtn.setFont(new java.awt.Font("Bitstream Vera Sans", 0, 10));
         _rewindBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/bwd.png"))); // NOI18N
         _rewindBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -347,8 +347,8 @@ public class MainFrame extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(136, Short.MAX_VALUE))
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 246, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         jSplitPane3.setLeftComponent(jPanel2);
@@ -599,17 +599,18 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void drawingPanel1MouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_drawingPanel1MouseDragged
         // TODO add your handling code here:
+        Point temp = _mouseLoc;
     	_mouseLoc = evt.getPoint();
         if (!_shift && _nodeDragged != null && drawingPanel1.contains(evt.getPoint())){
-            if (this._nodesSelected.size() <= 1){
+            if (this._nodesSelected.size() <= 1 || !_nodeDragged.isSelected()){
                 _nodeDragged.setCenter(evt.getX()-_nodeDragged.getOffset().x, evt.getY()-_nodeDragged.getOffset().y);
                 _nodeDragged.resetCircle();
             }
             else {
                 for (Node n : drawingPanel1.getDiagram().getNodes()){
                     if (n.isSelected()) {
-                        int difX = evt.getPoint().x - _mouseLoc.x;
-                        int difY = evt.getPoint().y - _mouseLoc.y;
+                        int difX = evt.getPoint().x - temp.x;
+                        int difY = evt.getPoint().y - temp.y;
                         n.setCenter(n.getCenter().x + difX, n.getCenter().y + difY);
                         n.resetCircle();
                     }
