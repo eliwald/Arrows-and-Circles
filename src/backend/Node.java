@@ -67,6 +67,7 @@ public class Node implements DiagramObject, Cloneable {
 		_area.selectAll();
 		_area.setEditable(true);
 		_area.setEnabled(true);
+        _area.setBackground(new Color(0,0,0,0));
 		_label = new JLabel(s);
 		_area.getDocument().addDocumentListener(new MyDocListener(_label));
         _area.addKeyListener(new EnterListener(_container));

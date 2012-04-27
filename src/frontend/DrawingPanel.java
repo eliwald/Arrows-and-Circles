@@ -62,7 +62,7 @@ public class DrawingPanel extends JPanel {
         
     }
 
-    public void addEdge(Node n1, Node n2) {
+    /*public void addEdge(Node n1, Node n2) {
     	if (n1 != null && n2 != null) {
     		clearAll();
 //    		DiagramProject dp = new DiagramProject();
@@ -81,13 +81,13 @@ public class DrawingPanel extends JPanel {
 //					return null;
 //				}
 //			});
-    		Edge e = new Edge(n1,n2,n1.getCenter(),n2.getCenter(), this);
+    		Edge e = new Edge(n1,n2,n1.getCenter(),n2.getCenter(), this,null);
             n1.addConnected(e);
             n2.addConnected(e);
     		_diagram.addEdge(e);
 	        repaint();
     	}
-    }
+    }*/
 
     
     
@@ -105,8 +105,14 @@ public class DrawingPanel extends JPanel {
            if (e.getCurrent()) {
                g2.setColor(java.awt.Color.PINK);
            }
-           Ellipse2D.Double end = e.getForward();
-           g2.fill(end);
+           if (e.getDirection() == EdgeDirection.SINGLE) {
+                Ellipse2D.Double end = e.getForward();
+                g2.fill(end);
+           }
+           else if (e.getDirection() == EdgeDirection.DOUBLE) {
+                g2.fill(e.getForward());
+                g2.fill(e.getBackward());
+           }
            g2.draw(e.resetArc());
        }
        if (_progressLine != null) {

@@ -44,7 +44,7 @@ public class Edge implements Cloneable, DiagramObject {
     private static final String DEFAULT_STRING = "0";
     
 
-	public Edge(Node s, Node e, Point2D.Double start, Point2D.Double end, DrawingPanel container) {
+	public Edge(Node s, Node e, Point2D.Double start, Point2D.Double end, DrawingPanel container, EdgeDirection d) {
 		_start = s;
 		_end = e;
         _container = container;
@@ -54,7 +54,7 @@ public class Edge implements Cloneable, DiagramObject {
 		_point_start = start;
 		_point_end = end;
         _selected = true;
-		_direction = EdgeDirection.SINGLE;
+		_direction = d;
 		_curve = new Arc2D.Double(Arc2D.OPEN);
 
         //added support for self loop
@@ -241,6 +241,18 @@ public class Edge implements Cloneable, DiagramObject {
         Ellipse2D.Double toReturn = new Ellipse2D.Double();
         int startX = (int)(_end.getCenter().x-(_end.getRadius()*vecX));
         int startY = (int)(_end.getCenter().y-(_end.getRadius()*vecY));
+        toReturn.setFrame(startX-6, startY-6, 12, 12);
+        return toReturn;
+    }
+
+    public Ellipse2D.Double getBackward() {
+        double difX = _start.getCenter().x - _end.getCenter().x;
+        double difY = _start.getCenter().y - _end.getCenter().y;
+        double vecX = difX/Math.sqrt((difX*difX+difY*difY));
+        double vecY = difY/Math.sqrt((difX*difX+difY*difY));
+        Ellipse2D.Double toReturn = new Ellipse2D.Double();
+        int startX = (int)(_start.getCenter().x-(_start.getRadius()*vecX));
+        int startY = (int)(_start.getCenter().y-(_start.getRadius()*vecY));
         toReturn.setFrame(startX-6, startY-6, 12, 12);
         return toReturn;
     }
