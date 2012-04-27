@@ -189,6 +189,10 @@ public class Diagram implements Cloneable {
 
 		if (!message.equals(""))
 			throw new InvalidDFSMException(message);
+		if (input.length() == 0) {
+			simulation.add(tempNode);
+			return simulation;
+		}
 		for (int i = 0; i < input.length(); i ++) {
 			tempInput = input.substring(i, i+1);
 			for (Edge e : tempNode.getConnected()){

@@ -277,29 +277,28 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
-        _rewindBtn.setFont(new java.awt.Font("Bitstream Vera Sans", 0, 10));
-        _rewindBtn.setText("RW");
+        _rewindBtn.setIcon(new ImageIcon("./img/bwd.png"));
         _rewindBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 _rewindBtnActionPerformed(evt);
             }
         });
 
-        _stopBtn.setText("S");
+        _stopBtn.setIcon(new ImageIcon("./img/stop.png"));;
         _stopBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 _stopBtnActionPerformed(evt);
             }
         });
 
-        _playPauseBtn.setText("P");
+        _playPauseBtn.setIcon(new ImageIcon("./img/play.png"));
         _playPauseBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 _playPauseBtnActionPerformed(evt);
             }
         });
 
-        _forwardBtn.setText("FF");
+        _forwardBtn.setIcon(new ImageIcon("./img/fwd.png"));
         _forwardBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 _forwardBtnActionPerformed(evt);
@@ -907,12 +906,14 @@ public class MainFrame extends javax.swing.JFrame {
     private void _playPauseBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event__playPauseBtnActionPerformed
         // TODO add your handling code here:
         if (!_simTimer.isRunning()) {
+        	_playPauseBtn.setIcon(new ImageIcon("./img/pause.png"));
             _forwardBtn.doClick();
             _simTimer.setDelay(_slider.getValue());
             _simTimer.start();
             return;
         }
         else {
+        	_playPauseBtn.setIcon(new ImageIcon("./img/play.png"));
             _simTimer.stop();
         }
     }//GEN-LAST:event__playPauseBtnActionPerformed
@@ -923,6 +924,7 @@ public class MainFrame extends javax.swing.JFrame {
             try {
                 _sim = drawingPanel1.getDiagram().deterministicSimulation(jTextField1.getText());
             } catch (InvalidDFSMException ex) {
+            	_playPauseBtn.setIcon(new ImageIcon("./img/play.png"));
                 jTextArea1.setText(ex.getMessage());
                 if (_simTimer.isRunning()) {
                     _simTimer.stop();
@@ -942,13 +944,19 @@ public class MainFrame extends javax.swing.JFrame {
             DiagramObject e = _iter.next();
             e.setCurrent(true);
             jTextArea1.append(e.getName() + "\n");
-        }
-        else {
-            jTextArea1.append("FINISHED");
-            _sim = null;
-            _iter = null;
-            if (_simTimer.isRunning()) {
-                _simTimer.stop();
+            if (!_iter.hasNext()) {
+            	_playPauseBtn.setIcon(new ImageIcon("./img/play.png"));
+            	jTextArea1.append("FINISHED: Ended at node " + e.getName() + ".\n");
+            	if (((Node)e).isEnd())
+            		jTextArea1.append("FSM Accepted the input string.\n");
+            	else
+            		jTextArea1.append("FSM Rejected the input string.\n");
+            	
+            	_sim = null;
+                _iter = null;
+                if (_simTimer.isRunning()) {
+                    _simTimer.stop();
+                }
             }
         }
         drawingPanel1.repaint();
