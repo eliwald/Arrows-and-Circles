@@ -70,7 +70,7 @@ public class Node implements DiagramObject, Cloneable {
         _area.setBackground(new Color(0,0,0,0));
 		_label = new JLabel(s);
 		_area.getDocument().addDocumentListener(new MyDocListener(_label));
-        _area.addKeyListener(new EnterListener(_container));
+        _area.addKeyListener(new EnterListener(_container, _area));
 		_label.setVisible(true);
 		_label.setOpaque(false);
 		_label.setSize((int)(dimension), 12);

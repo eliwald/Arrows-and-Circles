@@ -220,7 +220,7 @@ public class MainFrame extends javax.swing.JFrame {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 315, Short.MAX_VALUE)
+            .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 355, Short.MAX_VALUE)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(29, 29, 29)
                 .addComponent(_singlyBtn)
@@ -228,7 +228,7 @@ public class MainFrame extends javax.swing.JFrame {
                 .addComponent(_doublyBtn)
                 .addGap(18, 18, 18)
                 .addComponent(_undirectedBtn)
-                .addContainerGap(31, Short.MAX_VALUE))
+                .addContainerGap(66, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -239,7 +239,7 @@ public class MainFrame extends javax.swing.JFrame {
                     .addComponent(_doublyBtn)
                     .addComponent(_singlyBtn)
                     .addComponent(_undirectedBtn))
-                .addContainerGap(170, Short.MAX_VALUE))
+                .addContainerGap(135, Short.MAX_VALUE))
         );
 
         jSplitPane3.setRightComponent(jPanel1);
@@ -271,28 +271,29 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
-        _rewindBtn.setIcon(new ImageIcon("./img/bwd.png"));
+        _rewindBtn.setFont(new java.awt.Font("Bitstream Vera Sans", 0, 10)); // NOI18N
+        _rewindBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/bwd.png"))); // NOI18N
         _rewindBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 _rewindBtnActionPerformed(evt);
             }
         });
 
-        _stopBtn.setIcon(new ImageIcon("./img/stop.png"));;
+        _stopBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/stop.png"))); // NOI18N
         _stopBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 _stopBtnActionPerformed(evt);
             }
         });
 
-        _playPauseBtn.setIcon(new ImageIcon("./img/play.png"));
+        _playPauseBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/play.png"))); // NOI18N
         _playPauseBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 _playPauseBtnActionPerformed(evt);
             }
         });
 
-        _forwardBtn.setIcon(new ImageIcon("./img/fwd.png"));
+        _forwardBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/fwd.png"))); // NOI18N
         _forwardBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 _forwardBtnActionPerformed(evt);
@@ -307,7 +308,7 @@ public class MainFrame extends javax.swing.JFrame {
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 315, Short.MAX_VALUE)
+            .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 355, Short.MAX_VALUE)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(45, 45, 45)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
@@ -320,7 +321,7 @@ public class MainFrame extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(_forwardBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(_slider, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 222, Short.MAX_VALUE)
+                    .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 262, Short.MAX_VALUE)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(48, 48, 48))
         );
@@ -339,7 +340,7 @@ public class MainFrame extends javax.swing.JFrame {
                 .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(108, Short.MAX_VALUE))
+                .addContainerGap(136, Short.MAX_VALUE))
         );
 
         jSplitPane3.setLeftComponent(jPanel2);

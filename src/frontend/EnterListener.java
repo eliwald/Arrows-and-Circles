@@ -7,6 +7,7 @@ package frontend;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import javax.swing.JTextField;
 
 /**
  * Text area listener that gives focus back to the given container when enter is pressed.
@@ -14,13 +15,16 @@ import java.awt.event.KeyListener;
  */
 public class EnterListener implements KeyListener{
         private DrawingPanel _container;
+        private JTextField _field;
 
-        public EnterListener(DrawingPanel container){
+        public EnterListener(DrawingPanel container, JTextField field){
             _container = container;
+            _field = field;
         }
         
         public void keyTyped(KeyEvent e) {
             if (e.getKeyChar() == '\n'){
+                _field.select(0, 0);
                 _container.grabFocus();
             }
         }
