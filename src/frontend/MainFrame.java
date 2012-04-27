@@ -782,6 +782,8 @@ public class MainFrame extends javax.swing.JFrame {
         			_edgeStart.addConnected(newEdge);
                     n.addConnected(newEdge);
             		drawingPanel1.getDiagram().addEdge(newEdge);
+                    _nodesSelected = new HashSet<Node>();
+                    _edgesSelected = new HashSet<Edge>();
             		_edgesSelected.add(newEdge);
             		_edgeStart = null;
         			drawingPanel1._progressLine = null;
