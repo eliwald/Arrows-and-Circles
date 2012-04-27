@@ -78,6 +78,7 @@ public class MainFrame extends javax.swing.JFrame {
         jMenuItem1 = new javax.swing.JMenuItem();
         jTabbedPane2 = new javax.swing.JTabbedPane();
         jSplitPane1 = new javax.swing.JSplitPane();
+        buttonGroup1 = new javax.swing.ButtonGroup();
         jSplitPane2 = new javax.swing.JSplitPane();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -185,8 +186,11 @@ public class MainFrame extends javax.swing.JFrame {
 
         jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
+        buttonGroup1.add(jRadioButton1);
+        jRadioButton1.setSelected(true);
         jRadioButton1.setText("Singly");
 
+        buttonGroup1.add(jRadioButton2);
         jRadioButton2.setText("Doubly");
         jRadioButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -194,6 +198,7 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
+        buttonGroup1.add(jRadioButton3);
         jRadioButton3.setText("Undirected");
         jRadioButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -211,25 +216,25 @@ public class MainFrame extends javax.swing.JFrame {
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 315, Short.MAX_VALUE)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(48, Short.MAX_VALUE)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(29, 29, 29)
                 .addComponent(jRadioButton1)
                 .addGap(18, 18, 18)
                 .addComponent(jRadioButton2)
                 .addGap(18, 18, 18)
                 .addComponent(jRadioButton3)
-                .addContainerGap())
+                .addContainerGap(31, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jRadioButton2)
                     .addComponent(jRadioButton1)
                     .addComponent(jRadioButton3))
-                .addGap(251, 251, 251))
+                .addContainerGap(170, Short.MAX_VALUE))
         );
 
         jSplitPane3.setRightComponent(jPanel1);
@@ -329,8 +334,8 @@ public class MainFrame extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(78, Short.MAX_VALUE))
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(108, Short.MAX_VALUE))
         );
 
         jSplitPane3.setLeftComponent(jPanel2);
@@ -583,6 +588,23 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void drawingPanel1MouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_drawingPanel1MouseDragged
         // TODO add your handling code here:
+        if (_nodeDragged != null && drawingPanel1.contains(evt.getPoint())){
+            if (!_nodeDragged.isSelected()){
+                _nodeDragged.setCenter(evt.getX()-_nodeDragged.getOffset().x, evt.getY()-_nodeDragged.getOffset().y);
+                _nodeDragged.resetCircle();
+            }
+            else if (this._nodesSelected.size() > 1){
+                for (Node n : drawingPanel1.getDiagram().getNodes()){
+                    if (n.isSelected()) {
+                        int difX = evt.getPoint().x - _mouseLoc.x;
+                        int difY = evt.getPoint().y - _mouseLoc.y;
+                        n.setCenter(n.getCenter().x + difX, n.getCenter().y + difY);
+                        n.resetCircle();
+                    }
+                }
+            }
+            
+        }
         _mouseLoc = evt.getPoint();
         if (_edgeStart != null) {
             Node con = null;
@@ -616,10 +638,7 @@ public class MainFrame extends javax.swing.JFrame {
                 drawingPanel1._progressLine = new Line2D.Double(point_start, _mouseLoc);
             }
         }
-        else if (_nodeDragged != null && drawingPanel1.contains(evt.getPoint())){
-    		_nodeDragged.setCenter(evt.getX()-_nodeDragged.getOffset().x, evt.getY()-_nodeDragged.getOffset().y);
-            _nodeDragged.resetCircle();
-        }
+
         
         else if (_resizing != null) {
             Rectangle2D rec = _resizing.getResize();
@@ -1010,6 +1029,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JButton _rewindBtn;
     private javax.swing.JSlider _slider;
     private javax.swing.JButton _stopBtn;
+    private javax.swing.ButtonGroup buttonGroup1;
     private frontend.DrawingPanel drawingPanel1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
