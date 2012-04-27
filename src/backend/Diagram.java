@@ -193,6 +193,8 @@ public class Diagram implements Cloneable {
 			simulation.add(tempNode);
 			return simulation;
 		}
+		
+		simulation.add(tempNode);
 		for (int i = 0; i < input.length(); i ++) {
 			tempInput = input.substring(i, i+1);
 			for (Edge e : tempNode.getConnected()){

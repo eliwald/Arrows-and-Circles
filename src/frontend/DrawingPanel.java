@@ -105,11 +105,11 @@ public class DrawingPanel extends JPanel {
            if (e.getCurrent()) {
                g2.setColor(java.awt.Color.PINK);
            }
-           if (e.getDirection() == EdgeDirection.SINGLE) {
+           if (e.getDirection() == EdgeDirection.SINGLE && e.getStartNode() != e.getEndNode()) {
                 Ellipse2D.Double end = e.getForward();
                 g2.fill(end);
            }
-           else if (e.getDirection() == EdgeDirection.DOUBLE) {
+           else if (e.getDirection() == EdgeDirection.DOUBLE && e.getStartNode() != e.getEndNode()) {
                 g2.fill(e.getForward());
                 g2.fill(e.getBackward());
            }
@@ -171,10 +171,6 @@ public class DrawingPanel extends JPanel {
 
        }
 
-       
-
-      
-       
     }
     
 }
