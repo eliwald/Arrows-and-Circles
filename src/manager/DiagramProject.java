@@ -22,7 +22,7 @@ public class DiagramProject {
 	
 	/** The object that keeps track of recent changes to the diagram.
 	 * It is useful for undo and redo features. */
-	private HistoryStack _history;
+	private DiagramHistory _history;
 	
 	/**
 	 * Constructs a new diagram project object with blank diagram.
@@ -31,7 +31,7 @@ public class DiagramProject {
 	 */
 	public DiagramProject() {
 		_filename = null;
-		_history = new HistoryStack(MAX_HISTORY);
+		_history = new DiagramHistory(MAX_HISTORY);
 	}
 
 	/**
@@ -42,7 +42,7 @@ public class DiagramProject {
 	 */
 	public DiagramProject(Diagram diagram, String filename) {
 		_filename = filename;
-		_history = new HistoryStack(MAX_HISTORY, diagram);
+		_history = new DiagramHistory(MAX_HISTORY, diagram);
 	}
 
 	/**
@@ -58,15 +58,26 @@ public class DiagramProject {
 	}
 	
 	/**
-	 * 
-	 * @param newDiagram
-	 * @param message
-	 * @return
-	 * @throws CloneNotSupportedException
+	 * Modifies the current diagram object by using the specified action object
+	 * which implements the DiagramModifyAction interface.
+	 * @param action The action object that would modify the current diagram
+	 * 		with its modify method (interface of DiagramModifyAction). 
+	 * 		The implemented modify method must be robust and do not break.
+	 * @return A boolean indicating whether the modification of the current 
+	 * 		diagram is a success or not.
+	 * @throws CloneNotSupportedException is thrown if the current diagram is not cloneable.
 	 */
-	public void applyChange(Diagram newDiagram, String message) throws CloneNotSupportedException {
+	public boolean apply(DiagramModifyAction action) throws CloneNotSupportedException {
+		
+		// Create a new clone of the current diagram.
+		Diagram newDiagram = (Diagram) _history.getCurrentDiagram().clone();
 		
 		// Try to modify the diagram, and see if it is successful.
-		_history.add(newDiagram, message);
+		boolean success = action.modify(newDiagram);
+		if(success) {
+			_history.add(newDiagram, action.message());
+		}
+		
+		return success;
 	}
 }
