@@ -905,6 +905,7 @@ public class MainFrame extends javax.swing.JFrame {
     private void _playPauseBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event__playPauseBtnActionPerformed
         // TODO add your handling code here:
         if (!_simTimer.isRunning()) {
+            _forwardBtn.doClick();
             _simTimer.start();
         }
         else {
