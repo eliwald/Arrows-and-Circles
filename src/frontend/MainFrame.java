@@ -55,8 +55,8 @@ public class MainFrame extends javax.swing.JFrame {
     private Timer _simTimer;
     private EdgeDirection _edgeType;
     private boolean _shift = false;
-    private static final String PLAY_FILEPATH = "./src/img/play.png";
-    private static final String PAUSE_FILEPATH = "./src/img/pause.png";
+    private static final String PLAY_FILEPATH = "./img/play.png";
+    private static final String PAUSE_FILEPATH = "./img/pause.png";
 
 
     /**
@@ -992,6 +992,7 @@ public class MainFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
         if (_simTimer.isRunning()) {
             _simTimer.stop();
+            _playPauseBtn.setIcon(new ImageIcon(PLAY_FILEPATH));
         }
         if (_iter == null || _sim == null) {
             jTextArea1.setText("NOT IN SIMULATION");
