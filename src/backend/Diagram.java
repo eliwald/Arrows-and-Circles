@@ -1,9 +1,11 @@
 package backend;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.LinkedList;
+import java.util.Set;
 
 public class Diagram implements Cloneable {
 	private Collection<Node> _nodes;
@@ -72,10 +74,10 @@ public class Diagram implements Cloneable {
 		String message = "";
 
 		LinkedList<DiagramObject> simulation = new LinkedList<DiagramObject>();
-		HashSet<Node> start_nodes = new HashSet<Node>();
-		HashSet<String> edge_labels = new HashSet<String>();
-		HashSet<String> temp_edge_labels = new HashSet<String>();
-		HashSet<String> already_seen = new HashSet<String>();
+		Set<Node> start_nodes = Collections.synchronizedSet(new HashSet<Node>());
+		Set<String> edge_labels = Collections.synchronizedSet(new HashSet<String>());
+		Set<String> temp_edge_labels = Collections.synchronizedSet(new HashSet<String>());
+		Set<String> already_seen = Collections.synchronizedSet(new HashSet<String>());
 
 		if (_nodes.size() == 0)
 			throw new InvalidDFSMException("There are no nodes in the FSM.\n");
@@ -140,7 +142,7 @@ public class Diagram implements Cloneable {
 		
 		for (Node n : _nodes) {
 			if (n != tempNode) {
-				already_seen = new HashSet<String>();
+				already_seen = Collections.synchronizedSet(new HashSet<String>());
 				for (Edge e : n.getConnected()) {
 					if (e.getDirection() == EdgeDirection.SINGLE && e.getStartNode() == n)
 						if (temp_edge_labels.contains(e.getTextField().getText())) {
@@ -155,7 +157,7 @@ public class Diagram implements Cloneable {
 						else
 							temp_edge_labels.add(e.getTextField().getText());
 				}
-				already_seen = new HashSet<String>();
+				already_seen = Collections.synchronizedSet(new HashSet<String>());
 				for (String s : edge_labels) {
 					if(!temp_edge_labels.remove(s)) {
 						if (!already_seen.contains(s)) {
@@ -177,10 +179,12 @@ public class Diagram implements Cloneable {
 				}
 			}
 		}
-
+		already_seen = Collections.synchronizedSet(new HashSet<String>());
 		for (int i = 0; i < input.length(); i ++) {
-			if (!edge_labels.contains(input.substring(i, i+1)))
+			if (!already_seen.contains(input.substring(i, i+1)) && !edge_labels.contains(input.substring(i, i+1))) {
 				message += "Input character \'" + input.substring(i, i+1) + "\' is not in the input alphabet.\n";
+				already_seen.add(input.substring(i, i+1));
+			}
 		}
 
 		if (!message.equals(""))
