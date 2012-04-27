@@ -822,6 +822,8 @@ public class MainFrame extends javax.swing.JFrame {
         		if (n.getCircle().contains(_mouseLoc)) {
         			drawingPanel1.clearAll();
         			Edge newEdge = new Edge(_edgeStart,n,_edgeStart.getCenter(),_edgeStart.getCenter(),drawingPanel1,_edgeType);
+                    newEdge.getTextField().grabFocus();
+                    newEdge.getLabel().setVisible(false);
         			for (Edge e : drawingPanel1.getDiagram().getEdges()){
                         e.setSelected(false);
                     }
