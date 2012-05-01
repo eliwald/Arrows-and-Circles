@@ -844,33 +844,9 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void drawingPanel1MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_drawingPanel1MouseMoved
         // TODO add your handling code here:
-//        _mouseLoc = evt.getPoint();
-//        String mod = MouseEvent.getMouseModifiersText(evt.getModifiers());
-//        if (mod.contains("Shift") && drawingPanel1._progressLine == null) {
-//            Node currNode = null;
-//            int dist;
-//            int mindist = Integer.MAX_VALUE;
-//            for (Node n : drawingPanel1.getDiagram().getNodes()) {
-//                int difX = (int)n.getCenter().x - _mouseLoc.x;
-//                int difY = (int)n.getCenter().y - _mouseLoc.y;
-//                dist = (int)Math.sqrt(difX*difX + difY*difY);
-//                if (dist < mindist) {
-//                    mindist = dist;
-//                    currNode = n;
-//                }
-//            }
-//            if (currNode == null) {
-//                return;
-//            }
-//            Point loc = drawingPanel1.getLocationOnScreen();
-//            double difX = _mouseLoc.x - currNode.getCenter().x;
-//            double difY = _mouseLoc.y - currNode.getCenter().y;
-//            double vecX = difX/Math.sqrt((difX*difX+difY*difY));
-//            double vecY = difY/Math.sqrt((difX*difX+difY*difY));
-//            Point2D.Double curr = new Point2D.Double(currNode.getCenter().x+(currNode.getRadius()*vecX),currNode.getCenter().y+(currNode.getRadius()*vecY));
-//            _robot.mouseMove(loc.x+(int)curr.x, loc.y+(int)curr.y);
-//        }
-    	if (MouseEvent.getMouseModifiersText(evt.getModifiers()).contains("Shift")) {
+    	_mouseLoc = evt.getPoint();
+    	_edgeStart = null;
+    	if (MouseEvent.getMouseModifiersText(evt.getModifiers()).contains("Shift")){
     		for (Node n : drawingPanel1.getDiagram().getNodes()) {
     			if (n.getCircle().contains(evt.getPoint()))
     				_edgeStart = n;
