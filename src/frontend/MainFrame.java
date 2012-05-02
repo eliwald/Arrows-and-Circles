@@ -443,7 +443,6 @@ public class MainFrame extends javax.swing.JFrame {
     
   
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
-        // TODO add your handling code here:
         javax.swing.JScrollPane newPane = new javax.swing.JScrollPane();
         DrawingPanel newPanel = new DrawingPanel();
         newPane.setViewportView(newPanel);
@@ -518,7 +517,7 @@ public class MainFrame extends javax.swing.JFrame {
                 }
             }
             
-            //Otherwise, reset all the selected nodes, and add a new node cenetered at the click.
+            //Otherwise, reset all the selected nodes, and add a new node centered at the click.
             _nodesSelected = Collections.synchronizedSet(new HashSet<Node>());
             _edgesSelected = Collections.synchronizedSet(new HashSet<Edge>());
             Node add = drawingPanel1.addNode(evt.getPoint());
@@ -621,7 +620,6 @@ public class MainFrame extends javax.swing.JFrame {
      * @param evt
      */
     private void drawingPanel1MouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_drawingPanel1MouseDragged
-        // TODO add your handling code here:
         Point temp = _mouseLoc;
     	_mouseLoc = evt.getPoint();
     	
@@ -746,16 +744,18 @@ public class MainFrame extends javax.swing.JFrame {
      * @param evt
      */
     private void drawingPanel1MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_drawingPanel1MousePressed
-        // TODO add your handling code here:
+    	//De-select any text in the edges
         if (_edgesSelected != null) {
 	        for (Edge e : _edgesSelected)
 	        	e.getTextField().select(0, 0);
         }
         
+        //Set the edge, node, and resizing box currently being dragged to null.
         drawingPanel1.grabFocus();
         _edgeDragged = null;
         _nodeDragged = null;
         _resizing = null;
+        //Set the node/resizing/edge being dragged to the thing being pressed on.
         if (_edgeStart == null) {
         	for (Node n : drawingPanel1.getDiagram().getNodes()) {
         		if (n.getCircle().contains(evt.getPoint())) {
@@ -776,8 +776,15 @@ public class MainFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_drawingPanel1MousePressed
 
+    /**
+     * The Key Pressed method handles the pressing of delete, shift, or s.  If "delete" is pressed, it deletes
+     * all the currently selected nodes and edges (and all edges to the nodes).  If "s" is pressed, it snaps
+     * the mouse to the nearest node.  If "Shift" is pressed, it gets ready to create an edge by setting
+     * _edgeStart.
+     * @param evt
+     */
     private void drawingPanel1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_drawingPanel1KeyPressed
-        // TODO add your handling code here:
+        //If delete is pressed, delete all edges/nodes selected, and the edges conencted to the selected nodes.
         if(evt.getKeyCode() == KeyEvent.VK_DELETE || evt.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
             for (Node n : _nodesSelected){
                 for (Edge e : n.getConnected()){
@@ -797,8 +804,10 @@ public class MainFrame extends javax.swing.JFrame {
                 drawingPanel1.remove(e.getTextField());
                 drawingPanel1.getDiagram().getEdges().remove(e);
             }
-
+            _nodesSelected = Collections.synchronizedSet(new HashSet<Node>());
+            _edgesSelected = Collections.synchronizedSet(new HashSet<Edge>());
         }
+        //Otherwise if "s" is pressed, snap to the nearest node.
         else if(evt.getKeyCode() == KeyEvent.VK_S) {
             Node currNode = null;
 
@@ -826,6 +835,7 @@ public class MainFrame extends javax.swing.JFrame {
             else
             	_robot.mouseMove(loc.x + (int) (currNode.getCenter().x+(currNode.getRadius()*vecX)), loc.y + (int) (currNode.getCenter().y+(currNode.getRadius()*vecY)));
         }
+        //Otherwise if "shift" is pressed, get ready to create a new edge from the node over which we are hovering.
         else if (evt.getKeyCode() == KeyEvent.VK_SHIFT) {
         	for (Node n : drawingPanel1.getDiagram().getNodes()) {
         		if (n.getCircle().contains(_mouseLoc)) {
@@ -837,13 +847,22 @@ public class MainFrame extends javax.swing.JFrame {
         drawingPanel1.repaint();
     }//GEN-LAST:event_drawingPanel1KeyPressed
     
+    /**
+     * The Key Released method handles resetting the _edgeStart variable to null if
+     * shift is released.
+     * @param evt
+     */
     private void drawingPanel1KeyReleased(java.awt.event.KeyEvent evt) {
     	if (drawingPanel1._progressLine == null && evt.getKeyCode() == KeyEvent.VK_SHIFT)
     		_edgeStart = null;
     }
 
+    /**
+     * The Mouse Moved method checks to see whether we are currently hovering over a node and
+     * whether shift is being pressed; if it is, it sets that node to _edgeStart.
+     * @param evt
+     */
     private void drawingPanel1MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_drawingPanel1MouseMoved
-        // TODO add your handling code here:
     	_mouseLoc = evt.getPoint();
     	_edgeStart = null;
     	if (MouseEvent.getMouseModifiersText(evt.getModifiers()).contains("Shift")){
@@ -853,19 +872,23 @@ public class MainFrame extends javax.swing.JFrame {
     		}
     	}
     }//GEN-LAST:event_drawingPanel1MouseMoved
-
+    
+    /**
+     * When the mouse is released, if we are currently drawing an edge, we have to create the edge between two nodes.
+     * @param evt
+     */
     private void drawingPanel1MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_drawingPanel1MouseReleased
-        // TODO add your handling code here:
+        //If we were drawing an edge
         if (_edgeStart != null) {
+        	//Find the node which the edge is ending at
         	for (Node n : drawingPanel1.getDiagram().getNodes()) {
         		if (n.getCircle().contains(_mouseLoc)) {
-        			drawingPanel1.clearAll();
+        			drawingPanel1.clearAll(); //clear all selected nodes/edges
+        			
+        			//Create the new edge, reset all variabels associated with maintaining the edge being drawn.
         			Edge newEdge = new Edge(_edgeStart,n,_edgeStart.getCenter(),_edgeStart.getCenter(),drawingPanel1,_edgeType);
                     newEdge.getTextField().grabFocus();
                     newEdge.getLabel().setVisible(false);
-        			for (Edge e : drawingPanel1.getDiagram().getEdges()){
-                        e.setSelected(false);
-                    }
         			_edgeStart.addConnected(newEdge);
                     n.addConnected(newEdge);
             		drawingPanel1.getDiagram().addEdge(newEdge);
@@ -874,16 +897,15 @@ public class MainFrame extends javax.swing.JFrame {
             		_edgesSelected.add(newEdge);
             		_edgeStart = null;
         			drawingPanel1._progressLine = null;
-        			_resizing = null;
-        	        _nodeDragged = null;
-        	        _edgeDragged = null;
         	        drawingPanel1.repaint();
         			return;
         		}
         	}
+        	//If no end point was found, reset the line.
         	drawingPanel1._progressLine = null;
         	_edgeStart = null;
         }
+        //If no edge is being drawn, reset all the nodes/resizing boxes/edges being dragged, upon mouse release
         _resizing = null;
         _nodeDragged = null;
         _edgeDragged = null;
@@ -975,12 +997,12 @@ public class MainFrame extends javax.swing.JFrame {
             e.setCurrent(true);
             if (jTextArea1.getText().equals("BACK TO START"))
             	jTextArea1.setText("");
-            if (e instanceof Node && ((Node)e).isStart())
-            	jTextArea1.append("Start ");
+            if (jTextArea1.getText().equals(""))
+            	jTextArea1.setText("Start ");
             jTextArea1.append(e.getName() + "\n");
             if (!_iter.hasNext()) {
             	_playPauseBtn.setIcon(new ImageIcon(PLAY_FILEPATH));
-            	jTextArea1.append("FINISHED: Ended at node " + e.getName() + ".\n");
+            	jTextArea1.append("FINISHED: Ended at " + e.getName() + ".\n");
             	if (((Node)e).isEnd())
             		jTextArea1.append("FSM Accepted the input string.\n");
             	else

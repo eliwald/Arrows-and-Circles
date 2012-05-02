@@ -121,11 +121,8 @@ public class Diagram implements Cloneable {
 		
 		for (Edge e : _edges) {
 			if (e.getDirection() != EdgeDirection.SINGLE)
-				message += !e.getTextField().getText().equals("") ? "Edge " + e.getTextField().getText() + " is not a singly-directed edge.\n"
+				message += !e.getTextField().getText().equals("") ? "Edge " + e.getNodeString() + " is not a singly-directed edge.\n"
 														: "There is a non-singly directed edge.\n";
-			if (e.getStartNode() == null || e.getEndNode() == null)
-				message += !e.getTextField().getText().equals("") ? "Edge " + e.getTextField().getText() + " doesn't have a start or end node.\n"
-														: "There is an edge without a start or end node.\n";
 		}
 
 		for (Edge e : tempNode.getConnected()) {
@@ -204,7 +201,7 @@ public class Diagram implements Cloneable {
 					break;
 				}
 			}
-			simulation.add(tempEdgeTaken);
+			//simulation.add(tempEdgeTaken);
 			simulation.add(tempDest);
 			tempNode = tempDest;
 		}
