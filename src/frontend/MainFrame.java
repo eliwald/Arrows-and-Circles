@@ -56,6 +56,11 @@ public class MainFrame extends javax.swing.JFrame {
     private EdgeDirection _edgeType;
     private static final String PLAY_FILEPATH = "./src/img/play.png";
     private static final String PAUSE_FILEPATH = "./src/img/pause.png";
+    private javax.swing.JSlider _simSlide;
+    private int _simSize;
+    private int _curr;
+    private boolean _autoChange = false;
+    private boolean _inSimulation = false;
 
 
     /**
@@ -71,7 +76,7 @@ public class MainFrame extends javax.swing.JFrame {
         }
         initComponents();
     }
-    
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -101,6 +106,7 @@ public class MainFrame extends javax.swing.JFrame {
         jTextArea1 = new javax.swing.JTextArea();
         jTextField1 = new javax.swing.JTextField();
         _slider = new javax.swing.JSlider();
+        _simSlide = new javax.swing.JSlider();
         _rewindBtn = new javax.swing.JButton();
         _stopBtn = new javax.swing.JButton();
         _playPauseBtn = new javax.swing.JButton();
@@ -270,11 +276,19 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
-        _slider.setMaximum(5000);
-        _slider.setValue(1000);
+        _slider.setMaximum(3000);
+        _slider.setValue(2000);
         _slider.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 _sliderStateChanged(evt);
+            }
+        });
+
+        _simSlide.setMaximum(100);
+        _simSlide.setValue(0);
+        _simSlide.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                _simSlideStateChanged(evt);
             }
         });
 
@@ -329,6 +343,7 @@ public class MainFrame extends javax.swing.JFrame {
                         .addComponent(_forwardBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(_slider, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 262, Short.MAX_VALUE)
+                    .addComponent(_simSlide, javax.swing.GroupLayout.PREFERRED_SIZE,163,javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(48, 48, 48))
         );
@@ -346,6 +361,8 @@ public class MainFrame extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(_simSlide, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 246, Short.MAX_VALUE)
                 .addContainerGap())
         );
@@ -987,6 +1004,13 @@ public class MainFrame extends javax.swing.JFrame {
             }
             jTextArea1.setText("");
             _iter = _sim.listIterator();
+            _simSize = _sim.size();
+            if (!_autoChange) {
+                _autoChange = true;
+                _simSlide.setValue(0);
+                _autoChange = false;
+                _curr = 0;
+            }
         }
         for (Node n : drawingPanel1.getDiagram().getNodes()) {
             n.setCurrent(false);
@@ -997,6 +1021,12 @@ public class MainFrame extends javax.swing.JFrame {
         if (_iter.hasNext()) {
             DiagramObject e = _iter.next();
             e.setCurrent(true);
+            if (!_autoChange) {
+                _autoChange = true;
+                _simSlide.setValue(_simSlide.getValue() + 100/_simSize);
+                _curr = _simSlide.getValue();
+                _autoChange = false;
+            }
             if (jTextArea1.getText().equals("BACK TO START"))
             	jTextArea1.setText("");
             if (jTextArea1.getText().equals(""))
@@ -1012,6 +1042,8 @@ public class MainFrame extends javax.swing.JFrame {
             	
             	_sim = null;
                 _iter = null;
+                _curr = 0;
+                _simSize = 0;
                 if (_simTimer.isRunning()) {
                     _simTimer.stop();
                 }
@@ -1020,9 +1052,63 @@ public class MainFrame extends javax.swing.JFrame {
         drawingPanel1.repaint();
     }//GEN-LAST:event__forwardBtnActionPerformed
 
+
+    private void _simSlideStateChanged(javax.swing.event.ChangeEvent evt) {
+        if (_sim == null) {//only use when in sim.
+            return;
+        }
+        if (_autoChange) {
+            return;
+        }
+        int diff = _simSlide.getValue() - _curr;
+        if (diff == 0 && _simSize == 0) {
+            return;
+        }
+        if (_simSize == 0 && diff > 0) {
+            _autoChange = true;
+            _forwardBtn.doClick();
+            _autoChange = false;
+            return;
+        }
+        if (_simSize == 0 && diff > 0) {
+            _autoChange = true;
+            _rewindBtn.doClick();
+            _autoChange = false;
+        }
+        System.out.println(_simSize);
+        if (Math.abs(diff) < 100/_simSize) {
+            return;
+        }
+        System.out.println(diff);
+        if (diff < 0) {
+            while (diff < 0) {
+                _autoChange = true;
+                _rewindBtn.doClick();
+                diff += 100/_simSize;
+                _autoChange = false;
+            }
+        }
+        else if (diff > 0) {
+            while (diff > 0) {
+                _autoChange = true;
+                _forwardBtn.doClick();
+                if (_simSize == 0) {
+                    _simSlide.setValue(0);
+                    _autoChange = false;
+                    return;
+                }
+                diff -= 100/_simSize;
+                _autoChange = false;
+            }
+        }
+        
+        
+        _curr = _simSlide.getValue();
+    }
+
     private void _sliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event__sliderStateChanged
         // TODO add your handling code here:
-        _simTimer.setDelay(_slider.getValue());
+        _simTimer.setDelay(_slider.getMaximum() - _slider.getValue());
 }//GEN-LAST:event__sliderStateChanged
 
     private void _doublyBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event__doublyBtnActionPerformed
@@ -1055,6 +1141,12 @@ public class MainFrame extends javax.swing.JFrame {
         if (_iter.hasPrevious()) {
             DiagramObject e = _iter.previous();
             e.setCurrent(true);
+            if (!_autoChange) {
+                _autoChange = true;
+                _simSlide.setValue(_simSlide.getValue() - 100/_simSize);
+                _autoChange = false;
+            }
+            _curr = _simSlide.getValue();
         } else {
         	_playPauseBtn.setIcon(new ImageIcon(PLAY_FILEPATH));
             jTextArea1.setText("BACK TO START");
@@ -1119,6 +1211,7 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
     }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JRadioButton _doublyBtn;
     private javax.swing.ButtonGroup _edgeTypeGrp;
@@ -1161,3 +1254,4 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JTextField jTextField1;
     // End of variables declaration//GEN-END:variables
 }
+
