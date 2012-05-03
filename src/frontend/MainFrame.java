@@ -54,7 +54,6 @@ public class MainFrame extends javax.swing.JFrame {
     private ListIterator<DiagramObject> _iter;
     private Timer _simTimer;
     private EdgeDirection _edgeType;
-    private boolean _shift = false;
     private static final String PLAY_FILEPATH = "./src/img/play.png";
     private static final String PAUSE_FILEPATH = "./src/img/pause.png";
 
@@ -280,28 +279,28 @@ public class MainFrame extends javax.swing.JFrame {
         });
 
         _rewindBtn.setFont(new java.awt.Font("Bitstream Vera Sans", 0, 10));
-        _rewindBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/bwd.png"))); // NOI18N
+        _rewindBtn.setIcon(new javax.swing.ImageIcon("./src/img/bwd.png")); // NOI18N
         _rewindBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 _rewindBtnActionPerformed(evt);
             }
         });
 
-        _stopBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/stop.png"))); // NOI18N
+        _stopBtn.setIcon(new javax.swing.ImageIcon("./src/img/stop.png")); // NOI18N
         _stopBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 _stopBtnActionPerformed(evt);
             }
         });
 
-        _playPauseBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/play.png"))); // NOI18N
+        _playPauseBtn.setIcon(new javax.swing.ImageIcon("./src/img/play.png")); // NOI18N
         _playPauseBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 _playPauseBtnActionPerformed(evt);
             }
         });
 
-        _forwardBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/fwd.png"))); // NOI18N
+        _forwardBtn.setIcon(new javax.swing.ImageIcon("./src/img/fwd.png")); // NOI18N
         _forwardBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 _forwardBtnActionPerformed(evt);
@@ -444,7 +443,6 @@ public class MainFrame extends javax.swing.JFrame {
     
   
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
-        // TODO add your handling code here:
         javax.swing.JScrollPane newPane = new javax.swing.JScrollPane();
         DrawingPanel newPanel = new DrawingPanel();
         newPane.setViewportView(newPanel);
@@ -500,17 +498,26 @@ public class MainFrame extends javax.swing.JFrame {
     private void jMenuItem7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem7ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jMenuItem7ActionPerformed
-
+    
+    /**
+     * The Mouse Clicked method handles functionality on mouse clicks.  Functionality handled includes: creating a new node,
+     * toggling end state of a new node (double clicks), ctrl-selecting multiple edges or nodes, selecting a start state
+     * of a node, or selecting a new node/edge.
+     * @param evt
+     */
     private void drawingPanel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_drawingPanel1MouseClicked
-        // TODO add your handling code here:
         String mod = MouseEvent.getMouseModifiersText(evt.getModifiers());
+        //If there is a double click
         if (evt.getClickCount() >=2 && mod.equals("Button1")){
+        	//If double click inside a node, toggle end state.
             for (Node n : drawingPanel1.getDiagram().getNodes()){
                 if (n.getCircle().contains(evt.getPoint())){
                     n.setEnd(!n.isEnd());
                     return;
                 }
             }
+            
+            //Otherwise, reset all the selected nodes, and add a new node centered at the click.
             _nodesSelected = Collections.synchronizedSet(new HashSet<Node>());
             _edgesSelected = Collections.synchronizedSet(new HashSet<Edge>());
             Node add = drawingPanel1.addNode(evt.getPoint());
@@ -525,8 +532,12 @@ public class MainFrame extends javax.swing.JFrame {
             add.getLabel().setVisible(false);
             _nodesSelected.add(add);
         }
+        //Otherwise, it's a single click
         else{
+        	//If Ctrl is clicked, we are selecting multiple nodes/edges
             if (mod.equals("Ctrl+Button1")) {
+            	
+            	//Iterate over all edges and nodes, toggling selection for each node and edge
                 for (Node n : drawingPanel1.getDiagram().getNodes()){
                     if (n.getCircle().contains(evt.getPoint())){
                         if (n.isSelected()){
@@ -553,13 +564,18 @@ public class MainFrame extends javax.swing.JFrame {
                 }
                 drawingPanel1.repaint();
             }
+            // Else ctrl isn't clicked
             else{
+            	//If we are setting a start node, don't do anything else except toggle start icon
                 for (Node n : drawingPanel1.getDiagram().getNodes()){
                     if (n.getStartSymbol().contains(_mouseLoc) && n.isSelected()){
                         n.setStart(!n.isStart());
                         return;
                     }
                 }
+                
+                //Otherwise, reset all the selected nodes and edges, iterate through each node/edge to
+                //change the variables which manage how they are drawn, and see if a new node/edge is selected
             	_edgesSelected = Collections.synchronizedSet(new HashSet<Edge>());
             	_nodesSelected = Collections.synchronizedSet(new HashSet<Node>());
                 for (Node n : drawingPanel1.getDiagram().getNodes()){
@@ -586,6 +602,7 @@ public class MainFrame extends javax.swing.JFrame {
                     if (e.intersects(evt.getPoint().x,evt.getPoint().y)){
                         e.setSelected(true);
                         e.getTextField().setVisible(true);
+                        e.getTextField().selectAll();
                         e.getTextField().grabFocus();
                         e.getLabel().setVisible(false);
                         _edgesSelected.add(e);
@@ -597,59 +614,82 @@ public class MainFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_drawingPanel1MouseClicked
 
+    /**
+     * The Mouse Dragged method handles dragging the mouse.  Handles four basic functionality: dragging single or multiple nodes,
+     * drawing the progressLine for an edge in the middle of creation, resizing a node, and resizing an edge.
+     * @param evt
+     */
     private void drawingPanel1MouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_drawingPanel1MouseDragged
-        // TODO add your handling code here:
         Point temp = _mouseLoc;
     	_mouseLoc = evt.getPoint();
-        if (!_shift && _nodeDragged != null && drawingPanel1.contains(evt.getPoint())){
-            if (this._nodesSelected.size() <= 1 || !_nodeDragged.isSelected()){
+    	
+    	//If _nodeDragged, which is set when someone presses down on a node (in MousePressed), is not null, then drag the appropriate nodes:
+        if (_nodeDragged != null && drawingPanel1.contains(evt.getPoint())){
+        	
+        	//If the node is not selected, then just move that one node.
+            if (!_nodeDragged.isSelected()){
                 _nodeDragged.setCenter(evt.getX()-_nodeDragged.getOffset().x, evt.getY()-_nodeDragged.getOffset().y);
                 _nodeDragged.resetCircle();
             }
-            else {;
-                for (Node n : drawingPanel1.getDiagram().getNodes()){
-                    if (n.isSelected()) {
-                        int difX = evt.getPoint().x - temp.x;
-                        int difY = evt.getPoint().y - temp.y;
-                        n.setCenter(n.getCenter().x + difX, n.getCenter().y + difY);
-                        n.resetCircle();
-                    }
+
+            
+            //Otherwise, move all the selected nodes.
+            else {
+            	for (Node n : _nodesSelected){
+            		int difX = evt.getPoint().x - temp.x;
+            		int difY = evt.getPoint().y - temp.y;
+            		n.setCenter(n.getCenter().x + difX, n.getCenter().y + difY);
+            		n.resetCircle();
+
                 }
             }
             
         }
+        
+        //Otherwise, if we are in the middle of creating an edge, then handle drawing the progress edge on the screen.
         else if (_edgeStart != null) {
             Node con = null;
+            
+            //Check to see if there is a close node to which we can snap the end of the progress line.
             for (Node n : drawingPanel1.getDiagram().getNodes()) {
                 if (n.getCircle().contains(_mouseLoc)) {
                     con = n;
                 }
             }
+            
+            //If we are in the middle of a node, then snap the progress line to the closest point on that node.
+            double difX, difY, vecX, vecY;
+            Point2D.Double point_start, point_end = null;
+            
+            //Determine the vector based on either the mouse location, or the center of the node to which we're drawing.
             if (con != null) {
-                double difX = con.getCenter().x - _edgeStart.getCenter().x;
-                double difY = con.getCenter().y - _edgeStart.getCenter().y;
-                double vecX = difX/Math.sqrt((difX*difX+difY*difY));
-                double vecY = difY/Math.sqrt((difX*difX+difY*difY));
-
-                Point2D.Double point_start = new Point2D.Double(_edgeStart.getCenter().x+(_edgeStart.getRadius()*vecX),_edgeStart.getCenter().y+(_edgeStart.getRadius()*vecY));
-                Point2D.Double point_end = new Point2D.Double(con.getCenter().x-(con.getRadius()*vecX),con.getCenter().y-(con.getRadius()*vecY));
-                if (_edgeStart == con) {
-                    drawingPanel1._progressLine = Edge.getSelfLoop(_edgeStart);
-                }
-                else {
-                    drawingPanel1._progressLine = new Line2D.Double(point_start, point_end);
-                }
+                difX = con.getCenter().x - _edgeStart.getCenter().x;
+                difY = con.getCenter().y - _edgeStart.getCenter().y;
+            }
+            else {
+            	difX = _mouseLoc.x - _edgeStart.getCenter().x;
+                difY = _mouseLoc.y - _edgeStart.getCenter().y;
             }
             
-            else {
-                double difX = _mouseLoc.x - _edgeStart.getCenter().x;
-                double difY = _mouseLoc.y - _edgeStart.getCenter().y;
-                double vecX = difX/Math.sqrt((difX*difX+difY*difY));
-                double vecY = difY/Math.sqrt((difX*difX+difY*difY));
-                Point2D.Double point_start = new Point2D.Double(_edgeStart.getCenter().x+(_edgeStart.getRadius()*vecX),_edgeStart.getCenter().y+(_edgeStart.getRadius()*vecY));
-                drawingPanel1._progressLine = new Line2D.Double(point_start, _mouseLoc);
-            }
+            vecX = difX/Math.sqrt((difX*difX+difY*difY));
+            vecY = difY/Math.sqrt((difX*difX+difY*difY));
+            
+            //Start from the same place; if in a node, set the end point to be the middle of that node.
+            point_start = new Point2D.Double(_edgeStart.getCenter().x+(_edgeStart.getRadius()*vecX),_edgeStart.getCenter().y+(_edgeStart.getRadius()*vecY));
+            if (con != null)
+            	point_end = new Point2D.Double(con.getCenter().x-(con.getRadius()*vecX),con.getCenter().y-(con.getRadius()*vecY));
+            
+            //Draw the lines.
+            if (con != null && _edgeStart == con)
+                drawingPanel1._progressLine = Edge.getSelfLoop(_edgeStart);
+            else if (con != null)
+                drawingPanel1._progressLine = new Line2D.Double(point_start, point_end);
+            else
+            	drawingPanel1._progressLine = new Line2D.Double(point_start, _mouseLoc);
+            
         }
+        
+        //Otherwise, if we are in the middle of resizing, then correctly resize the node.
         else if (_resizing != null) {
             Rectangle2D rec = _resizing.getResize();
 
@@ -661,6 +701,8 @@ public class MainFrame extends javax.swing.JFrame {
             }
             _resizing.setRadius(newR);
         }
+        
+        //Otherwise, if we are in the middle of resizing an edge, then correctly resize the edge.
         else if (_edgeDragged != null) {
         	double ax = _edgeDragged.getStartNode().getCenter().getX() - _mouseLoc.getX();
         	double ay = _edgeDragged.getStartNode().getCenter().getY() - _mouseLoc.getY();
@@ -692,44 +734,59 @@ public class MainFrame extends javax.swing.JFrame {
             		_edgeDragged.setHeight(-h);
         	}
         }
+        
+        //Repaint at the end
         drawingPanel1.repaint();
         
     }//GEN-LAST:event_drawingPanel1MouseDragged
 
+    /**
+     * The Mouse Pressed method sets the appropriate helper variables used in Mouse Dragged.  If you press down
+     * on an edge, node, or resizing square, it selects the appropriate things.
+     * @param evt
+     */
     private void drawingPanel1MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_drawingPanel1MousePressed
-        // TODO add your handling code here:
-        String mod = MouseEvent.getMouseModifiersText(evt.getModifiers());
-        if (mod.contains("Shift")){
-            _shift = true;
+    	//De-select any text in the edges
+        if (_edgesSelected != null) {
+	        for (Edge e : _edgesSelected)
+	        	e.getTextField().select(0, 0);
         }
+        
+        //Set the edge, node, and resizing box currently being dragged to null.
         drawingPanel1.grabFocus();
         _edgeDragged = null;
         _nodeDragged = null;
         _resizing = null;
-        for (Node n : drawingPanel1.getDiagram().getNodes()) {
-            //n.getTextField().select(0, 0);
-            if (n.isSelected()) {
-                if (n.getResize().contains(evt.getPoint())) {
-                    _resizing = n;
-                    return;
-                }
-            }
-            if (n.getCircle().contains(evt.getPoint())) {
-                _nodeDragged = n;
-                n.setOffset(evt.getX() - n.getCenter().x, evt.getY() - n.getCenter().y);
-                return;
-            }
-        }
-        for (Edge e : drawingPanel1.getDiagram().getEdges()) {
-        	if (e.intersects(evt.getPoint().x,evt.getPoint().y)) {
-        		_edgeDragged = e;
-        		return;
+        //Set the node/resizing/edge being dragged to the thing being pressed on.
+        if (_edgeStart == null) {
+        	for (Node n : drawingPanel1.getDiagram().getNodes()) {
+        		if (n.getCircle().contains(evt.getPoint())) {
+        			_nodeDragged = n;
+        			n.setOffset(evt.getX() - n.getCenter().x, evt.getY() - n.getCenter().y);
+        		}
+        	}
+        	for (Node n : drawingPanel1.getDiagram().getNodes()) {
+        		if (n.isSelected() && n.getResize().contains(evt.getPoint())) {
+        			_resizing = n;
+        		}
+        	}
+        	for (Edge e : drawingPanel1.getDiagram().getEdges()) {
+        		if (e.intersects(evt.getPoint().x,evt.getPoint().y)) {
+        			_edgeDragged = e;
+        		}
         	}
         }
     }//GEN-LAST:event_drawingPanel1MousePressed
 
+    /**
+     * The Key Pressed method handles the pressing of delete, shift, or s.  If "delete" is pressed, it deletes
+     * all the currently selected nodes and edges (and all edges to the nodes).  If "s" is pressed, it snaps
+     * the mouse to the nearest node.  If "Shift" is pressed, it gets ready to create an edge by setting
+     * _edgeStart.
+     * @param evt
+     */
     private void drawingPanel1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_drawingPanel1KeyPressed
-        // TODO add your handling code here:
+        //If delete is pressed, delete all edges/nodes selected, and the edges conencted to the selected nodes.
         if(evt.getKeyCode() == KeyEvent.VK_DELETE || evt.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
             for (Node n : _nodesSelected){
                 for (Edge e : n.getConnected()){
@@ -749,9 +806,11 @@ public class MainFrame extends javax.swing.JFrame {
                 drawingPanel1.remove(e.getTextField());
                 drawingPanel1.getDiagram().getEdges().remove(e);
             }
-
+            _nodesSelected = Collections.synchronizedSet(new HashSet<Node>());
+            _edgesSelected = Collections.synchronizedSet(new HashSet<Edge>());
         }
-        if(drawingPanel1._progressLine == null && evt.getKeyCode() == KeyEvent.VK_SHIFT) {
+        //Otherwise if "s" is pressed, snap to the nearest node.
+        else if(evt.getKeyCode() == KeyEvent.VK_S) {
             Node currNode = null;
 
             int dist;
@@ -768,7 +827,6 @@ public class MainFrame extends javax.swing.JFrame {
             if (currNode == null) {
                 return;
             }
-            _edgeStart = currNode;
             Point loc = drawingPanel1.getLocationOnScreen();
             double difX = _mouseLoc.x - currNode.getCenter().x;
             double difY = _mouseLoc.y - currNode.getCenter().y;
@@ -779,57 +837,60 @@ public class MainFrame extends javax.swing.JFrame {
             else
             	_robot.mouseMove(loc.x + (int) (currNode.getCenter().x+(currNode.getRadius()*vecX)), loc.y + (int) (currNode.getCenter().y+(currNode.getRadius()*vecY)));
         }
+        //Otherwise if "shift" is pressed, get ready to create a new edge from the node over which we are hovering.
+        else if (evt.getKeyCode() == KeyEvent.VK_SHIFT) {
+        	for (Node n : drawingPanel1.getDiagram().getNodes()) {
+        		if (n.getCircle().contains(_mouseLoc)) {
+        			_edgeStart = n;
+        			return;
+        		}
+        	}
+        }
         drawingPanel1.repaint();
     }//GEN-LAST:event_drawingPanel1KeyPressed
     
+    /**
+     * The Key Released method handles resetting the _edgeStart variable to null if
+     * shift is released.
+     * @param evt
+     */
     private void drawingPanel1KeyReleased(java.awt.event.KeyEvent evt) {
     	if (drawingPanel1._progressLine == null && evt.getKeyCode() == KeyEvent.VK_SHIFT)
     		_edgeStart = null;
     }
 
+    /**
+     * The Mouse Moved method checks to see whether we are currently hovering over a node and
+     * whether shift is being pressed; if it is, it sets that node to _edgeStart.
+     * @param evt
+     */
     private void drawingPanel1MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_drawingPanel1MouseMoved
-        // TODO add your handling code here:
-        _mouseLoc = evt.getPoint();
-        String mod = MouseEvent.getMouseModifiersText(evt.getModifiers());
-        if (mod.contains("Shift") && drawingPanel1._progressLine == null) {
-            Node currNode = null;
-            int dist;
-            int mindist = Integer.MAX_VALUE;
-            for (Node n : drawingPanel1.getDiagram().getNodes()) {
-                int difX = (int)n.getCenter().x - _mouseLoc.x;
-                int difY = (int)n.getCenter().y - _mouseLoc.y;
-                dist = (int)Math.sqrt(difX*difX + difY*difY);
-                if (dist < mindist) {
-                    mindist = dist;
-                    currNode = n;
-                }
-            }
-            if (currNode == null) {
-                return;
-            }
-            Point loc = drawingPanel1.getLocationOnScreen();
-            double difX = _mouseLoc.x - currNode.getCenter().x;
-            double difY = _mouseLoc.y - currNode.getCenter().y;
-            double vecX = difX/Math.sqrt((difX*difX+difY*difY));
-            double vecY = difY/Math.sqrt((difX*difX+difY*difY));
-            Point2D.Double curr = new Point2D.Double(currNode.getCenter().x+(currNode.getRadius()*vecX),currNode.getCenter().y+(currNode.getRadius()*vecY));
-            _robot.mouseMove(loc.x+(int)curr.x, loc.y+(int)curr.y);
-        }
+    	_mouseLoc = evt.getPoint();
+    	_edgeStart = null;
+    	if (MouseEvent.getMouseModifiersText(evt.getModifiers()).contains("Shift")){
+    		for (Node n : drawingPanel1.getDiagram().getNodes()) {
+    			if (n.getCircle().contains(evt.getPoint()))
+    				_edgeStart = n;
+    		}
+    	}
     }//GEN-LAST:event_drawingPanel1MouseMoved
-
+    
+    /**
+     * When the mouse is released, if we are currently drawing an edge, we have to create the edge between two nodes.
+     * @param evt
+     */
     private void drawingPanel1MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_drawingPanel1MouseReleased
-        // TODO add your handling code here:
-    	String mod = MouseEvent.getMouseModifiersText(evt.getModifiers());
+        //If we were drawing an edge
         if (_edgeStart != null) {
+        	//Find the node which the edge is ending at
         	for (Node n : drawingPanel1.getDiagram().getNodes()) {
         		if (n.getCircle().contains(_mouseLoc)) {
-        			drawingPanel1.clearAll();
+        			drawingPanel1.clearAll(); //clear all selected nodes/edges
+        			
+        			//Create the new edge, reset all variabels associated with maintaining the edge being drawn.
         			Edge newEdge = new Edge(_edgeStart,n,_edgeStart.getCenter(),_edgeStart.getCenter(),drawingPanel1,_edgeType);
                     newEdge.getTextField().grabFocus();
                     newEdge.getLabel().setVisible(false);
-        			for (Edge e : drawingPanel1.getDiagram().getEdges()){
-                        e.setSelected(false);
-                    }
         			_edgeStart.addConnected(newEdge);
                     n.addConnected(newEdge);
             		drawingPanel1.getDiagram().addEdge(newEdge);
@@ -838,33 +899,19 @@ public class MainFrame extends javax.swing.JFrame {
             		_edgesSelected.add(newEdge);
             		_edgeStart = null;
         			drawingPanel1._progressLine = null;
-        			_resizing = null;
-        	        _nodeDragged = null;
-        	        _edgeDragged = null;
         	        drawingPanel1.repaint();
         			return;
         		}
         	}
-        	if (mod.contains("Shift")) {
-        		Point loc = drawingPanel1.getLocationOnScreen();
-        		double difX = _mouseLoc.x - _edgeStart.getCenter().x;
-        		double difY = _mouseLoc.y - _edgeStart.getCenter().y;
-        		double vecX = difX/Math.sqrt((difX*difX+difY*difY));
-        		double vecY = difY/Math.sqrt((difX*difX+difY*difY));
-        		Point2D.Double curr = new Point2D.Double(_edgeStart.getCenter().x+(_edgeStart.getRadius()*vecX),_edgeStart.getCenter().y+(_edgeStart.getRadius()*vecY));
-        		_robot.mouseMove(loc.x+(int)curr.x, loc.y+(int)curr.y);
-        		drawingPanel1._progressLine = null;
-        	}
-        	else {
-        		drawingPanel1._progressLine = null;
-        		_edgeStart = null;
-        	}
+        	//If no end point was found, reset the line.
+        	drawingPanel1._progressLine = null;
+        	_edgeStart = null;
         }
+        //If no edge is being drawn, reset all the nodes/resizing boxes/edges being dragged, upon mouse release
         _resizing = null;
         _nodeDragged = null;
         _edgeDragged = null;
         drawingPanel1.repaint();
-        _shift = false;
     }//GEN-LAST:event_drawingPanel1MouseReleased
 
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
@@ -952,12 +999,12 @@ public class MainFrame extends javax.swing.JFrame {
             e.setCurrent(true);
             if (jTextArea1.getText().equals("BACK TO START"))
             	jTextArea1.setText("");
-            if (e instanceof Node && ((Node)e).isStart())
-            	jTextArea1.append("Start ");
+            if (jTextArea1.getText().equals(""))
+            	jTextArea1.setText("Start ");
             jTextArea1.append(e.getName() + "\n");
             if (!_iter.hasNext()) {
             	_playPauseBtn.setIcon(new ImageIcon(PLAY_FILEPATH));
-            	jTextArea1.append("FINISHED: Ended at node " + e.getName() + ".\n");
+            	jTextArea1.append("FINISHED: Ended at " + e.getName() + ".\n");
             	if (((Node)e).isEnd())
             		jTextArea1.append("FSM Accepted the input string.\n");
             	else
@@ -993,6 +1040,7 @@ public class MainFrame extends javax.swing.JFrame {
         if (_simTimer.isRunning()) {
             _playPauseBtn.setIcon(new ImageIcon(PLAY_FILEPATH));
             _simTimer.stop();
+            _playPauseBtn.setIcon(new ImageIcon(PLAY_FILEPATH));
         }
         if (_iter == null || _sim == null) {
             jTextArea1.setText("NOT IN SIMULATION");
