@@ -23,6 +23,11 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 
+/**
+ * 
+ * @author ewald
+ *
+ */
 public class Node implements DiagramObject, Cloneable {
 	private Point2D.Double _center;
 	private double _radius;

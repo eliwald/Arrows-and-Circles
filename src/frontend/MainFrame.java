@@ -17,7 +17,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
-import java.awt.geom.Arc2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -38,10 +37,62 @@ import javax.swing.Timer;
 
 /**
  *
- * @author Eddie and Sandy
+ * @author Eddie, Sandy, Eli, and Plane
  */
 public class MainFrame extends javax.swing.JFrame {
-
+	
+	/*
+	 * Instance variables of the MainFrame. Refer to the guide below:
+	 * 
+	 * _edgeStart is set to be the start node of the edge currently being drawn.  When
+	 * 		the mouse is moved over a node, it is set as _edgeStart, so that when shift
+	 * 		is pressed and the mouse is dragged, we know where to begin the progress line.
+	 * 
+	 * _resizing is the currently selected resizing box on a node.  If a resizing box
+	 * 		is pressed, then this variable is set, so that when the mouse is dragged,
+	 * 		we know which box was pressed.
+	 * 
+	 * _mouseLoc is updated every time the mouse is moved, and represents the current mouse
+	 * 		location on the screen.
+	 * 
+	 * _robot is the Robot used to move the user's mouse when "s" is pressed.
+	 * 
+	 * _nodesSelected is the set of currently selected nodes in the diagram.  Make sure to
+	 * 		call Collections.synchronizedSet if you need to re-instantiate this, because it
+	 * 		is possible that two separate methods will try to access this set at once.
+	 * 
+	 * _edgesSelected is the currently selected edges, and has the same note as above.
+	 * 
+	 * _sim is the List returned by simulating the current FSM.  Used in all the simulation
+	 * 		methods down towards the bottom of this file.
+	 * 
+	 * _iter is the Iterator used to iterate through the _sim list.
+	 * 
+	 * _simTimer is the timer used in simulation to step from one step in the simulation
+	 * 		to the next.
+	 * 
+	 * _edgeType represents the current type of edge selected, so that when we make a new
+	 * 		edge, we know what type of edge to create.
+	 * 
+	 * _simSlide is the Slider used to iterate through the simulation.  It is the bottom
+	 * 		slider, and can be dragged forward or backward to step through the simulation.
+	 * 
+	 * _curr NOT SURE WHAT THIS DOES; EDDIE MADE THIS.
+	 * 
+	 * _autoChange is used when we want to change the slider's value without having
+	 * 		to go through the slider changed method; used for the second slider.  If you want
+	 * 		to change the value of the second slider without stopping simulation, set this to
+	 * 		true, set the value of the slider, then reset it to false.
+	 * 
+	 * _backwardClicked is used in the interplay between clicking forward and backward.  If you
+	 * 		make alternating calls to an Iterator's previous() and next(), the same object will
+	 * 		be returned every time.  Thus this variable is used so that if we want to go to the
+	 * 		next object after having just gone backwards, we will call next() one extra time;
+	 * 		similarly, if we want to go backwards after calling next(), we have to call previous()
+	 * 		one extra time.  If this variable is FALSE, then we are currently stepping BACKWARDS;
+	 * 		similarly, if it is TRUE, we are currently stepping FORWARDS.  This is used in the
+	 * 		simulation_move_forward/backward methods.
+	 */
     private Node _edgeStart;
     private Node _resizing;
     private Point _mouseLoc;
@@ -54,21 +105,28 @@ public class MainFrame extends javax.swing.JFrame {
     private ListIterator<DiagramObject> _iter;
     private Timer _simTimer;
     private EdgeDirection _edgeType;
+    private javax.swing.JSlider _simSlide;
+    private int _curr;
+    private boolean _autoChange;
+    private boolean _backwardClicked;
+    
+    //The file paths of image resources, and other global static variables we want to define.
     private static final String PLAY_FILEPATH = "./src/img/play.png";
     private static final String PAUSE_FILEPATH = "./src/img/pause.png";
-    private javax.swing.JSlider _simSlide;
-    private int _simSize;
-    private int _curr;
-    private boolean _autoChange = false;
-    private boolean _inSimulation = false;
-
+    private static final String FWD_FILEPATH = "./src/img/fwd.png";
+    private static final String BWD_FILEPATH = "./src/img/bwd.png";
+    private static final String STOP_FILEPATH = "./src/img/stop.png";
 
     /**
-     * Creates new form MainFram
+     * Creates new form MainFram.  Initializes the default edge type to SINGLE, and initiates the Timer.
+     * Sets backwardClicked to false, because initially we assume we want to go forward first in simulation.
+     * STILL NOT SURE WHAT AUTOCHANGE DOES.
      */
     public MainFrame() {
         _edgeType = EdgeDirection.SINGLE;
         _simTimer = new Timer(1000, new SimListener());
+        _autoChange = false;
+        _backwardClicked = false;
         try {
             _robot = new Robot();
         } catch (AWTException ex) {
@@ -88,8 +146,6 @@ public class MainFrame extends javax.swing.JFrame {
         jMenuItem2 = new javax.swing.JMenuItem();
         jMenu6 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
-        jTabbedPane2 = new javax.swing.JTabbedPane();
-        jSplitPane1 = new javax.swing.JSplitPane();
         _edgeTypeGrp = new javax.swing.ButtonGroup();
         jSplitPane2 = new javax.swing.JSplitPane();
         jTabbedPane1 = new javax.swing.JTabbedPane();
@@ -292,29 +348,28 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
-        _rewindBtn.setFont(new java.awt.Font("Bitstream Vera Sans", 0, 10));
-        _rewindBtn.setIcon(new javax.swing.ImageIcon("./src/img/bwd.png")); // NOI18N
+        _rewindBtn.setIcon(new javax.swing.ImageIcon(BWD_FILEPATH)); // NOI18N
         _rewindBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 _rewindBtnActionPerformed(evt);
             }
         });
 
-        _stopBtn.setIcon(new javax.swing.ImageIcon("./src/img/stop.png")); // NOI18N
+        _stopBtn.setIcon(new javax.swing.ImageIcon(STOP_FILEPATH)); // NOI18N
         _stopBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 _stopBtnActionPerformed(evt);
             }
         });
 
-        _playPauseBtn.setIcon(new javax.swing.ImageIcon("./src/img/play.png")); // NOI18N
+        _playPauseBtn.setIcon(new javax.swing.ImageIcon(PLAY_FILEPATH)); // NOI18N
         _playPauseBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 _playPauseBtnActionPerformed(evt);
             }
         });
 
-        _forwardBtn.setIcon(new javax.swing.ImageIcon("./src/img/fwd.png")); // NOI18N
+        _forwardBtn.setIcon(new javax.swing.ImageIcon(FWD_FILEPATH)); // NOI18N
         _forwardBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 _forwardBtnActionPerformed(evt);
@@ -458,7 +513,11 @@ public class MainFrame extends javax.swing.JFrame {
     }// </editor-fold>                        
 
     
-  
+    /**
+     * Called when a new tab is opened.  Creates a new drawing panel and pane associated with the new tab.
+     * Sets all appropriate listeners, and adds the new tab.
+     * @param evt	The ActionEvent associated with the tab menu item being clicked.
+     */
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
         javax.swing.JScrollPane newPane = new javax.swing.JScrollPane();
         DrawingPanel newPanel = new DrawingPanel();
@@ -504,7 +563,7 @@ public class MainFrame extends javax.swing.JFrame {
             .addGap(0, 778, Short.MAX_VALUE)
         );
 
-        jTabbedPane1.addTab("Untitled", new ImageIcon("frontend/ask.png"), jScrollPane1);
+        jTabbedPane1.addTab("Untitled", jScrollPane1);
         jTabbedPane1.setSelectedIndex(jTabbedPane1.getTabCount() - 1);
     }//GEN-LAST:event_jMenuItem3ActionPerformed
 
@@ -516,11 +575,15 @@ public class MainFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jMenuItem7ActionPerformed
     
+    /******************************************************************************************************************
+     * MOUSE CLICKING, MOUSE DRAGGING, MOUSE PRESSED, MOUSE MOVED, MOUSE RELEASED									  *
+     ******************************************************************************************************************/
+    
     /**
      * The Mouse Clicked method handles functionality on mouse clicks.  Functionality handled includes: creating a new node,
      * toggling end state of a new node (double clicks), ctrl-selecting multiple edges or nodes, selecting a start state
      * of a node, or selecting a new node/edge.
-     * @param evt
+     * @param evt	The MouseEvent associated with the mouse being clicked.
      */
     private void drawingPanel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_drawingPanel1MouseClicked
         String mod = MouseEvent.getMouseModifiersText(evt.getModifiers());
@@ -538,12 +601,6 @@ public class MainFrame extends javax.swing.JFrame {
             _nodesSelected = Collections.synchronizedSet(new HashSet<Node>());
             _edgesSelected = Collections.synchronizedSet(new HashSet<Edge>());
             Node add = drawingPanel1.addNode(evt.getPoint());
-            for (Node n : drawingPanel1.getDiagram().getNodes()){
-                n.setSelected(false);
-            }
-            for (Edge e : drawingPanel1.getDiagram().getEdges()){
-                e.setSelected(false);
-            }
             add.setSelected(true);
             add.getTextField().setVisible(true);
             add.getLabel().setVisible(false);
@@ -565,6 +622,7 @@ public class MainFrame extends javax.swing.JFrame {
                             n.setSelected(true);
                             _nodesSelected.add(n);
                         }
+                        break;
                     }
                 }
                 for (Edge e : drawingPanel1.getDiagram().getEdges()){
@@ -577,6 +635,7 @@ public class MainFrame extends javax.swing.JFrame {
                             e.setSelected(true);
                             _edgesSelected.add(e);
                         }
+                        break;
                     }
                 }
                 drawingPanel1.repaint();
@@ -595,16 +654,8 @@ public class MainFrame extends javax.swing.JFrame {
                 //change the variables which manage how they are drawn, and see if a new node/edge is selected
             	_edgesSelected = Collections.synchronizedSet(new HashSet<Edge>());
             	_nodesSelected = Collections.synchronizedSet(new HashSet<Node>());
-                for (Node n : drawingPanel1.getDiagram().getNodes()){
-                    n.setSelected(false);
-                    n.getTextField().setVisible(false);
-                    n.getLabel().setVisible(true);
-                }
-                for (Edge e : drawingPanel1.getDiagram().getEdges()){
-                    e.setSelected(false);
-                    e.getTextField().setVisible(false);
-                    e.getLabel().setVisible(true);
-                }
+                drawingPanel1.clearSelected();
+                
                 for (Node n : drawingPanel1.getDiagram().getNodes()){
                     if (n.getCircle().contains(evt.getPoint())){
                         n.setSelected(true);
@@ -634,7 +685,7 @@ public class MainFrame extends javax.swing.JFrame {
     /**
      * The Mouse Dragged method handles dragging the mouse.  Handles four basic functionality: dragging single or multiple nodes,
      * drawing the progressLine for an edge in the middle of creation, resizing a node, and resizing an edge.
-     * @param evt
+     * @param evt	The MouseEvent associated with the mouse being dragged.
      */
     private void drawingPanel1MouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_drawingPanel1MouseDragged
         Point temp = _mouseLoc;
@@ -657,7 +708,6 @@ public class MainFrame extends javax.swing.JFrame {
             		int difY = evt.getPoint().y - temp.y;
             		n.setCenter(n.getCenter().x + difX, n.getCenter().y + difY);
             		n.resetCircle();
-
                 }
             }
             
@@ -691,12 +741,14 @@ public class MainFrame extends javax.swing.JFrame {
             vecX = difX/Math.sqrt((difX*difX+difY*difY));
             vecY = difY/Math.sqrt((difX*difX+difY*difY));
             
-            //Start from the same place; if in a node, set the end point to be the middle of that node.
+            //Start from the same place; if mouse is inside a node, set the end point to be the middle of that node.
             point_start = new Point2D.Double(_edgeStart.getCenter().x+(_edgeStart.getRadius()*vecX),_edgeStart.getCenter().y+(_edgeStart.getRadius()*vecY));
             if (con != null)
             	point_end = new Point2D.Double(con.getCenter().x-(con.getRadius()*vecX),con.getCenter().y-(con.getRadius()*vecY));
             
-            //Draw the lines.
+            //Draw the lines. First case is if it's a self loop; second case is
+            //if it's to a node that the mouse is in the middle of; third case
+            //is if we just want to draw to a mouse point.
             if (con != null && _edgeStart == con)
                 drawingPanel1._progressLine = Edge.getSelfLoop(_edgeStart);
             else if (con != null)
@@ -760,7 +812,7 @@ public class MainFrame extends javax.swing.JFrame {
     /**
      * The Mouse Pressed method sets the appropriate helper variables used in Mouse Dragged.  If you press down
      * on an edge, node, or resizing square, it selects the appropriate things.
-     * @param evt
+     * @param evt	The MouseEvent associated with the mouse being pressed.
      */
     private void drawingPanel1MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_drawingPanel1MousePressed
     	//De-select any text in the edges
@@ -794,13 +846,72 @@ public class MainFrame extends javax.swing.JFrame {
         	}
         }
     }//GEN-LAST:event_drawingPanel1MousePressed
-
+    
+    /**
+     * The Mouse Moved method checks to see whether we are currently hovering over a node and
+     * whether shift is being pressed; if it is, it sets that node to _edgeStart.
+     * @param evt	The MouseEvent associated with the mouse being moved.
+     */
+    private void drawingPanel1MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_drawingPanel1MouseMoved
+    	_mouseLoc = evt.getPoint();
+    	_edgeStart = null;
+    	if (MouseEvent.getMouseModifiersText(evt.getModifiers()).contains("Shift")){
+    		for (Node n : drawingPanel1.getDiagram().getNodes()) {
+    			if (n.getCircle().contains(evt.getPoint()))
+    				_edgeStart = n;
+    		}
+    	}
+    }//GEN-LAST:event_drawingPanel1MouseMoved
+    
+    /**
+     * When the mouse is released, if we are currently drawing an edge, we have to create the edge between two nodes.
+     * @param evt	The MouseEvent associated with the mouse being released.
+     */
+    private void drawingPanel1MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_drawingPanel1MouseReleased
+        //If we were drawing an edge
+        if (_edgeStart != null) {
+        	//Find the node which the edge is ending at
+        	for (Node n : drawingPanel1.getDiagram().getNodes()) {
+        		if (n.getCircle().contains(_mouseLoc)) {
+        			drawingPanel1.clearSelected(); //clear all selected nodes/edges
+        			
+        			//Create the new edge, reset all variabels associated with maintaining the edge being drawn.
+        			Edge newEdge = new Edge(_edgeStart,n,_edgeStart.getCenter(),_edgeStart.getCenter(),drawingPanel1,_edgeType);
+                    newEdge.getTextField().grabFocus();
+                    newEdge.getLabel().setVisible(false);
+        			_edgeStart.addConnected(newEdge);
+                    n.addConnected(newEdge);
+            		drawingPanel1.getDiagram().addEdge(newEdge);
+                    _nodesSelected = Collections.synchronizedSet(new HashSet<Node>());
+                    _edgesSelected = Collections.synchronizedSet(new HashSet<Edge>());
+            		_edgesSelected.add(newEdge);
+            		_edgeStart = null;
+        			drawingPanel1._progressLine = null;
+        	        drawingPanel1.repaint();
+        			return;
+        		}
+        	}
+        	//If no end point was found, reset the line.
+        	drawingPanel1._progressLine = null;
+        	_edgeStart = null;
+        }
+        //If no edge is being drawn, reset all the nodes/resizing boxes/edges being dragged, upon mouse release
+        _resizing = null;
+        _nodeDragged = null;
+        _edgeDragged = null;
+        drawingPanel1.repaint();
+    }//GEN-LAST:event_drawingPanel1MouseReleased
+    
+    /******************************************************************************************************************
+     * KEY PRESSED, KEY RELEASED																					  *
+     ******************************************************************************************************************/
+    
     /**
      * The Key Pressed method handles the pressing of delete, shift, or s.  If "delete" is pressed, it deletes
      * all the currently selected nodes and edges (and all edges to the nodes).  If "s" is pressed, it snaps
      * the mouse to the nearest node.  If "Shift" is pressed, it gets ready to create an edge by setting
      * _edgeStart.
-     * @param evt
+     * @param evt	The KeyEvent associated with the key being pressed.
      */
     private void drawingPanel1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_drawingPanel1KeyPressed
         //If delete is pressed, delete all edges/nodes selected, and the edges conencted to the selected nodes.
@@ -869,68 +980,17 @@ public class MainFrame extends javax.swing.JFrame {
     /**
      * The Key Released method handles resetting the _edgeStart variable to null if
      * shift is released.
-     * @param evt
+     * @param evt	The KeyEvent associated with the key being released.
      */
     private void drawingPanel1KeyReleased(java.awt.event.KeyEvent evt) {
     	if (drawingPanel1._progressLine == null && evt.getKeyCode() == KeyEvent.VK_SHIFT)
     		_edgeStart = null;
     }
-
-    /**
-     * The Mouse Moved method checks to see whether we are currently hovering over a node and
-     * whether shift is being pressed; if it is, it sets that node to _edgeStart.
-     * @param evt
-     */
-    private void drawingPanel1MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_drawingPanel1MouseMoved
-    	_mouseLoc = evt.getPoint();
-    	_edgeStart = null;
-    	if (MouseEvent.getMouseModifiersText(evt.getModifiers()).contains("Shift")){
-    		for (Node n : drawingPanel1.getDiagram().getNodes()) {
-    			if (n.getCircle().contains(evt.getPoint()))
-    				_edgeStart = n;
-    		}
-    	}
-    }//GEN-LAST:event_drawingPanel1MouseMoved
     
-    /**
-     * When the mouse is released, if we are currently drawing an edge, we have to create the edge between two nodes.
-     * @param evt
-     */
-    private void drawingPanel1MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_drawingPanel1MouseReleased
-        //If we were drawing an edge
-        if (_edgeStart != null) {
-        	//Find the node which the edge is ending at
-        	for (Node n : drawingPanel1.getDiagram().getNodes()) {
-        		if (n.getCircle().contains(_mouseLoc)) {
-        			drawingPanel1.clearAll(); //clear all selected nodes/edges
-        			
-        			//Create the new edge, reset all variabels associated with maintaining the edge being drawn.
-        			Edge newEdge = new Edge(_edgeStart,n,_edgeStart.getCenter(),_edgeStart.getCenter(),drawingPanel1,_edgeType);
-                    newEdge.getTextField().grabFocus();
-                    newEdge.getLabel().setVisible(false);
-        			_edgeStart.addConnected(newEdge);
-                    n.addConnected(newEdge);
-            		drawingPanel1.getDiagram().addEdge(newEdge);
-                    _nodesSelected = Collections.synchronizedSet(new HashSet<Node>());
-                    _edgesSelected = Collections.synchronizedSet(new HashSet<Edge>());
-            		_edgesSelected.add(newEdge);
-            		_edgeStart = null;
-        			drawingPanel1._progressLine = null;
-        	        drawingPanel1.repaint();
-        			return;
-        		}
-        	}
-        	//If no end point was found, reset the line.
-        	drawingPanel1._progressLine = null;
-        	_edgeStart = null;
-        }
-        //If no edge is being drawn, reset all the nodes/resizing boxes/edges being dragged, upon mouse release
-        _resizing = null;
-        _nodeDragged = null;
-        _edgeDragged = null;
-        drawingPanel1.repaint();
-    }//GEN-LAST:event_drawingPanel1MouseReleased
-
+    /******************************************************************************************************************
+     * EXIT MENU, SIMULATION TEXT FIELD																				  *
+     ******************************************************************************************************************/
+    
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField1ActionPerformed
@@ -958,40 +1018,19 @@ public class MainFrame extends javax.swing.JFrame {
             drawingPanel1 = (DrawingPanel)jScrollPane1.getViewport().getView();
         }
     }//GEN-LAST:event_jMenuItem6ActionPerformed
-
-    private void _stopBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event__stopBtnActionPerformed
-        // TODO add your handling code here:
-        _sim = null;
-        _iter = null;
-        _simTimer.stop();
-        jTextArea1.setText("STOPPED");
-        _playPauseBtn.setIcon(new ImageIcon(PLAY_FILEPATH));
-        for (Node n : drawingPanel1.getDiagram().getNodes()) {
-            n.setCurrent(false);
-        }
-        for (Edge e : drawingPanel1.getDiagram().getEdges()) {
-            e.setCurrent(false);
-        }
-    }//GEN-LAST:event__stopBtnActionPerformed
-
-    private void _playPauseBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event__playPauseBtnActionPerformed
-        // TODO add your handling code here:
-        if (!_simTimer.isRunning()) {
-        	_playPauseBtn.setIcon(new ImageIcon(PAUSE_FILEPATH));
-            _forwardBtn.doClick();
-            _simTimer.setDelay(_slider.getValue());
-            _simTimer.start();
-            return;
-        }
-        else {
-        	_playPauseBtn.setIcon(new ImageIcon(PLAY_FILEPATH));
-            _simTimer.stop();
-        }
-    }//GEN-LAST:event__playPauseBtnActionPerformed
-
-    private void _forwardBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event__forwardBtnActionPerformed
-        // TODO add your handling code here:
-        if (_sim == null) {
+    
+    /******************************************************************************************************************
+     * SIMULATION METHODS: MOVE_FORWARD, MOVE_BACKWARD, STOP/PLAY/FWD/RWD CLICKED									  *
+     ******************************************************************************************************************/
+    
+    /**
+     * Helper method called when the simulation moves forward; use instead
+     * of calling "_fwdButton.doClick()".
+     */
+    private void simulation_move_forward() {
+    	//If simulation is not currently running, try starting it up.
+    	if (_sim == null) {
+    		//If the FSM is invalid, catch the error, display the message, and return.
             try {
                 _sim = drawingPanel1.getDiagram().deterministicSimulation(jTextField1.getText());
             } catch (InvalidDFSMException ex) {
@@ -1002,9 +1041,9 @@ public class MainFrame extends javax.swing.JFrame {
                 }
                 return;
             }
+            //Else, start simulation, move the first step forward to the start node.
             jTextArea1.setText("");
             _iter = _sim.listIterator();
-            _simSize = _sim.size();
             if (!_autoChange) {
                 _autoChange = true;
                 _simSlide.setValue(0);
@@ -1012,26 +1051,40 @@ public class MainFrame extends javax.swing.JFrame {
                 _curr = 0;
             }
         }
-        for (Node n : drawingPanel1.getDiagram().getNodes()) {
-            n.setCurrent(false);
-        }
-        for (Edge e : drawingPanel1.getDiagram().getEdges()) {
-            e.setCurrent(false);
-        }
+    	
+    	//After potentially starting up the simulation (or if it's already been started)
+    	//clear the selected objects.
+        drawingPanel1.clearCurrent();
+        
+        //If we still aren't at the end of our simulation, move to the next node.
         if (_iter.hasNext()) {
+        	//If backward was the last one to be clicked, make an extra call to
+        	//next() so that we move on to the correct next node.
+        	if (_backwardClicked) {
+        		_backwardClicked = false;
+        		_iter.next();
+        	}
+        	
+        	//Get the next object, set the slider value without stopping simulation.
             DiagramObject e = _iter.next();
             e.setCurrent(true);
             if (!_autoChange) {
                 _autoChange = true;
-                _simSlide.setValue(_simSlide.getValue() + 100/_simSize);
+                _simSlide.setValue(_simSlide.getValue() + 100/_sim.size());
                 _curr = _simSlide.getValue();
                 _autoChange = false;
             }
+            
+            //Set the text area to be the appropriate text.
             if (jTextArea1.getText().equals("BACK TO START"))
             	jTextArea1.setText("");
             if (jTextArea1.getText().equals(""))
             	jTextArea1.setText("Start ");
+            
+            //Append the name of the next object in the simulation to the text area.
             jTextArea1.append(e.getName() + "\n");
+            
+            //If this is the last element in the list, then clean up and stop simulation.
             if (!_iter.hasNext()) {
             	_playPauseBtn.setIcon(new ImageIcon(PLAY_FILEPATH));
             	jTextArea1.append("FINISHED: Ended at " + e.getName() + ".\n");
@@ -1043,16 +1096,96 @@ public class MainFrame extends javax.swing.JFrame {
             	_sim = null;
                 _iter = null;
                 _curr = 0;
-                _simSize = 0;
                 if (_simTimer.isRunning()) {
                     _simTimer.stop();
                 }
             }
         }
+        
+        //Repaint once at the end.
         drawingPanel1.repaint();
+    }
+    
+    /**
+     * Helper method called when the simulation moves backward.  Use instead of calling
+     * "_rwdButton.doClick()".
+     */
+    private void simulation_move_backward() {
+    	if (_simTimer.isRunning()) {
+            _playPauseBtn.setIcon(new ImageIcon(PLAY_FILEPATH));
+            _simTimer.stop();
+        }
+        if (_iter == null || _sim == null) {
+            jTextArea1.setText("NOT IN SIMULATION");
+            return;
+        }
+        drawingPanel1.clearCurrent();
+        if (_iter.hasPrevious()) {
+        	if (!_backwardClicked) {
+        		_backwardClicked = true;
+        		_iter.previous();
+        	}
+            DiagramObject e = _iter.previous();
+            e.setCurrent(true);
+            if (!_autoChange) {
+                _autoChange = true;
+                _simSlide.setValue(_simSlide.getValue() - 100/_sim.size());
+                _autoChange = false;
+            }
+            _curr = _simSlide.getValue();
+            String temp = jTextArea1.getText();
+            jTextArea1.setText("");
+            String[] tempArray = temp.split("\n");
+            for (int i = 0; i < tempArray.length - 1; i ++) {
+            	jTextArea1.append(tempArray[i] + "\n");
+            }
+            
+        } else {
+        	_playPauseBtn.setIcon(new ImageIcon(PLAY_FILEPATH));
+            jTextArea1.setText("BACK TO START");
+        }
+        drawingPanel1.repaint();
+    }
+
+    private void _stopBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event__stopBtnActionPerformed
+        // TODO add your handling code here:
+        _sim = null;
+        _iter = null;
+        _simTimer.stop();
+        jTextArea1.setText("STOPPED");
+        _playPauseBtn.setIcon(new ImageIcon(PLAY_FILEPATH));
+        drawingPanel1.clearCurrent();
+        drawingPanel1.repaint();
+    }//GEN-LAST:event__stopBtnActionPerformed
+
+    private void _playPauseBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event__playPauseBtnActionPerformed
+        // TODO add your handling code here:
+        if (!_simTimer.isRunning()) {
+        	_playPauseBtn.setIcon(new ImageIcon(PAUSE_FILEPATH));
+            simulation_move_forward();
+            _simTimer.setDelay(_slider.getMaximum() - _slider.getValue());
+            _simTimer.start();
+            return;
+        }
+        else {
+        	_playPauseBtn.setIcon(new ImageIcon(PLAY_FILEPATH));
+            _simTimer.stop();
+        }
+    }//GEN-LAST:event__playPauseBtnActionPerformed
+
+    private void _forwardBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event__forwardBtnActionPerformed
+        simulation_move_forward();
     }//GEN-LAST:event__forwardBtnActionPerformed
+    
+    private void _rewindBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event__rewindBtnActionPerformed
+        // TODO add your handling code here:
+        simulation_move_backward();
+    }//GEN-LAST:event__rewindBtnActionPerformed
 
-
+    /******************************************************************************************************************
+     * SLIDERS STATE CHANGED, TOOLBOX BUTTONS CLICKED																  *
+     ******************************************************************************************************************/
+    
     private void _simSlideStateChanged(javax.swing.event.ChangeEvent evt) {
         if (_sim == null) {//only use when in sim.
             return;
@@ -1061,47 +1194,48 @@ public class MainFrame extends javax.swing.JFrame {
             return;
         }
         int diff = _simSlide.getValue() - _curr;
-        if (diff == 0 && _simSize == 0) {
+        if (diff == 0 && _sim.size() == 0) {
             return;
         }
-        if (_simSize == 0 && diff > 0) {
+        if (_sim.size() == 0 && diff > 0) {
             _autoChange = true;
-            _forwardBtn.doClick();
+            simulation_move_forward();
             _autoChange = false;
             return;
         }
-        if (_simSize == 0 && diff > 0) {
+        if (_sim.size() == 0 && diff > 0) {
             _autoChange = true;
-            _rewindBtn.doClick();
+            simulation_move_backward();
             _autoChange = false;
         }
-        System.out.println(_simSize);
-        if (Math.abs(diff) < 100/_simSize) {
+        if (Math.abs(diff) < 100/_sim.size()) {
             return;
         }
-        System.out.println(diff);
         if (diff < 0) {
             while (diff < 0) {
                 _autoChange = true;
-                _rewindBtn.doClick();
-                diff += 100/_simSize;
+                simulation_move_backward();
+                diff += 100/_sim.size();
                 _autoChange = false;
             }
         }
         else if (diff > 0) {
             while (diff > 0) {
                 _autoChange = true;
-                _forwardBtn.doClick();
-                if (_simSize == 0) {
+                simulation_move_forward();
+                if (_sim == null) {
+                	_autoChange = false;
+                	return;
+                }
+                if (_sim.size() == 0) {
                     _simSlide.setValue(0);
                     _autoChange = false;
                     return;
                 }
-                diff -= 100/_simSize;
+                diff -= 100/_sim.size();
                 _autoChange = false;
             }
         }
-        
         
         _curr = _simSlide.getValue();
     }
@@ -1109,59 +1243,30 @@ public class MainFrame extends javax.swing.JFrame {
     private void _sliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event__sliderStateChanged
         // TODO add your handling code here:
         _simTimer.setDelay(_slider.getMaximum() - _slider.getValue());
-}//GEN-LAST:event__sliderStateChanged
+    }//GEN-LAST:event__sliderStateChanged
 
     private void _doublyBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event__doublyBtnActionPerformed
         // TODO add your handling code here:
         _edgeType = EdgeDirection.DOUBLE;
-}//GEN-LAST:event__doublyBtnActionPerformed
+    }//GEN-LAST:event__doublyBtnActionPerformed
 
     private void _undirectedBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event__undirectedBtnActionPerformed
         // TODO add your handling code here:
         _edgeType = EdgeDirection.NONE;
-}//GEN-LAST:event__undirectedBtnActionPerformed
-
-    private void _rewindBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event__rewindBtnActionPerformed
-        // TODO add your handling code here:
-        if (_simTimer.isRunning()) {
-            _playPauseBtn.setIcon(new ImageIcon(PLAY_FILEPATH));
-            _simTimer.stop();
-            _playPauseBtn.setIcon(new ImageIcon(PLAY_FILEPATH));
-        }
-        if (_iter == null || _sim == null) {
-            jTextArea1.setText("NOT IN SIMULATION");
-            return;
-        }
-        for (Node n : drawingPanel1.getDiagram().getNodes()) {
-            n.setCurrent(false);
-        }
-        for (Edge e : drawingPanel1.getDiagram().getEdges()) {
-            e.setCurrent(false);
-        }
-        if (_iter.hasPrevious()) {
-            DiagramObject e = _iter.previous();
-            e.setCurrent(true);
-            if (!_autoChange) {
-                _autoChange = true;
-                _simSlide.setValue(_simSlide.getValue() - 100/_simSize);
-                _autoChange = false;
-            }
-            _curr = _simSlide.getValue();
-        } else {
-        	_playPauseBtn.setIcon(new ImageIcon(PLAY_FILEPATH));
-            jTextArea1.setText("BACK TO START");
-        }
-        drawingPanel1.repaint();
-}//GEN-LAST:event__rewindBtnActionPerformed
+    }//GEN-LAST:event__undirectedBtnActionPerformed
 
     private void _singlyBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event__singlyBtnActionPerformed
         // TODO add your handling code here:
         _edgeType = EdgeDirection.SINGLE;
-}//GEN-LAST:event__singlyBtnActionPerformed
-
+    }//GEN-LAST:event__singlyBtnActionPerformed
+    
+    /******************************************************************************************************************
+     * HELPER FUNCTIONS AND CLASSES																					  *
+     ******************************************************************************************************************/
+    
     private class SimListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            _forwardBtn.doClick();
+            simulation_move_forward();
         }
     }
 
@@ -1245,11 +1350,9 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JSplitPane jSplitPane2;
     private javax.swing.JSplitPane jSplitPane3;
     private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JTabbedPane jTabbedPane2;
     private javax.swing.JTextArea jTextArea1;
     private javax.swing.JTextField jTextField1;
     // End of variables declaration//GEN-END:variables

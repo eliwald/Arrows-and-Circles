@@ -41,17 +41,30 @@ public class DrawingPanel extends JPanel {
         return _diagram;
     }
 
-    public void clearAll(){
+    public void clearSelected(){
         for (Node n : _diagram.getNodes()){
             n.setSelected(false);
+            n.getTextField().setVisible(false);
+            n.getLabel().setVisible(true);
         }
         for (Edge e : _diagram.getEdges()){
             e.setSelected(false);
+            e.getTextField().setVisible(false);
+            e.getLabel().setVisible(true);
+        }
+    }
+    
+    public void clearCurrent() {
+    	for (Node n : _diagram.getNodes()){
+            n.setCurrent(false);
+        }
+        for (Edge e : _diagram.getEdges()){
+            e.setCurrent(false);
         }
     }
 
     public Node addNode(Point p) {
-        clearAll();
+        clearSelected();
         Node n = new Node(p.x,p.y, this);
         _diagram.addNode(n);
         if (_diagram.getNodes().size() == 1) {

@@ -7,6 +7,11 @@ import java.util.List;
 import java.util.LinkedList;
 import java.util.Set;
 
+/**
+ * 
+ * @author ewald
+ *
+ */
 public class Diagram implements Cloneable {
 	private Collection<Node> _nodes;
 	private Collection<Edge> _edges;
