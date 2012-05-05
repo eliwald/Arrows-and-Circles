@@ -160,9 +160,14 @@ public class Diagram implements Cloneable {
 			for (Edge e : n.getConnected()) {
 				if (e.getDirection() == EdgeDirection.SINGLE && e.getStartNode() == n && !e.getTextField().getText().equals("")) {
 					//Split on commas so that the user can input multiple characters per edge
-					String[] labels = e.getTextField().getText().split("(\\s*)[^\\s](\\s*)((,(\\s*)[^\\s](\\s*))*)");
-					for (String s : labels)
-						System.out.println(s);
+					String[] splitcomma = e.getTextField().getText().split(",");
+					String[] labels = new String[splitcomma.length];
+					for (int i = 0; i < splitcomma.length; i ++) {
+						String s = splitcomma[i];
+						String[] tempArray = s.split("(\\s*)");
+						for (String inputchar : tempArray)
+							labels[i] = inputchar;
+					}
 					for (String s : labels) {
 						//If we haven't already seen this character from this node, then add it to the edge_labels (possibly already
 						//there), and to temp_edge_labels, so we know if we see a duplicate.
@@ -190,7 +195,14 @@ public class Diagram implements Cloneable {
 			for (Edge e : n.getConnected()) {
 				if (e.getDirection() == EdgeDirection.SINGLE && e.getStartNode() == n && !e.getTextField().getText().equals("")) {
 					//Split on commas so that the user can input multiple characters per edge
-					String[] labels = e.getTextField().getText().split("(\\s*)[^\\s](\\s*)(,(\\s*)[^\\s](\\s*))*");
+					String[] splitcomma = e.getTextField().getText().split(",");
+					String[] labels = new String[splitcomma.length];
+					for (int i = 0; i < splitcomma.length; i ++) {
+						String s = splitcomma[i];
+						String[] tempArray = s.split("(\\s*)");
+						for (String inputchar : tempArray)
+							labels[i] = inputchar;
+					}
 					for (String s : labels) {
 						//Add all characters coming out a node to the temp_edge_labels set.
 						if (!temp_edge_labels.contains(s))
@@ -249,7 +261,14 @@ public class Diagram implements Cloneable {
 		for (int i = 0; i < input.length(); i ++) {
 			tempInput = input.substring(i, i+1);
 			for (Edge e : tempNode.getConnected()){
-				String[] labels = e.getTextField().getText().split("(\\s*)[^\\s](\\s*)(,(\\s*)[^\\s](\\s*))*");
+				String[] splitcomma = e.getTextField().getText().split(",");
+				String[] labels = new String[splitcomma.length];
+				for (int j = 0; j < splitcomma.length; j ++) {
+					String s = splitcomma[j];
+					String[] tempArray = s.split("(\\s*)");
+					for (String inputchar : tempArray)
+						labels[j] = inputchar;
+				}
 				for (String s : labels) {
 					if (e.getStartNode() == tempNode && s.equals(tempInput)) {
 						tempDest = e.getEndNode();
