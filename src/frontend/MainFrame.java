@@ -307,7 +307,8 @@ public class MainFrame extends javax.swing.JFrame {
 			jSplitPane3.removeMouseMotionListener(m);
 		}
 		jSplitPane3.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
-		jSplitPane3.setResizeWeight(0.5);
+		jSplitPane3.setResizeWeight(0.9);
+		jSplitPane3.setEnabled(false);
 
 		jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
