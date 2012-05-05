@@ -10,6 +10,7 @@ import frontend.MyDocListener;
 
 import java.awt.Color;
 import java.awt.Polygon;
+import java.awt.Shape;
 import java.awt.event.KeyListener;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
@@ -37,7 +38,7 @@ public class Edge implements Cloneable, DiagramObject {
     private boolean _selected;
     private DrawingPanel _container;
     private boolean _current = false;
-    private static final int ARROW_SIZE = 5;
+    private static final int ARROW_SIZE = 6;
     private static final int TEXTBOX_HEIGHT = 25;
     private static final int TEXTBOX_WIDTH = 40;
     private static final int TEXTBOX_OFFSET = 25;
@@ -219,16 +220,52 @@ public class Edge implements Cloneable, DiagramObject {
     	return _curve;
     }
 
-    public Ellipse2D.Double getForward() {
-        double difX = _end.getCenter().x - _start.getCenter().x;
-        double difY = _end.getCenter().y - _start.getCenter().y;
-        double vecX = difX/Math.sqrt((difX*difX+difY*difY));
-        double vecY = difY/Math.sqrt((difX*difX+difY*difY));
-        Ellipse2D.Double toReturn = new Ellipse2D.Double();
-        int startX = (int)(_end.getCenter().x-(_end.getRadius()*vecX));
-        int startY = (int)(_end.getCenter().y-(_end.getRadius()*vecY));
-        toReturn.setFrame(startX-6, startY-6, 12, 12);
-        return toReturn;
+    public Shape getForward() {
+    	
+    	// Obtain the half segment vector from the start to the end.
+    	double[] halfSegment = {
+    		(_end.getCenter().getX() - _start.getCenter().getX()) / 2,
+    		(_end.getCenter().getY() - _start.getCenter().getY()) / 2,
+    	};
+    	double halfSegmentSize = Math.sqrt(halfSegment[0] * halfSegment[0] + halfSegment[1] * halfSegment[1]);
+    	
+    	// Obtain the radius vector (from center of the arc to the end)
+    	double[] radius = {
+    		(halfSegment[1]) / halfSegmentSize * _height + halfSegment[0],
+    		(-halfSegment[0]) / halfSegmentSize * _height + halfSegment[1]
+    	};
+    	double radiusSize = Math.sqrt(radius[0] * radius[0] + radius[1] * radius[1]);
+    	
+    	// Find the angle to turn around the radius vector to the quasi-tangent vector
+    	double sinTheta = _start.getRadius() / (2 * radiusSize);
+    	double cosTheta = Math.sqrt(1 - sinTheta * sinTheta) * (_turn ? -1 : 1);
+    	
+    	// Find the doubleAngle
+    	double sinTwoTheta = 2 * sinTheta * cosTheta;
+    	double cosTwoTheta = cosTheta * cosTheta - sinTheta * sinTheta;
+    	
+    	// Obtain the quasi-tangent vector
+    	double[] quasiTangent = {
+    		cosTwoTheta * radius[0] + sinTwoTheta * radius[1],
+    		-sinTwoTheta * radius[0] + cosTwoTheta * radius[1]
+    	};
+    	double quasiTangentSize = Math.sqrt(quasiTangent[0] * quasiTangent[0] + quasiTangent[1] * quasiTangent[1]);
+    	
+    	// Obtain the arrow tip position.
+    	double[] arrowTip = {
+    		_end.getCenter().getX() - radius[0] + quasiTangent[0],
+    		_end.getCenter().getY() - radius[1] + quasiTangent[1] 
+    	};
+    	
+    	// Obtain the arrow base position.
+    	double[] arrowBase = {
+    		(_turn ? -1 : 1) * (quasiTangent[1]) / radiusSize * ARROW_SIZE + arrowTip[0],
+    		(_turn ? 1 : -1) * (quasiTangent[0]) / radiusSize * ARROW_SIZE + arrowTip[1]
+    	};
+    	
+    	// TEMPORARY TESTING
+    	Ellipse2D.Double arrow = new Ellipse2D.Double(arrowBase[0] - 6, arrowBase[1] - 6, 12, 12);
+    	return arrow;
     }
 
     public Ellipse2D.Double getBackward() {
