@@ -852,35 +852,45 @@ public class MainFrame extends javax.swing.JFrame {
 
 		//Otherwise, if we are in the middle of resizing an edge, then correctly resize the edge.
 		else if (_edgeDragged != null) {
-			double ax = _edgeDragged.getStartNode().getCenter().getX() - _mouseLoc.getX();
-			double ay = _edgeDragged.getStartNode().getCenter().getY() - _mouseLoc.getY();
-			double bx = _edgeDragged.getEndNode().getCenter().getX() - _mouseLoc.getX();
-			double by = _edgeDragged.getEndNode().getCenter().getY() - _mouseLoc.getY();
-			double cx = _edgeDragged.getEndNode().getCenter().getX() - _edgeDragged.getStartNode().getCenter().getX();
-			double cy = _edgeDragged.getEndNode().getCenter().getY() - _edgeDragged.getStartNode().getCenter().getY();
-
-			double da = Math.sqrt(ax * ax + ay * ay);
-			double db = Math.sqrt(bx * bx + by * by);
-			double dc = Math.sqrt(cx * cx + cy * cy);
-
-			double crossAB = ax * by - ay * bx;
-			// positive if mouse is on the left of vector c, negative if mouse is on the right of vector c
-
-			if(Math.abs(crossAB) < 0.0000001) {
-				_edgeDragged.setHeight(0);
+			
+			// Find the vector from mouse to start node.
+			double[] vectorA = {
+				_edgeDragged.getStartNode().getCenter().getX() - _mouseLoc.getX(),
+				_edgeDragged.getStartNode().getCenter().getY() - _mouseLoc.getY()
+			};
+			double vectorASize = Math.sqrt(vectorA[0] * vectorA[0] + vectorA[1] * vectorA[1]);
+				
+			// Find the vector from the mouse to the end
+			double[] vectorB = {
+				_edgeDragged.getEndNode().getCenter().getX() - _mouseLoc.getX(),
+				_edgeDragged.getEndNode().getCenter().getY() - _mouseLoc.getY()
+			};
+			double vectorBSize = Math.sqrt(vectorB[0] * vectorB[0] + vectorB[1] * vectorB[1]);
+				
+			double[] vectorC = {
+				_edgeDragged.getEndNode().getCenter().getX() - _edgeDragged.getStartNode().getCenter().getX(),
+				_edgeDragged.getEndNode().getCenter().getY() - _edgeDragged.getStartNode().getCenter().getY()
+			};
+			double vectorCSize = Math.sqrt(vectorC[0] * vectorC[0] + vectorC[1] * vectorC[1]);
+				
+			double crossAB = vectorA[0] * vectorB[1] - vectorA[1] * vectorB[0];
+			_edgeDragged.setTurn(crossAB > 0);
+			
+			double cosTheta = (vectorASize * vectorASize + vectorBSize * vectorBSize - vectorCSize * vectorCSize) / (2 * vectorASize * vectorBSize);
+			
+			double height; 
+			if(Math.abs(crossAB) < Double.MIN_VALUE) {
+				height = -1000000.0;
 			}
 			else {
-				double r = (da * db * dc) / (Math.abs(crossAB) * 2);
-				double h = Math.sqrt(r*r - (dc/2)*(dc/2));
-
-				double lambda = da * da + db * db - dc * dc;
-
-				_edgeDragged.setTurn(crossAB > 0);
-				if(crossAB * lambda > 0)
-					_edgeDragged.setHeight(h);
-				else 
-					_edgeDragged.setHeight(-h);
+				double radius = (vectorASize * vectorBSize * vectorCSize) / (Math.abs(crossAB) * 2);
+				height = Math.sqrt(radius * radius - (vectorCSize / 2) * (vectorCSize / 2));
 			}
+
+			if(crossAB * cosTheta > 0)
+				_edgeDragged.setHeight(height);
+			else 
+				_edgeDragged.setHeight(-height);
 		}
 
 		//Repaint at the end
