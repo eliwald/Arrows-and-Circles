@@ -909,16 +909,19 @@ public class MainFrame extends javax.swing.JFrame {
 				if (n.getCircle().contains(evt.getPoint())) {
 					_nodeDragged = n;
 					n.setOffset(evt.getX() - n.getCenter().x, evt.getY() - n.getCenter().y);
+					return;
 				}
 			}
 			for (Node n : drawingPanel1.getDiagram().getNodes()) {
 				if (n.isSelected() && n.getResize().contains(evt.getPoint())) {
 					_resizing = n;
+					return;
 				}
 			}
 			for (Edge e : drawingPanel1.getDiagram().getEdges()) {
 				if (e.intersects(evt.getPoint().x,evt.getPoint().y)) {
 					_edgeDragged = e;
+					return;
 				}
 			}
 		}
