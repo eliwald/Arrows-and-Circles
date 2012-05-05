@@ -10,6 +10,7 @@ import backend.EdgeDirection;
 import backend.InvalidDFSMException;
 import backend.Node;
 import java.awt.AWTException;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Point;
 import java.awt.Robot;
@@ -29,11 +30,11 @@ import java.util.ListIterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingConstants;
-import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.Timer;
@@ -286,11 +287,11 @@ public class MainFrame extends javax.swing.JFrame {
 		drawingPanel1.setLayout(drawingPanel1Layout);
 		drawingPanel1Layout.setHorizontalGroup(
 				drawingPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGap(0, 951, Short.MAX_VALUE)
+				.addGap(0, 950, Short.MAX_VALUE)
 		);
 		drawingPanel1Layout.setVerticalGroup(
 				drawingPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGap(0, 842, Short.MAX_VALUE)
+				.addGap(0, 950, Short.MAX_VALUE)
 		);
 
 		jScrollPane1.setViewportView(drawingPanel1);
@@ -405,28 +406,28 @@ public class MainFrame extends javax.swing.JFrame {
 			}
 		});
 
-		_rewindBtn.setIcon(new javax.swing.ImageIcon(BWD_FILEPATH)); // NOI18N
+		_rewindBtn.setIcon(new javax.swing.ImageIcon(BWD_FILEPATH));
 		_rewindBtn.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				_rewindBtnActionPerformed(evt);
 			}
 		});
 
-		_stopBtn.setIcon(new javax.swing.ImageIcon(STOP_FILEPATH)); // NOI18N
+		_stopBtn.setIcon(new javax.swing.ImageIcon(STOP_FILEPATH));
 		_stopBtn.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				_stopBtnActionPerformed(evt);
 			}
 		});
 
-		_playPauseBtn.setIcon(new javax.swing.ImageIcon(PLAY_FILEPATH)); // NOI18N
+		_playPauseBtn.setIcon(new javax.swing.ImageIcon(PLAY_FILEPATH));
 		_playPauseBtn.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				_playPauseBtnActionPerformed(evt);
 			}
 		});
 
-		_forwardBtn.setIcon(new javax.swing.ImageIcon(FWD_FILEPATH)); // NOI18N
+		_forwardBtn.setIcon(new javax.swing.ImageIcon(FWD_FILEPATH));
 		_forwardBtn.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				_forwardBtnActionPerformed(evt);
@@ -554,20 +555,29 @@ public class MainFrame extends javax.swing.JFrame {
 		jMenuBar2.add(jMenu7);
 
 		setJMenuBar(jMenuBar2);
+		
+		JLabel helpText = new JLabel();
+		helpText.setHorizontalAlignment(JLabel.CENTER);
+		helpText.setText("Double Click: New Node | Single Click Component: Select Component | Ctrl-Click Component: Add Component To Selected Components");
 
 		javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
 		getContentPane().setLayout(layout);
 		layout.setHorizontalGroup(
-				layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addComponent(jSplitPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 970, Short.MAX_VALUE)
+				layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+				.addComponent(helpText, javax.swing.GroupLayout.DEFAULT_SIZE, 980, Short.MAX_VALUE)
+				.addComponent(jSplitPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 980, Short.MAX_VALUE)
 		);
 		layout.setVerticalGroup(
-				layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addComponent(jSplitPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 601, Short.MAX_VALUE)
+				layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+				.addGroup(layout.createSequentialGroup()
+						.addComponent(jSplitPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 601, Short.MAX_VALUE)
+						.addGap(1)
+						.addComponent(helpText, javax.swing.GroupLayout.DEFAULT_SIZE, 10, 10)
+						.addGap(2))
 		);
 
 		pack();
-	}// </editor-fold>                        
+	}                   
 
 
 	/**
