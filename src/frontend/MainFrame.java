@@ -10,6 +10,7 @@ import backend.EdgeDirection;
 import backend.InvalidDFSMException;
 import backend.Node;
 import java.awt.AWTException;
+import java.awt.Font;
 import java.awt.Point;
 import java.awt.Robot;
 import java.awt.event.ActionEvent;
@@ -31,6 +32,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingConstants;
+import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.Timer;
@@ -319,8 +321,10 @@ public class MainFrame extends javax.swing.JFrame {
         jTextArea1.setEditable(false);
         jTextArea1.setRows(5);
         jScrollPane2.setViewportView(jTextArea1);
-
+        
+        Font newTextFieldFont = new Font(jTextField1.getFont().getName(),Font.ITALIC,jTextField1.getFont().getSize());
         jTextField1.setText("Input string here");
+        jTextField1.setFont(newTextFieldFont);
         jTextField1.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jTextField1MouseClicked(evt);
@@ -622,7 +626,9 @@ public class MainFrame extends javax.swing.JFrame {
                             n.setSelected(true);
                             _nodesSelected.add(n);
                         }
-                        break;
+                        drawingPanel1.repaint();
+                        return; //If we find a node or edge, just return; we don't want to ctrl
+                        		//select multiple things if nodes are stacked on top of each other.
                     }
                 }
                 for (Edge e : drawingPanel1.getDiagram().getEdges()){
@@ -635,10 +641,10 @@ public class MainFrame extends javax.swing.JFrame {
                             e.setSelected(true);
                             _edgesSelected.add(e);
                         }
-                        break;
+                        drawingPanel1.repaint();
+                        return;
                     }
                 }
-                drawingPanel1.repaint();
             }
             // Else ctrl isn't clicked
             else{
@@ -999,6 +1005,8 @@ public class MainFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
         if (jTextField1.getText().equals("Input string here")){
             jTextField1.setText("");
+            Font newTextFieldFont = new Font(jTextField1.getFont().getName(),Font.PLAIN,jTextField1.getFont().getSize());
+            jTextField1.setFont(newTextFieldFont);
         }
     }//GEN-LAST:event_jTextField1MouseClicked
 
@@ -1143,6 +1151,7 @@ public class MainFrame extends javax.swing.JFrame {
         } else {
         	_playPauseBtn.setIcon(new ImageIcon(PLAY_FILEPATH));
             jTextArea1.setText("BACK TO START");
+            _backwardClicked = false;
         }
         drawingPanel1.repaint();
     }

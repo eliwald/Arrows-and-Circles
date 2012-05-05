@@ -7,6 +7,8 @@ package frontend;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.RenderingHints;
+
 import javax.swing.JPanel;
 
 import manager.DiagramProject;
@@ -107,7 +109,8 @@ public class DrawingPanel extends JPanel {
     @Override
     public void paintComponent(Graphics g) {
        super.paintComponent(g); 
-       Graphics2D g2 = (Graphics2D)g;
+       Graphics2D g2 = (Graphics2D) g;
+       g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
        for (Edge e: _diagram.getEdges()) {
     	   g2.setColor(java.awt.Color.BLACK);
            g2.setStroke(new BasicStroke(1));
