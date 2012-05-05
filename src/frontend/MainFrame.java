@@ -326,8 +326,8 @@ public class MainFrame extends javax.swing.JFrame {
         jTextField1.setText("Input string here");
         jTextField1.setFont(newTextFieldFont);
         jTextField1.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jTextField1MouseClicked(evt);
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                jTextField1MousePressed(evt);
             }
         });
         jTextField1.addActionListener(new java.awt.event.ActionListener() {
@@ -570,11 +570,19 @@ public class MainFrame extends javax.swing.JFrame {
         jTabbedPane1.addTab("Untitled", jScrollPane1);
         jTabbedPane1.setSelectedIndex(jTabbedPane1.getTabCount() - 1);
     }//GEN-LAST:event_jMenuItem3ActionPerformed
-
+    
+    /**
+     * This is what happens when you click save.
+     * @param evt
+     */
     private void jMenuItem5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem5ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jMenuItem5ActionPerformed
-
+    
+    /**
+     * This is what happens when you click save as.
+     * @param evt
+     */
     private void jMenuItem7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem7ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jMenuItem7ActionPerformed
@@ -1001,13 +1009,13 @@ public class MainFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField1ActionPerformed
 
-    private void jTextField1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextField1MouseClicked
+    private void jTextField1MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextField1MouseClicked
         // TODO add your handling code here:
         if (jTextField1.getText().equals("Input string here")){
             jTextField1.setText("");
-            Font newTextFieldFont = new Font(jTextField1.getFont().getName(),Font.PLAIN,jTextField1.getFont().getSize());
-            jTextField1.setFont(newTextFieldFont);
         }
+        Font newTextFieldFont = new Font(jTextField1.getFont().getName(),Font.PLAIN,jTextField1.getFont().getSize());
+        jTextField1.setFont(newTextFieldFont);
     }//GEN-LAST:event_jTextField1MouseClicked
 
     private void jMenuItem8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem8ActionPerformed
@@ -1119,28 +1127,46 @@ public class MainFrame extends javax.swing.JFrame {
      * "_rwdButton.doClick()".
      */
     private void simulation_move_backward() {
+    	//If the simulation is running, stop simulation.
     	if (_simTimer.isRunning()) {
             _playPauseBtn.setIcon(new ImageIcon(PLAY_FILEPATH));
             _simTimer.stop();
         }
+    	//If we are not in the simulation, alert the user.
         if (_iter == null || _sim == null) {
             jTextArea1.setText("NOT IN SIMULATION");
             return;
         }
+        
+        //Clear all the currently selected (PINK) nodes.
         drawingPanel1.clearCurrent();
+        
+        //If there is a previous node to go to
         if (_iter.hasPrevious()) {
+        	
+        	//If the last direction pressed was forwards, we need to do one extra
+        	//call to previous in order to actually move backwards instead of staying
+        	//at the same spot (which is how ListIterators work).
         	if (!_backwardClicked) {
         		_backwardClicked = true;
         		_iter.previous();
         	}
+        	
+        	//Get the previous node.  Set it to be current.
             DiagramObject e = _iter.previous();
             e.setCurrent(true);
+            
+            //Set the appropriate place of the second slider
             if (!_autoChange) {
                 _autoChange = true;
                 _simSlide.setValue(_simSlide.getValue() - 100/_sim.size());
                 _autoChange = false;
             }
+            
+            //Set this old value of the slider so that we can remember the previous place.
             _curr = _simSlide.getValue();
+            
+            //Take the last line of the text area off (remove the last node alert).
             String temp = jTextArea1.getText();
             jTextArea1.setText("");
             String[] tempArray = temp.split("\n");
@@ -1148,7 +1174,10 @@ public class MainFrame extends javax.swing.JFrame {
             	jTextArea1.append(tempArray[i] + "\n");
             }
             
-        } else {
+        }
+        
+        //Otherwise, if there is on previous, we are back to the start.
+        else {
         	_playPauseBtn.setIcon(new ImageIcon(PLAY_FILEPATH));
             jTextArea1.setText("BACK TO START");
             _backwardClicked = false;
@@ -1157,7 +1186,6 @@ public class MainFrame extends javax.swing.JFrame {
     }
 
     private void _stopBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event__stopBtnActionPerformed
-        // TODO add your handling code here:
         _sim = null;
         _iter = null;
         _simTimer.stop();
@@ -1196,7 +1224,7 @@ public class MainFrame extends javax.swing.JFrame {
      ******************************************************************************************************************/
     
     private void _simSlideStateChanged(javax.swing.event.ChangeEvent evt) {
-        if (_sim == null) {//only use when in sim.
+        if (_sim == null) {
             return;
         }
         if (_autoChange) {
