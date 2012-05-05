@@ -294,6 +294,7 @@ public class MainFrame extends javax.swing.JFrame {
 		);
 
 		jScrollPane1.setViewportView(drawingPanel1);
+		jScrollPane1.getVerticalScrollBar().setUnitIncrement(16);
 
 		jTabbedPane1.addTab("Untitled", jScrollPane1);
 
