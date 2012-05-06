@@ -4,20 +4,27 @@
  */
 package frontend;
 
+import backend.Diagram;
 import backend.DiagramObject;
 import backend.Edge;
 import backend.EdgeDirection;
 import backend.InvalidDFSMException;
 import backend.Node;
 import java.awt.AWTException;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Point;
 import java.awt.Robot;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentListener;
+import java.awt.event.ContainerListener;
+import java.awt.event.FocusListener;
+import java.awt.event.HierarchyBoundsListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.Arc2D;
 import java.awt.geom.Line2D;
@@ -36,8 +43,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingConstants;
+import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.plaf.basic.BasicSplitPaneUI;
 import javax.swing.Timer;
 
 /**
@@ -103,6 +112,9 @@ public class MainFrame extends javax.swing.JFrame {
 	 * 		the simulation moves forwards or backwards, it checks to make sure that whatever is
 	 * 		in the text field is equal to this instance variable.  Otherwise it alerts the user
 	 * 		and gives them the opportunity to restart.
+	 * 
+	 * _helpText is the label displayed at the bottom of the main frame to alert the user to
+	 * 		keybindings.
 	 */
 	private Node _edgeStart;
 	private Node _resizing;
@@ -121,6 +133,7 @@ public class MainFrame extends javax.swing.JFrame {
 	private boolean _autoChange;
 	private boolean _backwardClicked;
 	private String _currentInputString;
+	private JLabel _helpText;
 
 	//The file paths of image resources, and other global static variables we want to define.
 	private static final String PLAY_FILEPATH = "./src/img/play.png";
@@ -128,6 +141,10 @@ public class MainFrame extends javax.swing.JFrame {
 	private static final String FWD_FILEPATH = "./src/img/fwd.png";
 	private static final String BWD_FILEPATH = "./src/img/bwd.png";
 	private static final String STOP_FILEPATH = "./src/img/stop.png";
+	
+	private static final String help_message_text = "Double Click: New Node | \"S\": Snap Mouse To Nearest Node | Ctrl-Click Component: Add Component To Selected Components";
+	private static final String help_message_text_in_node_unselected = "Click To Select | Double Click: Toggle Accept State | Shift-DragClick: New Edge | Click-Drag: Move It Around";
+	private static final String help_message_text_in_node_selected = "Shift-DragClick: New Edge | Double Click: Toggle Accept | Delete/Backspace: Delete Node | Click Triangle: Toggle Start State";
 	
 	//If we are within 3 pixels of another node, then snap to that node.
 	private static int SNAP_DIFFERENCE = 7;
@@ -149,12 +166,12 @@ public class MainFrame extends javax.swing.JFrame {
 	private javax.swing.JLabel jLabel2;
 	private javax.swing.JMenu jMenu3;
 	private javax.swing.JMenu jMenu4;
-	private javax.swing.JMenu jMenu5;
+	private javax.swing.JMenu jMenuTools;
 	private javax.swing.JMenu jMenu6;
-	private javax.swing.JMenu jMenu7;
+	private javax.swing.JMenu jMenuHelp;
 	private javax.swing.JMenuBar jMenuBar2;
 	private javax.swing.JMenuItem jMenuItem1;
-	private javax.swing.JMenuItem jMenuItem10;
+	private javax.swing.JMenuItem jMenuItemRedo;
 	private javax.swing.JMenuItem jMenuItem2;
 	private javax.swing.JMenuItem jMenuItem3;
 	private javax.swing.JMenuItem jMenuItem4;
@@ -162,7 +179,9 @@ public class MainFrame extends javax.swing.JFrame {
 	private javax.swing.JMenuItem jMenuItem6;
 	private javax.swing.JMenuItem jMenuItem7;
 	private javax.swing.JMenuItem jMenuItem8;
-	private javax.swing.JMenuItem jMenuItem9;
+	private javax.swing.JMenuItem jMenuItemUndo;
+	private javax.swing.JMenuItem jMenuItemSelectAll;
+	private javax.swing.JMenuItem jMenuItemShowTrans;
 	private javax.swing.JPanel jPanel1;
 	private javax.swing.JPanel jPanel2;
 	private javax.swing.JScrollPane jScrollPane1;
@@ -183,6 +202,8 @@ public class MainFrame extends javax.swing.JFrame {
 		_simTimer = new Timer(1000, new SimListener());
 		_autoChange = false;
 		_backwardClicked = false;
+		_helpText = new JLabel();
+		_helpText.setHorizontalAlignment(JLabel.CENTER);
 		try {
 			_robot = new Robot();
 		} catch (AWTException ex) {
@@ -206,6 +227,8 @@ public class MainFrame extends javax.swing.JFrame {
 		jSplitPane2 = new javax.swing.JSplitPane();
 		jTabbedPane1 = new javax.swing.JTabbedPane();
 		jScrollPane1 = new javax.swing.JScrollPane();
+		
+		
 		drawingPanel1 = new frontend.DrawingPanel();
 		jSplitPane3 = new javax.swing.JSplitPane();
 		jPanel1 = new javax.swing.JPanel();
@@ -233,10 +256,12 @@ public class MainFrame extends javax.swing.JFrame {
 		jMenuItem6 = new javax.swing.JMenuItem();
 		jMenuItem8 = new javax.swing.JMenuItem();
 		jMenu4 = new javax.swing.JMenu();
-		jMenuItem9 = new javax.swing.JMenuItem();
-		jMenuItem10 = new javax.swing.JMenuItem();
-		jMenu5 = new javax.swing.JMenu();
-		jMenu7 = new javax.swing.JMenu();
+		jMenuItemUndo = new javax.swing.JMenuItem();
+		jMenuItemRedo = new javax.swing.JMenuItem();
+		jMenuItemSelectAll = new javax.swing.JMenuItem();
+		jMenuItemShowTrans = new javax.swing.JMenuItem();
+		jMenuTools = new javax.swing.JMenu();
+		jMenuHelp = new javax.swing.JMenu();
 
 		jMenuItem2.setText("jMenuItem2");
 
@@ -308,8 +333,7 @@ public class MainFrame extends javax.swing.JFrame {
 			jSplitPane3.removeMouseMotionListener(m);
 		}
 		jSplitPane3.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
-		jSplitPane3.setResizeWeight(0.9);
-		jSplitPane3.setEnabled(false);
+		jSplitPane3.setResizeWeight(0.95);
 
 		jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
@@ -349,7 +373,7 @@ public class MainFrame extends javax.swing.JFrame {
 				jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
 				.addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 355, Short.MAX_VALUE)
 				.addGroup(jPanel1Layout.createSequentialGroup()
-						.addGap(29, 29, 29)
+						.addGap(48, 48, 48)
 						.addComponent(_singlyBtn)
 						.addGap(18, 18, 18)
 						.addComponent(_doublyBtn)
@@ -366,14 +390,14 @@ public class MainFrame extends javax.swing.JFrame {
 								.addComponent(_doublyBtn)
 								.addComponent(_singlyBtn)
 								.addComponent(_undirectedBtn))
-								.addContainerGap(135, Short.MAX_VALUE))
+								.addContainerGap(10, Short.MAX_VALUE))
 		);
 
 		jSplitPane3.setRightComponent(jPanel1);
 
 		jPanel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
-		jTextArea1.setColumns(20);
+		jTextArea1.setColumns(30);
 		jTextArea1.setEditable(false);
 		jTextArea1.setRows(5);
 		jScrollPane2.setViewportView(jTextArea1);
@@ -393,7 +417,7 @@ public class MainFrame extends javax.swing.JFrame {
 		});
 
 		_slider.setMaximum(3000);
-		_slider.setValue(2000);
+		_slider.setValue(1500);
 		_slider.addChangeListener(new javax.swing.event.ChangeListener() {
 			public void stateChanged(javax.swing.event.ChangeEvent evt) {
 				_sliderStateChanged(evt);
@@ -439,6 +463,31 @@ public class MainFrame extends javax.swing.JFrame {
 		jLabel1.setHorizontalAlignment(SwingConstants.CENTER);
 		jLabel1.setText("Simulation");
 		jLabel1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+		
+		JLabel simTextAreaLabel = new JLabel();
+		simTextAreaLabel.setHorizontalAlignment(JLabel.CENTER);
+		simTextAreaLabel.setFont(newTextFieldFont);
+		simTextAreaLabel.setText("Simulation Console");
+		
+		JLabel minWait = new JLabel();
+		minWait.setHorizontalAlignment(JLabel.CENTER);
+		minWait.setFont(newTextFieldFont);
+		minWait.setText("3s");
+		
+		JLabel maxWait = new JLabel();
+		maxWait.setHorizontalAlignment(JLabel.CENTER);
+		maxWait.setFont(newTextFieldFont);
+		maxWait.setText("0s");
+		
+		JLabel simulationTimeSliderLabel = new JLabel();
+		simulationTimeSliderLabel.setHorizontalAlignment(JLabel.CENTER);
+		simulationTimeSliderLabel.setFont(newTextFieldFont);
+		simulationTimeSliderLabel.setText("Interval Between Simulation Steps");
+		
+		JLabel simulationStepSlider = new JLabel();
+		simulationStepSlider.setFont(newTextFieldFont);
+		simulationStepSlider.setHorizontalAlignment(JLabel.CENTER);
+		simulationStepSlider.setText("Simulation Slider: Scroll Through Simulation");
 
 		javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
 		jPanel2.setLayout(jPanel2Layout);
@@ -446,7 +495,7 @@ public class MainFrame extends javax.swing.JFrame {
 				jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
 				.addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 355, Short.MAX_VALUE)
 				.addGroup(jPanel2Layout.createSequentialGroup()
-						.addGap(45, 45, 45)
+						.addGap(10, 10, 10)
 						.addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
 								.addGroup(jPanel2Layout.createSequentialGroup()
 										.addComponent(_rewindBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -456,11 +505,17 @@ public class MainFrame extends javax.swing.JFrame {
 										.addComponent(_playPauseBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
 										.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 										.addComponent(_forwardBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
-										.addComponent(_slider, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
-										.addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 262, Short.MAX_VALUE)
-										.addComponent(_simSlide, javax.swing.GroupLayout.PREFERRED_SIZE,163,javax.swing.GroupLayout.PREFERRED_SIZE)
-										.addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-										.addGap(48, 48, 48))
+										.addComponent(simulationTimeSliderLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+										.addGroup(jPanel2Layout.createSequentialGroup()
+												.addComponent(minWait, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+												.addComponent(_slider, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
+												.addComponent(maxWait, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
+												.addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 262, Short.MAX_VALUE)
+												.addComponent(simulationStepSlider, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+												.addComponent(_simSlide, javax.swing.GroupLayout.PREFERRED_SIZE,163,javax.swing.GroupLayout.PREFERRED_SIZE)
+												.addComponent(simTextAreaLabel, javax.swing.GroupLayout.PREFERRED_SIZE,300,javax.swing.GroupLayout.PREFERRED_SIZE)
+												.addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+												.addGap(10, 10, 10))
 		);
 		jPanel2Layout.setVerticalGroup(
 				jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -472,19 +527,82 @@ public class MainFrame extends javax.swing.JFrame {
 								.addComponent(_stopBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
 								.addComponent(_playPauseBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
 								.addComponent(_forwardBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
-								.addComponent(_slider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-								.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-								.addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-								.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-								.addComponent(_simSlide, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-								.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-								.addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 246, Short.MAX_VALUE)
-								.addContainerGap())
+								.addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+										.addComponent(simulationTimeSliderLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
+										.addGroup(jPanel2Layout.createParallelGroup()
+												.addComponent(minWait, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
+												.addComponent(_slider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+												.addComponent(maxWait, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE))
+												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+												.addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+												.addComponent(simulationStepSlider, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
+												.addComponent(_simSlide, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+												.addComponent(simTextAreaLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+												.addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 246, Short.MAX_VALUE)
+												.addContainerGap())
 		);
-
 		jSplitPane3.setLeftComponent(jPanel2);
+		final BasicSplitPaneUI splitPaneUI = (BasicSplitPaneUI) jSplitPane3.getUI();
+		final BasicSplitPaneUI mainSplitPaneUI = (BasicSplitPaneUI) jSplitPane2.getUI();
+		
+		jPanel2.addMouseListener(new MouseListener() {
+			@Override
+			public void mouseReleased(MouseEvent e) {}
+			
+			@Override
+			public void mousePressed(MouseEvent e) {}
+			
+			@Override
+			public void mouseExited(MouseEvent e) {}
+			
+			@Override
+			public void mouseEntered(MouseEvent e) {}
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {}
+		});
+		jPanel1.addMouseListener(new MouseListener() {
+			@Override
+			public void mouseReleased(MouseEvent e) {}
+			
+			@Override
+			public void mousePressed(MouseEvent e) {}
+			
+			@Override
+			public void mouseExited(MouseEvent e) {}
+			
+			@Override
+			public void mouseEntered(MouseEvent e) {}
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {}
+		});
+		
+		splitPaneUI.getDivider().addMouseMotionListener(new MouseMotionListener() {
+			public void mouseMoved(MouseEvent evt) {
+				splitPaneUI.getDivider().setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+			}
+			public void mouseDragged(MouseEvent evt) {
+				jSplitPane3.setDividerLocation(splitPaneUI.getDividerLocation(jSplitPane3));
+			}
+		});
+		mainSplitPaneUI.getDivider().addMouseMotionListener(new MouseMotionListener() {
+			
+			@Override
+			public void mouseMoved(MouseEvent e) {
+				mainSplitPaneUI.getDivider().setCursor(new Cursor(Cursor.DEFAULT_CURSOR));	
+			}
+			
+			@Override
+			public void mouseDragged(MouseEvent e) {
+				jSplitPane2.setDividerLocation(mainSplitPaneUI.getDividerLocation(jSplitPane2));
+			}
+		});
 
 		jSplitPane2.setLeftComponent(jSplitPane3);
+		jSplitPane2.setOneTouchExpandable(true);
 
 		jMenu3.setText("File");
 
@@ -540,41 +658,86 @@ public class MainFrame extends javax.swing.JFrame {
 
 		jMenu4.setText("Edit");
 
-		jMenuItem9.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Z, java.awt.event.InputEvent.CTRL_MASK));
-		jMenuItem9.setText("Undo");
-		jMenu4.add(jMenuItem9);
+		jMenuItemUndo.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Z, java.awt.event.InputEvent.CTRL_MASK));
+		jMenuItemUndo.setText("Undo");
+		jMenu4.add(jMenuItemUndo);
 
-		jMenuItem10.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Y, java.awt.event.InputEvent.CTRL_MASK));
-		jMenuItem10.setText("Redo");
-		jMenu4.add(jMenuItem10);
+		jMenuItemRedo.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Y, java.awt.event.InputEvent.CTRL_MASK));
+		jMenuItemRedo.setText("Redo");
+		jMenu4.add(jMenuItemRedo);
 
+		jMenuItemSelectAll.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.CTRL_MASK));
+		jMenuItemSelectAll.setText("Select All");
+		jMenuItemSelectAll.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				_nodesSelected = Collections.synchronizedSet(new HashSet<Node>());
+				_edgesSelected = Collections.synchronizedSet(new HashSet<Edge>());
+				Diagram diagram = drawingPanel1.getDiagram();
+				for (Node n : diagram.getNodes()){
+					n.setSelected(true);
+					_nodesSelected.add(n);
+				}
+				for (Edge ed : diagram.getEdges()){
+					ed.setSelected(true);
+					_edgesSelected.add(ed);
+				}
+				drawingPanel1.repaint();
+			}
+			
+		});
+		jMenu4.add(jMenuItemSelectAll);
+		
+//		jMenuItemShowTrans.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.CTRL_MASK));
+		jMenuItemShowTrans.setText("Show Transitions");
+		jMenuTools.add(jMenuItemShowTrans);
+		jMenuItemShowTrans.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				StringBuilder builder = new StringBuilder();
+				for (Node node : drawingPanel1.getDiagram().getNodes()){
+					for (Edge edge : node.getConnected()){
+						if (edge.getStartNode() == node && edge.getDirection() == EdgeDirection.SINGLE){
+							builder.append("<"+ node.getName() + ", edge labeled: " + edge.getLabel().getText() + " -> " + edge.getEndNode().getName() +  ">\n");
+						}
+					}
+				}
+				String[] opts = {"OK"};
+				JOptionPane.showOptionDialog(jSplitPane2, builder.toString(), "Transitions", JOptionPane.DEFAULT_OPTION, 
+		JOptionPane.INFORMATION_MESSAGE, null, opts, opts[0]);
+			}
+			
+		});
+		
 		jMenuBar2.add(jMenu4);
 
-		jMenu5.setText("View");
-		jMenuBar2.add(jMenu5);
+		jMenuTools.setText("Tools");
+		
+		jMenuBar2.add(jMenuTools);
 
-		jMenu7.setText("Help");
-		jMenuBar2.add(jMenu7);
+		jMenuHelp.setText("Help");
+		jMenuBar2.add(jMenuHelp);
 
 		setJMenuBar(jMenuBar2);
-		
-		JLabel helpText = new JLabel();
-		helpText.setHorizontalAlignment(JLabel.CENTER);
-		helpText.setText("Double Click: New Node | Single Click Component: Select Component | Ctrl-Click Component: Add Component To Selected Components");
+
+		_helpText.setText(help_message_text);
 
 		javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
 		getContentPane().setLayout(layout);
 		layout.setHorizontalGroup(
 				layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-				.addComponent(helpText, javax.swing.GroupLayout.DEFAULT_SIZE, 980, Short.MAX_VALUE)
-				.addComponent(jSplitPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 980, Short.MAX_VALUE)
+				.addComponent(_helpText, javax.swing.GroupLayout.DEFAULT_SIZE, 980, Short.MAX_VALUE)
+				.addComponent(jSplitPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 1000, Short.MAX_VALUE)
 		);
 		layout.setVerticalGroup(
 				layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
 				.addGroup(layout.createSequentialGroup()
-						.addComponent(jSplitPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 601, Short.MAX_VALUE)
+						.addComponent(jSplitPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 700, Short.MAX_VALUE)
 						.addGap(1)
-						.addComponent(helpText, javax.swing.GroupLayout.DEFAULT_SIZE, 10, 10)
+						.addComponent(_helpText, javax.swing.GroupLayout.DEFAULT_SIZE, 10, 10)
 						.addGap(2))
 		);
 
@@ -625,11 +788,11 @@ public class MainFrame extends javax.swing.JFrame {
 		drawingPanel1.setLayout(drawingPanel1Layout);
 		drawingPanel1Layout.setHorizontalGroup(
 				drawingPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGap(0, 599, Short.MAX_VALUE)
+				.addGap(0, 950, Short.MAX_VALUE)
 		);
 		drawingPanel1Layout.setVerticalGroup(
 				drawingPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGap(0, 778, Short.MAX_VALUE)
+				.addGap(0, 950, Short.MAX_VALUE)
 		);
 
 		jTabbedPane1.addTab("Untitled", jScrollPane1);
@@ -682,6 +845,7 @@ public class MainFrame extends javax.swing.JFrame {
 			add.getTextField().setVisible(true);
 			add.getLabel().setVisible(false);
 			_nodesSelected.add(add);
+			_helpText.setText(help_message_text_in_node_selected);
 		}
 		//Otherwise, it's a single click
 		else{
@@ -736,12 +900,13 @@ public class MainFrame extends javax.swing.JFrame {
 				drawingPanel1.clearSelected();
 
 				for (Node n : drawingPanel1.getDiagram().getNodes()){
-					if (n.getCircle().contains(evt.getPoint())){
+					if (n.getCircle().contains(evt.getPoint()) || (n.isStart() && n.getStartSymbol().contains(evt.getPoint()))){
 						n.setSelected(true);
 						n.getTextField().setVisible(true);
 						n.getLabel().setVisible(false);
 						_nodesSelected.add(n);
 						drawingPanel1.repaint();
+						_helpText.setText(help_message_text_in_node_selected);
 						return;
 					}
 				}
@@ -976,12 +1141,20 @@ public class MainFrame extends javax.swing.JFrame {
 	private void drawingPanel1MouseMoved(java.awt.event.MouseEvent evt) {
 		_mouseLoc = evt.getPoint();
 		_edgeStart = null;
-		if (MouseEvent.getMouseModifiersText(evt.getModifiers()).contains("Shift")){
-			for (Node n : drawingPanel1.getDiagram().getNodes()) {
-				if (n.getCircle().contains(evt.getPoint()))
+		boolean changed_help_text = false;
+		for (Node n : drawingPanel1.getDiagram().getNodes()) {
+			if (n.getCircle().contains(_mouseLoc) || (n.isStart() && n.getStartSymbol().contains(_mouseLoc))) {
+				if (n.getCircle().contains(_mouseLoc) && MouseEvent.getMouseModifiersText(evt.getModifiers()).contains("Shift"))
 					_edgeStart = n;
+				if (n.isSelected())
+					_helpText.setText(help_message_text_in_node_selected);
+				else
+					_helpText.setText(help_message_text_in_node_unselected);
+				changed_help_text = true;
 			}
 		}
+		if (!changed_help_text) 
+			_helpText.setText(help_message_text);
 	}
 
 	/**
@@ -996,7 +1169,7 @@ public class MainFrame extends javax.swing.JFrame {
 				if (n.getCircle().contains(_mouseLoc)) {
 					drawingPanel1.clearSelected(); //clear all selected nodes/edges
 
-					//Create the new edge, reset all variabels associated with maintaining the edge being drawn.
+					//Create the new edge, reset all variables associated with maintaining the edge being drawn.
 					Edge newEdge = new Edge(_edgeStart,n,_edgeStart.getCenter(),_edgeStart.getCenter(),drawingPanel1,_edgeType);
 					newEdge.getTextField().grabFocus();
 					newEdge.getLabel().setVisible(false);
@@ -1347,7 +1520,7 @@ public class MainFrame extends javax.swing.JFrame {
 		drawingPanel1.repaint();
 	}
 
-	private void _stopBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event__stopBtnActionPerformed
+	private void _stopBtnActionPerformed(java.awt.event.ActionEvent evt) {
 		_sim = null;
 		_iter = null;
 		_simTimer.stop();
@@ -1355,14 +1528,12 @@ public class MainFrame extends javax.swing.JFrame {
 		_playPauseBtn.setIcon(new ImageIcon(PLAY_FILEPATH));
 		drawingPanel1.clearCurrent();
 		drawingPanel1.repaint();
-	}//GEN-LAST:event__stopBtnActionPerformed
+	}
 
-	private void _playPauseBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event__playPauseBtnActionPerformed
-		// TODO add your handling code here:
+	private void _playPauseBtnActionPerformed(java.awt.event.ActionEvent evt) {
 		if (!_simTimer.isRunning()) {
 			_playPauseBtn.setIcon(new ImageIcon(PAUSE_FILEPATH));
 			simulation_move_forward();
-			_simTimer.setDelay(_slider.getMaximum() - _slider.getValue());
 			_simTimer.start();
 			return;
 		}
@@ -1370,7 +1541,7 @@ public class MainFrame extends javax.swing.JFrame {
 			_playPauseBtn.setIcon(new ImageIcon(PLAY_FILEPATH));
 			_simTimer.stop();
 		}
-	}//GEN-LAST:event__playPauseBtnActionPerformed
+	}
 
 	private void _forwardBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event__forwardBtnActionPerformed
 		simulation_move_forward();
@@ -1438,26 +1609,35 @@ public class MainFrame extends javax.swing.JFrame {
 
 		_curr = _simSlide.getValue();
 	}
-
-	private void _sliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event__sliderStateChanged
-		// TODO add your handling code here:
+	
+	
+	private void _sliderStateChanged(javax.swing.event.ChangeEvent evt) {
 		_simTimer.setDelay(_slider.getMaximum() - _slider.getValue());
-	}//GEN-LAST:event__sliderStateChanged
+	}
 
-	private void _doublyBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event__doublyBtnActionPerformed
-		// TODO add your handling code here:
+	private void _doublyBtnActionPerformed(java.awt.event.ActionEvent evt) {
+		for (Edge e : _edgesSelected) {
+			e.setDirection(EdgeDirection.DOUBLE);
+		}
 		_edgeType = EdgeDirection.DOUBLE;
-	}//GEN-LAST:event__doublyBtnActionPerformed
+		drawingPanel1.repaint();
+	}
 
-	private void _undirectedBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event__undirectedBtnActionPerformed
-		// TODO add your handling code here:
+	private void _undirectedBtnActionPerformed(java.awt.event.ActionEvent evt) {
+		for (Edge e : _edgesSelected) {
+			e.setDirection(EdgeDirection.NONE);
+		}
 		_edgeType = EdgeDirection.NONE;
-	}//GEN-LAST:event__undirectedBtnActionPerformed
+		drawingPanel1.repaint();
+	}
 
-	private void _singlyBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event__singlyBtnActionPerformed
-		// TODO add your handling code here:
+	private void _singlyBtnActionPerformed(java.awt.event.ActionEvent evt) {
+		for (Edge e : _edgesSelected) {
+			e.setDirection(EdgeDirection.SINGLE);
+		}
 		_edgeType = EdgeDirection.SINGLE;
-	}//GEN-LAST:event__singlyBtnActionPerformed
+		drawingPanel1.repaint();
+	}
 
 	/******************************************************************************************************************
 	 * HELPER FUNCTIONS AND CLASSES																					  *
@@ -1489,6 +1669,7 @@ public class MainFrame extends javax.swing.JFrame {
 		 */
 		try {
 			for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+//				System.out.println(info.getName());
 				if ("Nimbus".equals(info.getName())) {
 					javax.swing.UIManager.setLookAndFeel(info.getClassName());
 					break;
