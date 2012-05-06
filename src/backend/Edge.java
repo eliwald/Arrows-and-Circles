@@ -2,6 +2,8 @@ package backend;
 
 
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.geom.Arc2D;
 
 import frontend.DrawingPanel;
@@ -552,7 +554,10 @@ public class Edge implements Cloneable, DiagramObject {
     public String getName() {
         return ("Edge " + getNodeString() +  ": " + _area.getText());
     }
-
+    
+    /**
+     * @return
+     */
 	public String getNodeString() {
 		return "(" + getStartNode().getLabel().getText() + ", " + getEndNode().getLabel().getText() + ")";
 	}
@@ -572,5 +577,8 @@ public class Edge implements Cloneable, DiagramObject {
 	public double getAngle() {
 		return _angle;
 	}
-
+	
+	
+	
+	
 }

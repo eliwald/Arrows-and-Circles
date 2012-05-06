@@ -14,6 +14,7 @@ import java.awt.AWTException;
 import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.Robot;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -33,10 +34,14 @@ import java.util.ListIterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
+import javax.swing.JSlider;
 import javax.swing.JTabbedPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -112,7 +117,7 @@ public class MainFrame extends javax.swing.JFrame {
 	 * 
 	 * _shiftClicked is false if shift is not currently being held, and true otherwise.  We
 	 * 		need this variable because Mac OS doesn't recognize shift in Mouse Modifiers for
-	 * 		some reason.
+	 * 		some reason.  TAKING THIS OUT FOR NOW.
 	 */
 	private Node _edgeStart;
 	private Node _resizing;
@@ -132,7 +137,6 @@ public class MainFrame extends javax.swing.JFrame {
 	private boolean _backwardClicked;
 	private String _currentInputString;
 	private JLabel _helpText;
-	private boolean _shiftClicked;
 
 	//The file paths of image resources, and other global static variables we want to define.
 	private static final String PLAY_FILEPATH = "./src/img/play.png";
@@ -158,7 +162,7 @@ public class MainFrame extends javax.swing.JFrame {
 	private javax.swing.JButton _playPauseBtn;
 	private javax.swing.JButton _rewindBtn;
 	private javax.swing.JRadioButton _singlyBtn;
-	private javax.swing.JSlider _slider;
+	private javax.swing.JSlider _speedSlider, _slider;
 	private javax.swing.JButton _stopBtn;
 	private javax.swing.JRadioButton _undirectedBtn;
 	private frontend.DrawingPanel drawingPanel1;
@@ -182,6 +186,7 @@ public class MainFrame extends javax.swing.JFrame {
 	private javax.swing.JMenuItem jMenuItemUndo;
 	private javax.swing.JMenuItem jMenuItemSelectAll;
 	private javax.swing.JMenuItem jMenuItemShowTrans;
+	private javax.swing.JMenuItem jMenuItemAbout;
 	private javax.swing.JPanel jPanel1;
 	private javax.swing.JPanel jPanel2;
 	private javax.swing.JScrollPane jScrollPane1;
@@ -240,7 +245,7 @@ public class MainFrame extends javax.swing.JFrame {
 		jScrollPane2 = new javax.swing.JScrollPane();
 		jTextArea1 = new javax.swing.JTextArea();
 		jTextField1 = new javax.swing.JTextField();
-		_slider = new javax.swing.JSlider();
+		_speedSlider = new javax.swing.JSlider();
 		_simSlide = new javax.swing.JSlider();
 		_rewindBtn = new javax.swing.JButton();
 		_stopBtn = new javax.swing.JButton();
@@ -260,6 +265,7 @@ public class MainFrame extends javax.swing.JFrame {
 		jMenuItemRedo = new javax.swing.JMenuItem();
 		jMenuItemSelectAll = new javax.swing.JMenuItem();
 		jMenuItemShowTrans = new javax.swing.JMenuItem();
+		jMenuItemAbout = new javax.swing.JMenuItem();
 		jMenuTools = new javax.swing.JMenu();
 		jMenuHelp = new javax.swing.JMenu();
 
@@ -313,11 +319,11 @@ public class MainFrame extends javax.swing.JFrame {
 		drawingPanel1.setLayout(drawingPanel1Layout);
 		drawingPanel1Layout.setHorizontalGroup(
 				drawingPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGap(0, 950, Short.MAX_VALUE)
+				.addGap(0, 1900, Short.MAX_VALUE)
 		);
 		drawingPanel1Layout.setVerticalGroup(
 				drawingPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGap(0, 950, Short.MAX_VALUE)
+				.addGap(0, 1900, Short.MAX_VALUE)
 		);
 
 		jScrollPane1.setViewportView(drawingPanel1);
@@ -363,7 +369,7 @@ public class MainFrame extends javax.swing.JFrame {
 		});
 
 		jLabel1.setHorizontalAlignment(SwingConstants.CENTER);
-		jLabel2.setText("Toolbox");
+		jLabel2.setText("Edges");
 		jLabel2.setHorizontalAlignment(SwingConstants.CENTER);
 		jLabel2.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
@@ -416,9 +422,9 @@ public class MainFrame extends javax.swing.JFrame {
 			}
 		});
 
-		_slider.setMaximum(3000);
-		_slider.setValue(1500);
-		_slider.addChangeListener(new javax.swing.event.ChangeListener() {
+		_speedSlider.setMaximum(3000);
+		_speedSlider.setValue(1500);
+		_speedSlider.addChangeListener(new javax.swing.event.ChangeListener() {
 			public void stateChanged(javax.swing.event.ChangeEvent evt) {
 				_sliderStateChanged(evt);
 			}
@@ -508,7 +514,7 @@ public class MainFrame extends javax.swing.JFrame {
 										.addComponent(simulationTimeSliderLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
 										.addGroup(jPanel2Layout.createSequentialGroup()
 												.addComponent(minWait, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-												.addComponent(_slider, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
+												.addComponent(_speedSlider, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
 												.addComponent(maxWait, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
 												.addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 262, Short.MAX_VALUE)
 												.addComponent(simulationStepSlider, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -531,7 +537,7 @@ public class MainFrame extends javax.swing.JFrame {
 										.addComponent(simulationTimeSliderLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
 										.addGroup(jPanel2Layout.createParallelGroup()
 												.addComponent(minWait, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
-												.addComponent(_slider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+												.addComponent(_speedSlider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
 												.addComponent(maxWait, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE))
 												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 												.addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -696,7 +702,6 @@ public class MainFrame extends javax.swing.JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
 				StringBuilder builder = new StringBuilder();
 				for (Node node : drawingPanel1.getDiagram().getNodes()){
 					for (Edge edge : node.getConnected()){
@@ -705,11 +710,13 @@ public class MainFrame extends javax.swing.JFrame {
 						}
 					}
 				}
+				String disp = builder.toString();
+				if (disp.equals("")) disp = "There are no transitions in this FSM.";
 				String[] opts = {"OK"};
-				JOptionPane.showOptionDialog(jSplitPane2, builder.toString(), "Transitions", JOptionPane.DEFAULT_OPTION, 
-							JOptionPane.INFORMATION_MESSAGE, null, opts, opts[0]);
-			}
-			
+
+				JOptionPane.showOptionDialog(jSplitPane2, disp, "Transitions", JOptionPane.DEFAULT_OPTION, 
+				JOptionPane.INFORMATION_MESSAGE, null, opts, opts[0]);
+			}	
 		});
 		
 		jMenuBar2.add(jMenu4);
@@ -719,6 +726,28 @@ public class MainFrame extends javax.swing.JFrame {
 		jMenuBar2.add(jMenuTools);
 
 		jMenuHelp.setText("Help");
+		jMenuItemAbout.setText("About");
+		jMenuHelp.add(jMenuItemAbout);
+		jMenuItemAbout.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JFrame aboutFrame = new JFrame("About");
+				aboutFrame.setVisible(true);
+				JTabbedPane tabs = new JTabbedPane();
+				aboutFrame.add(tabs);
+				JScrollPane controls = new JScrollPane();
+				controls.setName("Key Bindings");
+				JScrollPane dev = new JScrollPane();
+				dev.setName("Development");
+				tabs.add(controls);
+				tabs.add(dev);
+				aboutFrame.pack();
+			}
+			
+		});
+		
+		
 		jMenuBar2.add(jMenuHelp);
 
 		setJMenuBar(jMenuBar2);
@@ -741,9 +770,16 @@ public class MainFrame extends javax.swing.JFrame {
 						.addGap(2))
 		);
 
+		//add zoom slider; totally separate from rest of UI (i.e. doesn't ever move, not part of any group or layout, etc).
+        _slider = new JSlider(JSlider.VERTICAL, -3, 3, 0);
+        _slider.setPaintTicks(true);
+        _slider.setSize(25, 100);
+        _slider.setName("Zoom");
+        this.add(_slider);
+        _slider.setVisible(true);
+		
 		pack();
 	}                   
-
 
 	/**
 	 * Called when a new tab is opened.  Creates a new drawing panel and pane associated with the new tab.
@@ -788,11 +824,11 @@ public class MainFrame extends javax.swing.JFrame {
 		drawingPanel1.setLayout(drawingPanel1Layout);
 		drawingPanel1Layout.setHorizontalGroup(
 				drawingPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGap(0, 950, Short.MAX_VALUE)
+				.addGap(0, 1900, Short.MAX_VALUE)
 		);
 		drawingPanel1Layout.setVerticalGroup(
 				drawingPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGap(0, 950, Short.MAX_VALUE)
+				.addGap(0, 1900, Short.MAX_VALUE)
 		);
 
 		jTabbedPane1.addTab("Untitled", jScrollPane1);
@@ -838,8 +874,7 @@ public class MainFrame extends javax.swing.JFrame {
 			}
 
 			//Otherwise, reset all the selected nodes, and add a new node centered at the click.
-			_nodesSelected = Collections.synchronizedSet(new HashSet<Node>());
-			_edgesSelected = Collections.synchronizedSet(new HashSet<Edge>());
+			resetSelected();
 			Node add = drawingPanel1.addNode(evt.getPoint());
 			add.setSelected(true);
 			add.getTextField().setVisible(true);
@@ -851,9 +886,10 @@ public class MainFrame extends javax.swing.JFrame {
 		else{
 			//If Ctrl is clicked, we are selecting multiple nodes/edges
 			if (mod.equals("Ctrl+Button1")) {
-
 				//Iterate over all edges and nodes, toggling selection for each node and edge
 				for (Node n : drawingPanel1.getDiagram().getNodes()){
+					n.getTextField().setVisible(false);
+					n.getLabel().setVisible(true);
 					if (n.getCircle().contains(evt.getPoint())){
 						if (n.isSelected()){
 							n.setSelected(false);
@@ -895,9 +931,7 @@ public class MainFrame extends javax.swing.JFrame {
 
 				//Otherwise, reset all the selected nodes and edges, iterate through each node/edge to
 				//change the variables which manage how they are drawn, and see if a new node/edge is selected
-				_edgesSelected = Collections.synchronizedSet(new HashSet<Edge>());
-				_nodesSelected = Collections.synchronizedSet(new HashSet<Node>());
-				drawingPanel1.clearSelected();
+				resetSelected();
 
 				for (Node n : drawingPanel1.getDiagram().getNodes()){
 					if (n.getCircle().contains(evt.getPoint()) || (n.isStart() && n.getStartSymbol().contains(evt.getPoint()))){
@@ -911,6 +945,7 @@ public class MainFrame extends javax.swing.JFrame {
 					}
 				}
 				for (Edge e : drawingPanel1.getDiagram().getEdges()){
+					Rectangle boundingBox = e.getLabel().getBounds();
 					if (e.intersects(evt.getPoint().x,evt.getPoint().y)){
 						e.setSelected(true);
 						e.getTextField().setVisible(true);
@@ -918,7 +953,32 @@ public class MainFrame extends javax.swing.JFrame {
 						e.getTextField().grabFocus();
 						e.getLabel().setVisible(false);
 						_edgesSelected.add(e);
+						EdgeDirection dir = e.getDirection();
+						switch (dir){
+							case DOUBLE:
+								_doublyBtn.setSelected(true);
+								_edgeType = EdgeDirection.DOUBLE;
+								break;
+							case SINGLE:
+								_singlyBtn.setSelected(true);
+								_edgeType = EdgeDirection.SINGLE;
+								break;
+							default:
+								_undirectedBtn.setSelected(true);
+								_edgeType = EdgeDirection.NONE;
+							
+						}
 						drawingPanel1.repaint();
+						return;
+					}
+					else if (boundingBox.contains(evt.getPoint().x, evt.getPoint().y)){
+						resetSelected();
+						e.getLabel().setVisible(false);
+						e.getTextField().setVisible(true);
+						e.getTextField().grabFocus();
+						e.getTextField().selectAll();
+						_edgesSelected.add(e);
+						e.setSelected(true);
 						return;
 					}
 				}
@@ -1109,6 +1169,17 @@ public class MainFrame extends javax.swing.JFrame {
 		_edgeDragged = null;
 		_nodeDragged = null;
 		_resizing = null;
+		
+		//Check if we are trying to draw another edge
+		if (MouseEvent.getMouseModifiersText(evt.getModifiers()).contains("Shift")) {
+			for (Node n : drawingPanel1.getDiagram().getNodes()) {
+				if (n.getCircle().contains(evt.getPoint())) {
+					_edgeStart = n;
+					break;
+				}
+			}
+		}
+		
 		//Set the node/resizing/edge being dragged to the thing being pressed on.
 		if (_edgeStart == null) {
 			for (Node n : drawingPanel1.getDiagram().getNodes()) {
@@ -1147,8 +1218,6 @@ public class MainFrame extends javax.swing.JFrame {
 		boolean changed_help_text = false;
 		for (Node n : drawingPanel1.getDiagram().getNodes()) {
 			if (n.getCircle().contains(_mouseLoc) || (n.isStart() && n.getStartSymbol().contains(_mouseLoc))) {
-				if (n.getCircle().contains(_mouseLoc) && _shiftClicked)
-					_edgeStart = n;
 				if (n.isSelected())
 					_helpText.setText(help_message_text_in_node_selected);
 				else
@@ -1177,8 +1246,9 @@ public class MainFrame extends javax.swing.JFrame {
 			//Find the node which the edge is ending at
 			for (Node n : drawingPanel1.getDiagram().getNodes()) {
 				if (n.getCircle().contains(_mouseLoc)) {
-					drawingPanel1.clearSelected(); //clear all selected nodes/edges
-
+					//Reset selected edges/nodes
+					resetSelected();
+					
 					//Create the new edge, reset all variables associated with maintaining the edge being drawn.
 					Edge newEdge = new Edge(_edgeStart,n,_edgeStart.getCenter(),_edgeStart.getCenter(),drawingPanel1,_edgeType);
 					newEdge.getTextField().grabFocus();
@@ -1186,8 +1256,6 @@ public class MainFrame extends javax.swing.JFrame {
 					_edgeStart.addConnected(newEdge);
 					n.addConnected(newEdge);
 					drawingPanel1.getDiagram().addEdge(newEdge);
-					_nodesSelected = Collections.synchronizedSet(new HashSet<Node>());
-					_edgesSelected = Collections.synchronizedSet(new HashSet<Edge>());
 					_edgesSelected.add(newEdge);
 					_edgeStart = null;
 					drawingPanel1._progressLine = null;
@@ -1198,7 +1266,6 @@ public class MainFrame extends javax.swing.JFrame {
 			//If no end point was found, reset the line.
 			drawingPanel1._progressLine = null;
 			_edgeStart = null;
-			_shiftClicked = false;
 		}
 		//If no edge is being drawn, reset all the nodes/resizing boxes/edges being dragged, upon mouse release
 		_resizing = null;
@@ -1239,11 +1306,10 @@ public class MainFrame extends javax.swing.JFrame {
 				drawingPanel1.remove(e.getTextField());
 				drawingPanel1.getDiagram().getEdges().remove(e);
 			}
-			_nodesSelected = Collections.synchronizedSet(new HashSet<Node>());
-			_edgesSelected = Collections.synchronizedSet(new HashSet<Edge>());
+			resetSelected();
 		}
 		//Otherwise if "s" is pressed, snap to the nearest node.
-		else if(evt.getKeyCode() == KeyEvent.VK_S) {
+		else if(evt.getKeyCode() == KeyEvent.VK_S && evt.getModifiers() != 2) {
 			Node currNode = null;
 
 			int dist;
@@ -1270,16 +1336,6 @@ public class MainFrame extends javax.swing.JFrame {
 			else
 				_robot.mouseMove(loc.x + (int) (currNode.getCenter().x+(currNode.getRadius()*vecX)), loc.y + (int) (currNode.getCenter().y+(currNode.getRadius()*vecY)));
 		}
-		//Otherwise if "shift" is pressed, get ready to create a new edge from the node over which we are hovering.
-		else if (evt.getKeyCode() == KeyEvent.VK_SHIFT) {
-			_shiftClicked = true;
-			for (Node n : drawingPanel1.getDiagram().getNodes()) {
-				if (n.getCircle().contains(_mouseLoc)) {
-					_edgeStart = n;
-					return;
-				}
-			}
-		}
 		drawingPanel1.repaint();
 	}
 
@@ -1290,7 +1346,6 @@ public class MainFrame extends javax.swing.JFrame {
 	 */
 	private void drawingPanel1KeyReleased(java.awt.event.KeyEvent evt) {
 		if (evt.getKeyCode() == KeyEvent.VK_SHIFT) {
-			_shiftClicked = false;
 			if (drawingPanel1._progressLine == null)
 				_edgeStart = null;
 		}
@@ -1429,7 +1484,7 @@ public class MainFrame extends javax.swing.JFrame {
 					jTextArea1.setText("Start ");
 
 				//Append the name of the next object in the simulation to the text area.
-				jTextArea1.append(e.getName() + "\n");
+				jTextArea1.setText(jTextArea1.getText() + (e.getName() + "\n"));
 
 				//Select the correct character in the input string, so the user knows which edge he's taking.
 				jTextField1.grabFocus();
@@ -1442,11 +1497,11 @@ public class MainFrame extends javax.swing.JFrame {
 				//If this is the last element in the list, then clean up and stop simulation.
 				if (!_iter.hasNext()) {
 					_playPauseBtn.setIcon(new ImageIcon(PLAY_FILEPATH));
-					jTextArea1.append("FINISHED: Ended at " + e.getName() + ".\n");
+					jTextArea1.setText(jTextArea1.getText() + ("FINISHED: Ended at " + e.getName() + ".\n"));
 					if (((Node)e).isEnd())
-						jTextArea1.append("FSM Accepted the input string.\n");
+						jTextArea1.setText(jTextArea1.getText() + ("FSM Accepted the input string.\n"));
 					else
-						jTextArea1.append("FSM Rejected the input string.\n");
+						jTextArea1.setText(jTextArea1.getText() + ("FSM Rejected the input string.\n"));
 
 					_sim = null;
 					_iter = null;
@@ -1535,7 +1590,7 @@ public class MainFrame extends javax.swing.JFrame {
 				jTextArea1.setText("");
 				String[] tempArray = temp.split("\n");
 				for (int i = 0; i < tempArray.length - 1; i ++) {
-					jTextArea1.append(tempArray[i] + "\n");
+					jTextArea1.setText(jTextArea1.getText() + (tempArray[i] + "\n"));
 				}
 			}
 			else if (answer == 0) {
@@ -1674,7 +1729,7 @@ public class MainFrame extends javax.swing.JFrame {
 	 * @param evt
 	 */
 	private void _sliderStateChanged(javax.swing.event.ChangeEvent evt) {
-		_simTimer.setDelay(_slider.getMaximum() - _slider.getValue());
+		_simTimer.setDelay(_speedSlider.getMaximum() - _speedSlider.getValue());
 	}
 	
 	/**
@@ -1738,6 +1793,15 @@ public class MainFrame extends javax.swing.JFrame {
 		int answer = JOptionPane.showOptionDialog(this, "There is unsaved work! Would you like to save before closing" +
 				" this tab?", "Closing Unsaved Tab", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE, null, opts, opts[1]);
 		return answer;
+	}
+	
+	/**
+	 * This resets all the selected nodes/edges.
+	 */
+	private void resetSelected() {
+		drawingPanel1.clearSelected();
+		_nodesSelected = Collections.synchronizedSet(new HashSet<Node>());
+		_edgesSelected = Collections.synchronizedSet(new HashSet<Edge>());
 	}
 
 	/**

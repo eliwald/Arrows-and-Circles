@@ -63,22 +63,24 @@ public class Node implements DiagramObject, Cloneable {
 		double dimension = Math.sqrt(temp/2);
 		_area = new JTextField(){@Override public void
 			setBorder(Border border) {}};
-		String s = "n"+_container.getDiagram().getNodes().size();
+		
+		int size = _container.getDiagram().getNodes().size();
+		String s = "n_"+ size;
 		_area.setText(s);
 		_area.setVisible(true);
 		_area.setOpaque(false);
-		_area.setSize((int)(dimension), 12);
+		_area.setSize((int)(dimension), 15);
 		_area.setHorizontalAlignment(JTextField.CENTER);
 		_area.selectAll();
 		_area.setEditable(true);
 		_area.setEnabled(true);
         _area.setBackground(new Color(0,0,0,0));
-		_label = new JLabel(s);
+		_label = new JLabel("<html>n<sub>"+size+"</sub>");
 		_area.getDocument().addDocumentListener(new MyDocListener(_label));
         _area.addKeyListener(new EnterListener(_container, _area));
 		_label.setVisible(true);
 		_label.setOpaque(false);
-		_label.setSize((int)(dimension), 12);
+		_label.setSize((int)(dimension), 15);
 		_label.setHorizontalAlignment(JTextField.CENTER);
 
 		_container.add(_label);
@@ -234,7 +236,7 @@ public class Node implements DiagramObject, Cloneable {
     }
 
     public String getName() {
-        return ("Node: " + _label.getText());
+        return ("Node: " + _area.getText());
     }
 
 	
