@@ -165,7 +165,7 @@ public class MainFrame extends javax.swing.JFrame {
 	private javax.swing.JLabel jLabel2;
 	private javax.swing.JMenu jMenu3;
 	private javax.swing.JMenu jMenu4;
-	private javax.swing.JMenu jMenuWindow;
+	private javax.swing.JMenu jMenuTools;
 	private javax.swing.JMenu jMenu6;
 	private javax.swing.JMenu jMenuHelp;
 	private javax.swing.JMenuBar jMenuBar2;
@@ -180,6 +180,7 @@ public class MainFrame extends javax.swing.JFrame {
 	private javax.swing.JMenuItem jMenuItem8;
 	private javax.swing.JMenuItem jMenuItemUndo;
 	private javax.swing.JMenuItem jMenuItemSelectAll;
+	private javax.swing.JMenuItem jMenuItemShowTrans;
 	private javax.swing.JPanel jPanel1;
 	private javax.swing.JPanel jPanel2;
 	private javax.swing.JScrollPane jScrollPane1;
@@ -257,7 +258,8 @@ public class MainFrame extends javax.swing.JFrame {
 		jMenuItemUndo = new javax.swing.JMenuItem();
 		jMenuItemRedo = new javax.swing.JMenuItem();
 		jMenuItemSelectAll = new javax.swing.JMenuItem();
-		jMenuWindow = new javax.swing.JMenu();
+		jMenuItemShowTrans = new javax.swing.JMenuItem();
+		jMenuTools = new javax.swing.JMenu();
 		jMenuHelp = new javax.swing.JMenu();
 
 		jMenuItem2.setText("jMenuItem2");
@@ -677,11 +679,34 @@ public class MainFrame extends javax.swing.JFrame {
 		});
 		jMenu4.add(jMenuItemSelectAll);
 		
+//		jMenuItemShowTrans.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.CTRL_MASK));
+		jMenuItemShowTrans.setText("Show Transitions");
+		jMenuTools.add(jMenuItemShowTrans);
+		jMenuItemShowTrans.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				StringBuilder builder = new StringBuilder();
+				for (Node node : drawingPanel1.getDiagram().getNodes()){
+					for (Edge edge : node.getConnected()){
+						if (edge.getStartNode() == node && edge.getDirection() == EdgeDirection.SINGLE){
+							builder.append("<"+ node.getName() + ", edge labeled: " + edge.getLabel().getText() + " -> " + edge.getEndNode().getName() +  ">\n");
+						}
+					}
+				}
+				String[] opts = {"OK"};
+				JOptionPane.showOptionDialog(jSplitPane2, builder.toString(), "Transitions", JOptionPane.DEFAULT_OPTION, 
+		JOptionPane.INFORMATION_MESSAGE, null, opts, opts[0]);
+			}
+			
+		});
+		
 		jMenuBar2.add(jMenu4);
 
-		jMenuWindow.setText("Window");
+		jMenuTools.setText("Tools");
 		
-		jMenuBar2.add(jMenuWindow);
+		jMenuBar2.add(jMenuTools);
 
 		jMenuHelp.setText("Help");
 		jMenuBar2.add(jMenuHelp);
