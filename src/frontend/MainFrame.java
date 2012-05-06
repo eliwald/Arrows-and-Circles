@@ -469,12 +469,12 @@ public class MainFrame extends javax.swing.JFrame {
 		JLabel minWait = new JLabel();
 		minWait.setHorizontalAlignment(JLabel.CENTER);
 		minWait.setFont(newTextFieldFont);
-		minWait.setText("0s");
+		minWait.setText("3s");
 		
 		JLabel maxWait = new JLabel();
 		maxWait.setHorizontalAlignment(JLabel.CENTER);
 		maxWait.setFont(newTextFieldFont);
-		maxWait.setText("3s");
+		maxWait.setText("0s");
 		
 		JLabel simulationTimeSliderLabel = new JLabel();
 		simulationTimeSliderLabel.setHorizontalAlignment(JLabel.CENTER);
@@ -1476,7 +1476,7 @@ public class MainFrame extends javax.swing.JFrame {
 		drawingPanel1.repaint();
 	}
 
-	private void _stopBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event__stopBtnActionPerformed
+	private void _stopBtnActionPerformed(java.awt.event.ActionEvent evt) {
 		_sim = null;
 		_iter = null;
 		_simTimer.stop();
@@ -1484,14 +1484,12 @@ public class MainFrame extends javax.swing.JFrame {
 		_playPauseBtn.setIcon(new ImageIcon(PLAY_FILEPATH));
 		drawingPanel1.clearCurrent();
 		drawingPanel1.repaint();
-	}//GEN-LAST:event__stopBtnActionPerformed
+	}
 
-	private void _playPauseBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event__playPauseBtnActionPerformed
-		// TODO add your handling code here:
+	private void _playPauseBtnActionPerformed(java.awt.event.ActionEvent evt) {
 		if (!_simTimer.isRunning()) {
 			_playPauseBtn.setIcon(new ImageIcon(PAUSE_FILEPATH));
 			simulation_move_forward();
-			_simTimer.setDelay(_slider.getMaximum() - _slider.getValue());
 			_simTimer.start();
 			return;
 		}
@@ -1499,7 +1497,7 @@ public class MainFrame extends javax.swing.JFrame {
 			_playPauseBtn.setIcon(new ImageIcon(PLAY_FILEPATH));
 			_simTimer.stop();
 		}
-	}//GEN-LAST:event__playPauseBtnActionPerformed
+	}
 
 	private void _forwardBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event__forwardBtnActionPerformed
 		simulation_move_forward();
