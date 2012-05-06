@@ -16,11 +16,13 @@ public class Diagram implements Cloneable {
 	private Collection<Node> _nodes;
 	private Collection<Edge> _edges;
 	private String _name;
+	private int _revision;
 
 	public Diagram() {
 		_nodes = new HashSet<Node>();
 		_edges = new HashSet<Edge>();
 		_name = "";
+		_revision = 0;
 	}
 
 	public String getName(){
@@ -58,6 +60,7 @@ public class Diagram implements Cloneable {
 	public Object clone() throws CloneNotSupportedException {
 		Diagram cloned = (Diagram) super.clone();
 		cloned.setName(getName());
+		cloned.setRevision(getRevision());
 		Collection<Node> cloned_nodes = new HashSet<Node>();
 		Collection<Node> old_nodes = getNodes();
 		Collection<Edge> cloned_edges = new HashSet<Edge>();
@@ -272,5 +275,13 @@ public class Diagram implements Cloneable {
 			tempNode = tempDest;
 		}
 		return simulation;
+	}
+
+	public void setRevision(int revision) {
+		_revision = revision;
+	}
+
+	public int getRevision() {
+		return _revision;
 	}
 }
