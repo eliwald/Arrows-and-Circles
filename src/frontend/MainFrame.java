@@ -1248,6 +1248,7 @@ public class MainFrame extends javax.swing.JFrame {
 					_edgesSelected = Collections.synchronizedSet(new HashSet<Edge>());
 					_edgesSelected.add(newEdge);
 					_edgeStart = null;
+					_shiftClicked = false;
 					drawingPanel1._progressLine = null;
 					drawingPanel1.repaint();
 					return;
