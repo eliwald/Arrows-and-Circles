@@ -702,7 +702,6 @@ public class MainFrame extends javax.swing.JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
 				StringBuilder builder = new StringBuilder();
 				for (Node node : drawingPanel1.getDiagram().getNodes()){
 					for (Edge edge : node.getConnected()){
@@ -717,9 +716,7 @@ public class MainFrame extends javax.swing.JFrame {
 
 				JOptionPane.showOptionDialog(jSplitPane2, disp, "Transitions", JOptionPane.DEFAULT_OPTION, 
 				JOptionPane.INFORMATION_MESSAGE, null, opts, opts[0]);
-
-			}
-			
+			}	
 		});
 		
 		jMenuBar2.add(jMenu4);
@@ -735,7 +732,6 @@ public class MainFrame extends javax.swing.JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
 				JFrame aboutFrame = new JFrame("About");
 				aboutFrame.setVisible(true);
 				JTabbedPane tabs = new JTabbedPane();
@@ -1209,9 +1205,9 @@ public class MainFrame extends javax.swing.JFrame {
 		boolean changed_help_text = false;
 		for (Node n : drawingPanel1.getDiagram().getNodes()) {
 			if (n.getCircle().contains(_mouseLoc) || (n.isStart() && n.getStartSymbol().contains(_mouseLoc))) {
-
-				if (n.getCircle().contains(_mouseLoc) && _shiftClicked)
+				if (n.getCircle().contains(_mouseLoc) && _shiftClicked) {
 					_edgeStart = n;
+				}
 				if (n.isSelected())
 					_helpText.setText(help_message_text_in_node_selected);
 				else
@@ -1240,6 +1236,9 @@ public class MainFrame extends javax.swing.JFrame {
 			//Find the node which the edge is ending at
 			for (Node n : drawingPanel1.getDiagram().getNodes()) {
 				if (n.getCircle().contains(_mouseLoc)) {
+					//Reset selected edges/nodes
+					resetSelected();
+					
 					//Create the new edge, reset all variables associated with maintaining the edge being drawn.
 					Edge newEdge = new Edge(_edgeStart,n,_edgeStart.getCenter(),_edgeStart.getCenter(),drawingPanel1,_edgeType);
 					newEdge.getTextField().grabFocus();
@@ -1247,7 +1246,6 @@ public class MainFrame extends javax.swing.JFrame {
 					_edgeStart.addConnected(newEdge);
 					n.addConnected(newEdge);
 					drawingPanel1.getDiagram().addEdge(newEdge);
-					resetSelected();
 					_edgesSelected.add(newEdge);
 					_edgeStart = null;
 					_shiftClicked = false;
