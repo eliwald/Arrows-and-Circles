@@ -116,7 +116,7 @@ public class MainFrame extends javax.swing.JFrame {
 	 * 
 	 * _shiftClicked is false if shift is not currently being held, and true otherwise.  We
 	 * 		need this variable because Mac OS doesn't recognize shift in Mouse Modifiers for
-	 * 		some reason.
+	 * 		some reason.  TAKING THIS OUT FOR NOW.
 	 */
 	private Node _edgeStart;
 	private Node _resizing;
@@ -136,7 +136,6 @@ public class MainFrame extends javax.swing.JFrame {
 	private boolean _backwardClicked;
 	private String _currentInputString;
 	private JLabel _helpText;
-	private boolean _shiftClicked;
 
 	//The file paths of image resources, and other global static variables we want to define.
 	private static final String PLAY_FILEPATH = "./src/img/play.png";
@@ -1159,6 +1158,17 @@ public class MainFrame extends javax.swing.JFrame {
 		_edgeDragged = null;
 		_nodeDragged = null;
 		_resizing = null;
+		
+		//Check if we are trying to draw another edge
+		if (MouseEvent.getMouseModifiersText(evt.getModifiers()).contains("Shift")) {
+			for (Node n : drawingPanel1.getDiagram().getNodes()) {
+				if (n.getCircle().contains(evt.getPoint())) {
+					_edgeStart = n;
+					break;
+				}
+			}
+		}
+		
 		//Set the node/resizing/edge being dragged to the thing being pressed on.
 		if (_edgeStart == null) {
 			for (Node n : drawingPanel1.getDiagram().getNodes()) {
@@ -1197,9 +1207,6 @@ public class MainFrame extends javax.swing.JFrame {
 		boolean changed_help_text = false;
 		for (Node n : drawingPanel1.getDiagram().getNodes()) {
 			if (n.getCircle().contains(_mouseLoc) || (n.isStart() && n.getStartSymbol().contains(_mouseLoc))) {
-				if (n.getCircle().contains(_mouseLoc) && _shiftClicked) {
-					_edgeStart = n;
-				}
 				if (n.isSelected())
 					_helpText.setText(help_message_text_in_node_selected);
 				else
@@ -1240,7 +1247,6 @@ public class MainFrame extends javax.swing.JFrame {
 					drawingPanel1.getDiagram().addEdge(newEdge);
 					_edgesSelected.add(newEdge);
 					_edgeStart = null;
-					_shiftClicked = false;
 					drawingPanel1._progressLine = null;
 					drawingPanel1.repaint();
 					return;
@@ -1249,7 +1255,6 @@ public class MainFrame extends javax.swing.JFrame {
 			//If no end point was found, reset the line.
 			drawingPanel1._progressLine = null;
 			_edgeStart = null;
-			_shiftClicked = false;
 		}
 		//If no edge is being drawn, reset all the nodes/resizing boxes/edges being dragged, upon mouse release
 		_resizing = null;
@@ -1322,16 +1327,6 @@ public class MainFrame extends javax.swing.JFrame {
 			else
 				_robot.mouseMove(loc.x + (int) (currNode.getCenter().x+(currNode.getRadius()*vecX)), loc.y + (int) (currNode.getCenter().y+(currNode.getRadius()*vecY)));
 		}
-		//Otherwise if "shift" is pressed, get ready to create a new edge from the node over which we are hovering.
-		else if (evt.getKeyCode() == KeyEvent.VK_SHIFT) {
-			_shiftClicked = true;
-			for (Node n : drawingPanel1.getDiagram().getNodes()) {
-				if (n.getCircle().contains(_mouseLoc)) {
-					_edgeStart = n;
-					return;
-				}
-			}
-		}
 		drawingPanel1.repaint();
 	}
 
@@ -1342,7 +1337,6 @@ public class MainFrame extends javax.swing.JFrame {
 	 */
 	private void drawingPanel1KeyReleased(java.awt.event.KeyEvent evt) {
 		if (evt.getKeyCode() == KeyEvent.VK_SHIFT) {
-			_shiftClicked = false;
 			if (drawingPanel1._progressLine == null)
 				_edgeStart = null;
 		}
