@@ -900,7 +900,6 @@ public class MainFrame extends javax.swing.JFrame {
 							_nodesSelected.add(n);
 						}
 						drawingPanel1.repaint();
-						System.out.println("returning after ctrl-click");
 						return; //If we find a node or edge, just return; we don't want to ctrl
 						//select multiple things if nodes are stacked on top of each other.
 					}
@@ -973,7 +972,6 @@ public class MainFrame extends javax.swing.JFrame {
 						return;
 					}
 					else if (boundingBox.contains(evt.getPoint().x, evt.getPoint().y)){
-						System.out.println("line");
 						resetSelected();
 						e.getLabel().setVisible(false);
 						e.getTextField().setVisible(true);
@@ -1312,8 +1310,6 @@ public class MainFrame extends javax.swing.JFrame {
 		}
 		//Otherwise if "s" is pressed, snap to the nearest node.
 		else if(evt.getKeyCode() == KeyEvent.VK_S && evt.getModifiers() != 2) {
-			System.out.println(evt.getModifiers());
-			System.out.println(KeyEvent.VK_CONTROL);
 			Node currNode = null;
 
 			int dist;
