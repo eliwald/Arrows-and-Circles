@@ -839,7 +839,7 @@ public class MainFrame extends javax.swing.JFrame {
 				drawingPanel1.clearSelected();
 
 				for (Node n : drawingPanel1.getDiagram().getNodes()){
-					if (n.getCircle().contains(evt.getPoint()) || n.getCircle().contains(evt.getPoint())){
+					if (n.getCircle().contains(evt.getPoint()) || (n.isStart() && n.getStartSymbol().contains(evt.getPoint()))){
 						n.setSelected(true);
 						n.getTextField().setVisible(true);
 						n.getLabel().setVisible(false);
@@ -1064,7 +1064,7 @@ public class MainFrame extends javax.swing.JFrame {
 		_edgeStart = null;
 		boolean changed_help_text = false;
 		for (Node n : drawingPanel1.getDiagram().getNodes()) {
-			if (n.getCircle().contains(_mouseLoc) || n.getStartSymbol().contains(_mouseLoc)) {
+			if (n.getCircle().contains(_mouseLoc) || (n.isStart() && n.getStartSymbol().contains(_mouseLoc))) {
 				if (n.getCircle().contains(_mouseLoc) && MouseEvent.getMouseModifiersText(evt.getModifiers()).contains("Shift"))
 					_edgeStart = n;
 				if (n.isSelected())
