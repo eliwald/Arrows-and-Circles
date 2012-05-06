@@ -94,7 +94,6 @@ public class Edge implements Cloneable, DiagramObject {
 		_label.setBackground(new Color(0,0,0,0));
 		_label.setSize(TEXTBOX_WIDTH, TEXTBOX_HEIGHT);
 		_label.setHorizontalAlignment(JTextField.CENTER);
-		_label.addMouseListener(new labelClickListener(this));
 		_container.add(_label);
 		_container.add(_area);
 
@@ -579,35 +578,7 @@ public class Edge implements Cloneable, DiagramObject {
 		return _angle;
 	}
 	
-	private class labelClickListener implements MouseListener{
-		private Edge _edge;
-		
-		public labelClickListener(Edge edge){
-			_edge = edge;
-		}
-		
-		@Override
-		public void mouseClicked(MouseEvent e) {
-			// TODO Auto-generated method stub
-			_label.setVisible(false);
-			_area.setVisible(true);
-			_edge.setSelected(true);
-			
-		}
-
-		@Override
-		public void mouseEntered(MouseEvent e) {}
-
-		@Override
-		public void mouseExited(MouseEvent e) {}
-
-		@Override
-		public void mousePressed(MouseEvent e) {}
-
-		@Override
-		public void mouseReleased(MouseEvent e) {}
-		
-	}
+	
 	
 	
 }

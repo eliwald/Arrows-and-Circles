@@ -975,6 +975,14 @@ public class MainFrame extends javax.swing.JFrame {
 						drawingPanel1.repaint();
 						return;
 					}
+					else if (e.getLabel().contains(evt.getPoint())){
+						System.out.println("line");
+						resetSelected();
+						e.getLabel().setVisible(false);
+						e.getTextField().setVisible(true);
+						_edgesSelected.add(e);
+						return;
+					}
 				}
 			}
 		}
