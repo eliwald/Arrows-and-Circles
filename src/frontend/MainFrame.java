@@ -12,16 +12,11 @@ import backend.InvalidDFSMException;
 import backend.Node;
 import java.awt.AWTException;
 import java.awt.Cursor;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Point;
 import java.awt.Robot;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentListener;
-import java.awt.event.ContainerListener;
-import java.awt.event.FocusListener;
-import java.awt.event.HierarchyBoundsListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -47,7 +42,6 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
-import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
@@ -119,6 +113,10 @@ public class MainFrame extends javax.swing.JFrame {
 	 * 
 	 * _helpText is the label displayed at the bottom of the main frame to alert the user to
 	 * 		keybindings.
+	 * 
+	 * _shiftClicked is false if shift is not currently being held, and true otherwise.  We
+	 * 		need this variable because Mac OS doesn't recognize shift in Mouse Modifiers for
+	 * 		some reason.
 	 */
 	private Node _edgeStart;
 	private Node _resizing;
@@ -138,6 +136,7 @@ public class MainFrame extends javax.swing.JFrame {
 	private boolean _backwardClicked;
 	private String _currentInputString;
 	private JLabel _helpText;
+	private boolean _shiftClicked;
 
 	//The file paths of image resources, and other global static variables we want to define.
 	private static final String PLAY_FILEPATH = "./src/img/play.png";
@@ -149,6 +148,7 @@ public class MainFrame extends javax.swing.JFrame {
 	private static final String help_message_text = "Double Click: New Node | \"S\": Snap Mouse To Nearest Node | Ctrl-Click Component: Add Component To Selected Components";
 	private static final String help_message_text_in_node_unselected = "Click To Select | Double Click: Toggle Accept State | Shift-DragClick: New Edge | Click-Drag: Move It Around";
 	private static final String help_message_text_in_node_selected = "Shift-DragClick: New Edge | Double Click: Toggle Accept | Delete/Backspace: Delete Node | Click Triangle: Toggle Start State";
+	private static final String help_messate_text_in_edge = "To Delete: If Text Is Selected, Hit Enter; Then Delete | Toggle Direction: Lower Left Pane | To Rename: Single Click Edge";
 	
 	//If we are within 3 pixels of another node, then snap to that node.
 	private static int SNAP_DIFFERENCE = 7;
@@ -707,15 +707,17 @@ public class MainFrame extends javax.swing.JFrame {
 				for (Node node : drawingPanel1.getDiagram().getNodes()){
 					for (Edge edge : node.getConnected()){
 						if (edge.getStartNode() == node && edge.getDirection() == EdgeDirection.SINGLE){
-							builder.append("<"+ node.getName() + ", edge labeled: " + edge.getLabel().getText() + " -> " + edge.getEndNode().getName() +  ">\n");
+							builder.append("<"+ node.getName() + ", edge labeled: " + edge.getTextField().getText() + " -> " + edge.getEndNode().getName() +  ">\n");
 						}
 					}
 				}
 				String disp = builder.toString();
 				if (disp.equals("")) disp = "There are no transitions in this FSM.";
 				String[] opts = {"OK"};
+
 				JOptionPane.showOptionDialog(jSplitPane2, disp, "Transitions", JOptionPane.DEFAULT_OPTION, 
-		JOptionPane.INFORMATION_MESSAGE, null, opts, opts[0]);
+				JOptionPane.INFORMATION_MESSAGE, null, opts, opts[0]);
+
 			}
 			
 		});
@@ -1084,6 +1086,9 @@ public class MainFrame extends javax.swing.JFrame {
 		//Otherwise, if we are in the middle of resizing an edge, then correctly resize the edge.
 		else if (_edgeDragged != null) {
 			
+			//Set the help text of the bottom bar
+			_helpText.setText(help_messate_text_in_edge);
+			
 			// When the start node and end node are different.
 			if(_edgeDragged.getStartNode() != _edgeDragged.getEndNode()) {
 			
@@ -1197,12 +1202,20 @@ public class MainFrame extends javax.swing.JFrame {
 		boolean changed_help_text = false;
 		for (Node n : drawingPanel1.getDiagram().getNodes()) {
 			if (n.getCircle().contains(_mouseLoc) || (n.isStart() && n.getStartSymbol().contains(_mouseLoc))) {
-				if (n.getCircle().contains(_mouseLoc) && MouseEvent.getMouseModifiersText(evt.getModifiers()).contains("Shift"))
+
+				if (n.getCircle().contains(_mouseLoc) && _shiftClicked)
 					_edgeStart = n;
 				if (n.isSelected())
 					_helpText.setText(help_message_text_in_node_selected);
 				else
 					_helpText.setText(help_message_text_in_node_unselected);
+				changed_help_text = true;
+			}
+		}
+		for (Edge e : drawingPanel1.getDiagram().getEdges()) {
+			if (e.intersects(_mouseLoc.getX(), _mouseLoc.getY())) {
+				//Set the help text of the bottom bar
+				_helpText.setText(help_messate_text_in_edge);
 				changed_help_text = true;
 			}
 		}
@@ -1241,6 +1254,7 @@ public class MainFrame extends javax.swing.JFrame {
 			//If no end point was found, reset the line.
 			drawingPanel1._progressLine = null;
 			_edgeStart = null;
+			_shiftClicked = false;
 		}
 		//If no edge is being drawn, reset all the nodes/resizing boxes/edges being dragged, upon mouse release
 		_resizing = null;
@@ -1316,6 +1330,7 @@ public class MainFrame extends javax.swing.JFrame {
 		}
 		//Otherwise if "shift" is pressed, get ready to create a new edge from the node over which we are hovering.
 		else if (evt.getKeyCode() == KeyEvent.VK_SHIFT) {
+			_shiftClicked = true;
 			for (Node n : drawingPanel1.getDiagram().getNodes()) {
 				if (n.getCircle().contains(_mouseLoc)) {
 					_edgeStart = n;
@@ -1332,48 +1347,70 @@ public class MainFrame extends javax.swing.JFrame {
 	 * @param evt	The KeyEvent associated with the key being released.
 	 */
 	private void drawingPanel1KeyReleased(java.awt.event.KeyEvent evt) {
-		if (drawingPanel1._progressLine == null && evt.getKeyCode() == KeyEvent.VK_SHIFT)
-			_edgeStart = null;
+		if (evt.getKeyCode() == KeyEvent.VK_SHIFT) {
+			_shiftClicked = false;
+			if (drawingPanel1._progressLine == null)
+				_edgeStart = null;
+		}
 	}
 
 	/******************************************************************************************************************
 	 * EXIT MENU, SIMULATION TEXT FIELD																				  *
 	 ******************************************************************************************************************/
-
-	private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
-		// TODO add your handling code here:
-	}//GEN-LAST:event_jTextField1ActionPerformed
-
-	private void jTextField1MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTextField1MouseClicked
-		// TODO add your handling code here:
+	
+	/**
+	 * Gets called when an action is performed on the simulation text
+	 * field.  Nothing needs to happen; I think we can delete this.
+	 */
+	private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {
+	}
+	
+	/**
+	 * This gets called when the mouse is pressed inside the simulation
+	 * text field.  Sets the text to be empty if the text is the
+	 * default "Input string here".
+	 */
+	private void jTextField1MousePressed(java.awt.event.MouseEvent evt) {
 		if (jTextField1.getText().equals("Input string here")){
 			jTextField1.setText("");
 		}
 		Font newTextFieldFont = new Font(jTextField1.getFont().getName(),Font.PLAIN,jTextField1.getFont().getSize());
 		jTextField1.setFont(newTextFieldFont);
-	}//GEN-LAST:event_jTextField1MouseClicked
-
-	private void jMenuItem8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem8ActionPerformed
-		// TODO add your handling code here:
+	}
+	
+	/**
+	 * This gets called when the user hits ctrl-Q to quit the program.
+	 * @param evt
+	 */
+	private void jMenuItem8ActionPerformed(java.awt.event.ActionEvent evt) {
 		exitPrompt();
 		System.exit(0);
-	}//GEN-LAST:event_jMenuItem8ActionPerformed
 
-	private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
-		// TODO add your handling code here:
-		exitPrompt();
-		int currIndex = jTabbedPane1.getSelectedIndex();
-		if (currIndex >= 0){
-			jTabbedPane1.remove(currIndex);
+	}
+	
+	/**
+	 * This gets called when the close tab action is performed.
+	 * @param evt
+	 */
+	private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {
+		//TODO: Add to this if-statement the condition that checks whether or
+		//not the currently selected index has already been saved
+		if (jTabbedPane1.getSelectedIndex() != -1) {
+			int answer = exitPrompt();
+			if (answer == 1) {
+				//TODO: Save the tab before closing it!
+			}
+			if (answer != 2) {
+				int currIndex = jTabbedPane1.getSelectedIndex();
+				jTabbedPane1.remove(currIndex);
+				if (jTabbedPane1.getSelectedComponent() != null){
+					jScrollPane1 = (JScrollPane)(jTabbedPane1.getSelectedComponent());
+					drawingPanel1 = (DrawingPanel)jScrollPane1.getViewport().getView();
+				}
+			}
 		}
-		else{
-			return;
-		}
-		if (jTabbedPane1.getSelectedComponent() != null){
-			jScrollPane1 = (JScrollPane)(jTabbedPane1.getSelectedComponent());
-			drawingPanel1 = (DrawingPanel)jScrollPane1.getViewport().getView();
-		}
-	}//GEN-LAST:event_jMenuItem6ActionPerformed
+		//If it has already been saved, then just copy above code to exit no matter what.
+	}
 
 	/******************************************************************************************************************
 	 * SIMULATION METHODS: MOVE_FORWARD, MOVE_BACKWARD, STOP/PLAY/FWD/RWD CLICKED									  *
@@ -1579,7 +1616,11 @@ public class MainFrame extends javax.swing.JFrame {
 		}
 		drawingPanel1.repaint();
 	}
-
+	
+	/**
+	 * Gets called when the "Stop" button is clicked.
+	 * @param evt		The ActionEvent associated with the stop.
+	 */
 	private void _stopBtnActionPerformed(java.awt.event.ActionEvent evt) {
 		_sim = null;
 		_iter = null;
@@ -1589,7 +1630,11 @@ public class MainFrame extends javax.swing.JFrame {
 		drawingPanel1.clearCurrent();
 		drawingPanel1.repaint();
 	}
-
+	
+	/**
+	 * Gets called when the "Play/Pause" button is clicked.
+	 * @param evt		The ActionEvent associated with the play.
+	 */
 	private void _playPauseBtnActionPerformed(java.awt.event.ActionEvent evt) {
 		if (!_simTimer.isRunning()) {
 			_playPauseBtn.setIcon(new ImageIcon(PAUSE_FILEPATH));
@@ -1602,20 +1647,32 @@ public class MainFrame extends javax.swing.JFrame {
 			_simTimer.stop();
 		}
 	}
-
-	private void _forwardBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event__forwardBtnActionPerformed
+	
+	/**
+	 * Gets called when the "Fwd" button is clicked.
+	 * @param evt		The ActionEvent associated with the fwd.
+	 */
+	private void _forwardBtnActionPerformed(java.awt.event.ActionEvent evt) {
 		simulation_move_forward();
-	}//GEN-LAST:event__forwardBtnActionPerformed
-
-	private void _rewindBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event__rewindBtnActionPerformed
-		// TODO add your handling code here:
+	}
+	
+	/**
+	 * Gets called when the "Bwd" button is clicked.
+	 * @param evt		The ActionEvent associated with the bwd.
+	 */
+	private void _rewindBtnActionPerformed(java.awt.event.ActionEvent evt) {
 		simulation_move_backward();
-	}//GEN-LAST:event__rewindBtnActionPerformed
+	}
 
 	/******************************************************************************************************************
 	 * SLIDERS STATE CHANGED, TOOLBOX BUTTONS CLICKED																  *
 	 ******************************************************************************************************************/
-
+	
+	/**
+	 * This gets called when the slider value changes that handles scrolling
+	 * quickly through simulation.  Eddie made this method, and I can't follow
+	 * the logic; he'll have to comment it.
+	 */
 	private void _simSlideStateChanged(javax.swing.event.ChangeEvent evt) {
 		if (_sim == null) {
 			return;
@@ -1670,11 +1727,19 @@ public class MainFrame extends javax.swing.JFrame {
 		_curr = _simSlide.getValue();
 	}
 	
-	
+	/**
+	 * Gets called when the top slider that sets the time interval between
+	 * simulation steps gets changed.
+	 * @param evt
+	 */
 	private void _sliderStateChanged(javax.swing.event.ChangeEvent evt) {
 		_simTimer.setDelay(_speedSlider.getMaximum() - _speedSlider.getValue());
 	}
-
+	
+	/**
+	 * This gets called when the Doubly sided edge button gets clicked.
+	 * @param evt
+	 */
 	private void _doublyBtnActionPerformed(java.awt.event.ActionEvent evt) {
 		for (Edge e : _edgesSelected) {
 			e.setDirection(EdgeDirection.DOUBLE);
@@ -1682,7 +1747,11 @@ public class MainFrame extends javax.swing.JFrame {
 		_edgeType = EdgeDirection.DOUBLE;
 		drawingPanel1.repaint();
 	}
-
+	
+	/**
+	 * This gets called when the Undirected edge button gets clicked.
+	 * @param evt
+	 */
 	private void _undirectedBtnActionPerformed(java.awt.event.ActionEvent evt) {
 		for (Edge e : _edgesSelected) {
 			e.setDirection(EdgeDirection.NONE);
@@ -1690,7 +1759,11 @@ public class MainFrame extends javax.swing.JFrame {
 		_edgeType = EdgeDirection.NONE;
 		drawingPanel1.repaint();
 	}
-
+	
+	/**
+	 * This gets called when the Singly directed edge button gets clicked.
+	 * @param evt
+	 */
 	private void _singlyBtnActionPerformed(java.awt.event.ActionEvent evt) {
 		for (Edge e : _edgesSelected) {
 			e.setDirection(EdgeDirection.SINGLE);
@@ -1702,31 +1775,34 @@ public class MainFrame extends javax.swing.JFrame {
 	/******************************************************************************************************************
 	 * HELPER FUNCTIONS AND CLASSES																					  *
 	 ******************************************************************************************************************/
-
+	
+	/**
+	 * Listener used for the simulation timer, so that when the timer goes off,
+	 * simulation can move forwards.
+	 */
 	private class SimListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			simulation_move_forward();
 		}
 	}
-
-	private void exitPrompt(){
-		//TODO fill this in to prompt for save
-
+	
+	/**
+	 * Returns 0 if the user does not want to save, but wants to close the window.
+	 * Returns 1 if the user does want to save and close the window.
+	 * Returns 2 if the user wants to cancel closing the window.
+	 * @return		What the user wants to do.
+	 */
+	private int exitPrompt(){
+		String[] opts = {"No", "Yes", "Cancel"};
+		int answer = JOptionPane.showOptionDialog(this, "There is unsaved work! Would you like to save before closing" +
+				" this tab?", "Closing Unsaved Tab", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE, null, opts, opts[1]);
+		return answer;
 	}
 
 	/**
 	 * @param args the command line arguments
 	 */
 	public static void main(String args[]) {
-		/*
-		 * Set the Nimbus look and feel
-		 */
-		//<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-		/*
-		 * If Nimbus (introduced in Java SE 6) is not available, stay with the
-		 * default look and feel. For details see
-		 * http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
-		 */
 		try {
 			for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
 				if ("Nimbus".equals(info.getName())) {
@@ -1743,13 +1819,11 @@ public class MainFrame extends javax.swing.JFrame {
 		} catch (javax.swing.UnsupportedLookAndFeelException ex) {
 			java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
 		}
-		//</editor-fold>
 
 		/*
 		 * Create and display the form
 		 */
 		java.awt.EventQueue.invokeLater(new Runnable() {
-
 			public void run() {
 				new MainFrame().setVisible(true);
 			}
