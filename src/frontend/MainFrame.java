@@ -4,6 +4,7 @@
  */
 package frontend;
 
+import backend.Diagram;
 import backend.DiagramObject;
 import backend.Edge;
 import backend.EdgeDirection;
@@ -164,12 +165,12 @@ public class MainFrame extends javax.swing.JFrame {
 	private javax.swing.JLabel jLabel2;
 	private javax.swing.JMenu jMenu3;
 	private javax.swing.JMenu jMenu4;
-	private javax.swing.JMenu jMenu5;
+	private javax.swing.JMenu jMenuWindow;
 	private javax.swing.JMenu jMenu6;
-	private javax.swing.JMenu jMenu7;
+	private javax.swing.JMenu jMenuHelp;
 	private javax.swing.JMenuBar jMenuBar2;
 	private javax.swing.JMenuItem jMenuItem1;
-	private javax.swing.JMenuItem jMenuItem10;
+	private javax.swing.JMenuItem jMenuItemRedo;
 	private javax.swing.JMenuItem jMenuItem2;
 	private javax.swing.JMenuItem jMenuItem3;
 	private javax.swing.JMenuItem jMenuItem4;
@@ -177,7 +178,8 @@ public class MainFrame extends javax.swing.JFrame {
 	private javax.swing.JMenuItem jMenuItem6;
 	private javax.swing.JMenuItem jMenuItem7;
 	private javax.swing.JMenuItem jMenuItem8;
-	private javax.swing.JMenuItem jMenuItem9;
+	private javax.swing.JMenuItem jMenuItemUndo;
+	private javax.swing.JMenuItem jMenuItemSelectAll;
 	private javax.swing.JPanel jPanel1;
 	private javax.swing.JPanel jPanel2;
 	private javax.swing.JScrollPane jScrollPane1;
@@ -223,6 +225,8 @@ public class MainFrame extends javax.swing.JFrame {
 		jSplitPane2 = new javax.swing.JSplitPane();
 		jTabbedPane1 = new javax.swing.JTabbedPane();
 		jScrollPane1 = new javax.swing.JScrollPane();
+		
+		
 		drawingPanel1 = new frontend.DrawingPanel();
 		jSplitPane3 = new javax.swing.JSplitPane();
 		jPanel1 = new javax.swing.JPanel();
@@ -250,10 +254,11 @@ public class MainFrame extends javax.swing.JFrame {
 		jMenuItem6 = new javax.swing.JMenuItem();
 		jMenuItem8 = new javax.swing.JMenuItem();
 		jMenu4 = new javax.swing.JMenu();
-		jMenuItem9 = new javax.swing.JMenuItem();
-		jMenuItem10 = new javax.swing.JMenuItem();
-		jMenu5 = new javax.swing.JMenu();
-		jMenu7 = new javax.swing.JMenu();
+		jMenuItemUndo = new javax.swing.JMenuItem();
+		jMenuItemRedo = new javax.swing.JMenuItem();
+		jMenuItemSelectAll = new javax.swing.JMenuItem();
+		jMenuWindow = new javax.swing.JMenu();
+		jMenuHelp = new javax.swing.JMenu();
 
 		jMenuItem2.setText("jMenuItem2");
 
@@ -652,21 +657,42 @@ public class MainFrame extends javax.swing.JFrame {
 
 		jMenu4.setText("Edit");
 
-		jMenuItem9.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Z, java.awt.event.InputEvent.CTRL_MASK));
-		jMenuItem9.setText("Undo");
-		jMenu4.add(jMenuItem9);
+		jMenuItemUndo.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Z, java.awt.event.InputEvent.CTRL_MASK));
+		jMenuItemUndo.setText("Undo");
+		jMenu4.add(jMenuItemUndo);
 
-		jMenuItem10.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Y, java.awt.event.InputEvent.CTRL_MASK));
-		jMenuItem10.setText("Redo");
-		jMenu4.add(jMenuItem10);
+		jMenuItemRedo.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Y, java.awt.event.InputEvent.CTRL_MASK));
+		jMenuItemRedo.setText("Redo");
+		jMenu4.add(jMenuItemRedo);
 
+		jMenuItemSelectAll.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.CTRL_MASK));
+		jMenuItemSelectAll.setText("Select All");
+		jMenuItemSelectAll.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				Diagram diagram = drawingPanel1.getDiagram();
+				for (Node n : diagram.getNodes()){
+					n.setSelected(true);
+				}
+				for (Edge ed : diagram.getEdges()){
+					ed.setSelected(true);
+				}
+				drawingPanel1.repaint();
+			}
+			
+		});
+		jMenu4.add(jMenuItemSelectAll);
+		
 		jMenuBar2.add(jMenu4);
 
-		jMenu5.setText("View");
-		jMenuBar2.add(jMenu5);
+		jMenuWindow.setText("Window");
+		
+		jMenuBar2.add(jMenuWindow);
 
-		jMenu7.setText("Help");
-		jMenuBar2.add(jMenu7);
+		jMenuHelp.setText("Help");
+		jMenuBar2.add(jMenuHelp);
 
 		setJMenuBar(jMenuBar2);
 
@@ -1600,6 +1626,7 @@ public class MainFrame extends javax.swing.JFrame {
 		 */
 		try {
 			for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+//				System.out.println(info.getName());
 				if ("Nimbus".equals(info.getName())) {
 					javax.swing.UIManager.setLookAndFeel(info.getClassName());
 					break;
