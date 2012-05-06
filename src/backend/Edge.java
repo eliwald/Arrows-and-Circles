@@ -9,6 +9,7 @@ import frontend.EnterListener;
 import frontend.MyDocListener;
 
 import java.awt.Color;
+import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.Shape;
 import java.awt.event.KeyListener;
@@ -36,6 +37,8 @@ public class Edge implements Cloneable, DiagramObject {
     private double _height; // from midpoint between two centers to center of the arc
     private boolean _turn = false; // false for negative, true for positive
     private boolean _selected;
+    private double _angle; // only applies for self loop
+    private double _offset;
     private DrawingPanel _container;
     private boolean _current = false;
     private static final int ARROW_SIZE = 12;
@@ -43,6 +46,7 @@ public class Edge implements Cloneable, DiagramObject {
     private static final int TEXTBOX_WIDTH = 40;
     private static final int TEXTBOX_OFFSET = 25;
     private static final String DEFAULT_STRING = "0";
+	private static final int RADIUS_TOLERANCE = 6;
     
 
 	public Edge(Node s, Node e, Point2D.Double start, Point2D.Double end, DrawingPanel container, EdgeDirection d) {
@@ -55,6 +59,8 @@ public class Edge implements Cloneable, DiagramObject {
 		_point_start = start;
 		_point_end = end;
         _selected = true;
+        _angle = Math.PI / 4;
+        _offset = 0;
 		_direction = d;
 		_curve = new Arc2D.Double(Arc2D.OPEN);
 
@@ -114,52 +120,76 @@ public class Edge implements Cloneable, DiagramObject {
 
     public Shape resetArc() {
 
-        double cx = 0;
-        double cy = 0;
-        
-        if (_start == _end) {
-            cx = _start.getRadius() * .6;
-            cy = _start.getRadius() * .6;
-        }
+    	// If this is not the self-loop
+    	if(_start != _end) {
 
-        else {// Obtain the length of the chord.
-            cx = (_end.getCenter().getX() - _start.getCenter().getX()) / 2;
-            cy = (_end.getCenter().getY() - _start.getCenter().getY()) / 2;
-        }
-        double dc = Math.sqrt(cx*cx + cy*cy);
-        
-        // Obtain the radius vector and size.
-        double rx = (-cy) / dc * _height + cx;
-        double ry = (cx) / dc * _height + cy;
-        double dr = Math.sqrt(rx * rx + ry * ry);
-       
-        // Obtain the center of the arc.
-        double ax = _start.getCenter().getX() + rx;
-        double ay = _start.getCenter().getY() + ry;
-        
-        // Location
-        double lx, ly;
-        
-        // Change the curve.
-        _curve.setArcByCenter(ax, ay, dr, -Math.PI/2, Math.PI/2, Arc2D.OPEN);
-        if(_turn) {
-        	_curve.setAngles(_start.getCenter(), _end.getCenter());
-        	lx = (-cy) / dc * (dr + _height + TEXTBOX_OFFSET) + cx;
-        	ly = (cx) / dc * (dr + _height + TEXTBOX_OFFSET) + cy;
-        }
-        else {
-        	_curve.setAngles(_end.getCenter(), _start.getCenter());
-        	lx = (cy) / dc * (dr - _height + TEXTBOX_OFFSET) + cx;
-        	ly = (-cx) / dc * (dr - _height + TEXTBOX_OFFSET) + cy;
-        }
+        	// Obtain the half segment vector from the start to the end.
+        	double[] halfSegment = {
+        		(_end.getCenter().getX() - _start.getCenter().getX()) / 2,
+        		(_end.getCenter().getY() - _start.getCenter().getY()) / 2,
+        	};
+        	double halfSegmentSize = Math.sqrt(halfSegment[0] * halfSegment[0] + halfSegment[1] * halfSegment[1]);
+        	
+        	// Obtain the radius vector (from center of the arc to the end)
+        	double[] radius = {
+        		(-halfSegment[1]) / halfSegmentSize * _height + halfSegment[0],
+        		(halfSegment[0]) / halfSegmentSize * _height + halfSegment[1]
+        	};
+        	double radiusSize = Math.sqrt(radius[0] * radius[0] + radius[1] * radius[1]);
+	        
+        	// Obtain the center of the arc.
+        	double[] arcCenter = {
+        		_start.getCenter().getX() + radius[0],
+        		_start.getCenter().getY() + radius[1]
+        	};
 
-        _area.setLocation((int) (_start.getCenter().getX() + lx) - TEXTBOX_WIDTH / 2, (int) (_start.getCenter().getY() + ly) - TEXTBOX_HEIGHT / 2);
-        _label.setLocation((int) (_start.getCenter().getX() + lx) - TEXTBOX_WIDTH / 2, (int) (_start.getCenter().getY() + ly) - TEXTBOX_HEIGHT / 2);
-        
-        return _curve;
+        	// Draw the curve
+        	_curve.setArcByCenter(arcCenter[0], arcCenter[1], radiusSize, -Math.PI/2, Math.PI/2, Arc2D.OPEN);
+        	if(_turn)
+        		_curve.setAngles(_start.getCenter(), _end.getCenter());
+	        else
+	        	_curve.setAngles(_end.getCenter(), _start.getCenter());
+	        
+	        // Find the label location
+        	double[] label = {
+        		(_turn ? -1 : 1) * halfSegment[1] / halfSegmentSize * (radiusSize + (_turn ? 1 : -1) * _height + TEXTBOX_OFFSET) + halfSegment[0],
+        		(_turn ? 1 : -1) * halfSegment[0] / halfSegmentSize * (radiusSize + (_turn ? 1 : -1) * _height + TEXTBOX_OFFSET) + halfSegment[1]
+        	};
+	
+	        _area.setLocation((int) (_start.getCenter().getX() + label[0]) - TEXTBOX_WIDTH / 2, 
+	        		(int) (_start.getCenter().getY() + label[1]) - TEXTBOX_HEIGHT / 2);
+	        _label.setLocation((int) (_start.getCenter().getX() + label[0]) - TEXTBOX_WIDTH / 2, 
+	        		(int) (_start.getCenter().getY() + label[1]) - TEXTBOX_HEIGHT / 2);
+	        
+	        return _curve;
+    	}
+    	// Drawing self-loop
+    	else {
+    		// Obtain the center of the arc.
+        	double[] arcCenter = {
+        		_start.getCenter().getX() + Math.cos(_angle) * _start.getRadius() * Math.sqrt(2),
+        		_start.getCenter().getY() + Math.sin(_angle) * _start.getRadius() * Math.sqrt(2)
+        	};
+        	
+        	// Draw the curve
+        	_curve.setArcByCenter(arcCenter[0], arcCenter[1], _start.getRadius(), -_angle * 180 / Math.PI - 135, 270, Arc2D.OPEN);
+        	
+        	// Find the label location
+        	double[] label = {
+        		Math.cos(_angle) * (_start.getRadius() * (Math.sqrt(2) + 1) + TEXTBOX_OFFSET),
+        		Math.sin(_angle) * (_start.getRadius() * (Math.sqrt(2) + 1) + TEXTBOX_OFFSET)
+        	};
+	
+	        _area.setLocation((int) (_start.getCenter().getX() + label[0]) - TEXTBOX_WIDTH / 2, 
+	        		(int) (_start.getCenter().getY() + label[1]) - TEXTBOX_HEIGHT / 2);
+	        _label.setLocation((int) (_start.getCenter().getX() + label[0]) - TEXTBOX_WIDTH / 2, 
+	        		(int) (_start.getCenter().getY() + label[1]) - TEXTBOX_HEIGHT / 2);
+        	
+	        return _curve;
+    	}
     }
     
-    private static double theta(double x, double y) {
+    public static double theta(double x, double y) {
     	double theta = y / (Math.abs(x) + Math.abs(y));
         if(x < 0) {
         	theta = 2 - theta;
@@ -172,48 +202,59 @@ public class Edge implements Cloneable, DiagramObject {
     
     public boolean intersects(double x, double y) {
     	
-    	// In case of the self loop, use the usual intersects 
-        if (_start == _end) {
-            return _curve.intersects(x - 4, y - 4, 8, 8);
-        }
+    	if(_start != _end) {
+        	// Obtain the half segment vector from the start to the end.
+        	double[] halfSegment = {
+        		(_end.getCenter().getX() - _start.getCenter().getX()) / 2,
+        		(_end.getCenter().getY() - _start.getCenter().getY()) / 2,
+        	};
+        	double halfSegmentSize = Math.sqrt(halfSegment[0] * halfSegment[0] + halfSegment[1] * halfSegment[1]);
+        	
+        	// Obtain the radius vector (from center of the arc to the end)
+        	double[] radius = {
+        		(-halfSegment[1]) / halfSegmentSize * _height + halfSegment[0],
+        		(halfSegment[0]) / halfSegmentSize * _height + halfSegment[1]
+        	};
+        	double radiusSize = Math.sqrt(radius[0] * radius[0] + radius[1] * radius[1]);
+	        
+        	// Obtain the center of the arc.
+        	double[] arcCenter = {
+        		_start.getCenter().getX() + radius[0],
+        		_start.getCenter().getY() + radius[1]
+        	};
+        	
+        	// Obtain the vector from the center of the arc to the mouse.
+        	double[] mouse = { x - arcCenter[0], y - arcCenter[1] };
+        	double mouseSize = Math.sqrt(mouse[0] * mouse[0] + mouse[1] * mouse[1]);
+	        
+	        // Obtain the virtual angle
+	        double thetaMouse = theta(mouse[0], mouse[1]);
+	        double thetaP = theta(_start.getCenter().getX() - arcCenter[0], _start.getCenter().getY() - arcCenter[1]);
+	        double thetaQ = theta(_end.getCenter().getX() - arcCenter[0], _end.getCenter().getY() - arcCenter[1]);
+	        if(_turn) { // needs to reverse
+	        	double tmp = thetaP;
+	        	thetaP = thetaQ;
+	        	thetaQ = tmp;
+	        }
+	        
+	        // Check if mouse is in the range.
+	        return (Math.abs(mouseSize - radiusSize) < RADIUS_TOLERANCE && (thetaP < thetaQ && thetaP < thetaMouse && thetaMouse < thetaQ
+	        		|| thetaP > thetaQ && (thetaMouse < thetaQ || thetaMouse > thetaP)));
+    	}
+    	else {
+    		// Obtain the center of the arc.
+        	double[] arcCenter = {
+        		_start.getCenter().getX() + Math.cos(_angle) * _start.getRadius() * Math.sqrt(2),
+        		_start.getCenter().getY() + Math.sin(_angle) * _start.getRadius() * Math.sqrt(2)
+        	};
 
-        // Obtain the half vector from the start to the end.
-        double cx = (_end.getCenter().getX() - _start.getCenter().getX()) / 2;
-        double cy = (_end.getCenter().getY() - _start.getCenter().getY()) / 2;
-        double dc = Math.sqrt(cx*cx + cy*cy);
-        
-        // Obtain the radius vector and size.
-        double rx = (-cy) / dc * _height + cx;
-        double ry = (cx) / dc * _height + cy;
-        double dr = Math.sqrt(rx * rx + ry * ry);
-       
-        // Obtain the center of the arc.
-        double ax = _start.getCenter().getX() + rx;
-        double ay = _start.getCenter().getY() + ry;
-        
-        // Find the distance from the center of the circle to the mouse.
-        double mx = x - ax;
-        double my = y - ay;
-        double dm = Math.sqrt(mx*mx + my*my);
-        
-        // Obtain the virtual angle
-        double thetaMouse = theta(mx, my);
-        double thetaP = theta(_start.getCenter().getX() - ax, _start.getCenter().getY() - ay);
-        double thetaQ = theta(_end.getCenter().getX() - ax, _end.getCenter().getY() - ay);
-        if(_turn) { // needs to reverse
-        	double tmp = thetaP;
-        	thetaP = thetaQ;
-        	thetaQ = tmp;
-        }
-        
-        // Check if mouse is in the range.
-        if(Math.abs(dm - dr) < 6 && (thetaP < thetaQ && thetaP < thetaMouse && thetaMouse < thetaQ || 
-        		thetaP > thetaQ && (thetaMouse < thetaQ || thetaMouse > thetaP))) {
-        	return true;
-        }
-        else {
-        	return false;
-        }
+        	// Obtain the vector from the center of the arc to the mouse.
+        	double[] mouse = { x - arcCenter[0], y - arcCenter[1] };
+        	double mouseSize = Math.sqrt(mouse[0] * mouse[0] + mouse[1] * mouse[1]);
+	        
+	        // Check if mouse is in the range.
+	        return (Math.abs(mouseSize - _start.getRadius()) < RADIUS_TOLERANCE);
+    	}
     }
     
     public Arc2D getCurve() {
@@ -222,124 +263,200 @@ public class Edge implements Cloneable, DiagramObject {
 
     public Shape getForward() {
     	
-    	// Obtain the half segment vector from the start to the end.
-    	double[] halfSegment = {
-    		(_end.getCenter().getX() - _start.getCenter().getX()) / 2,
-    		(_end.getCenter().getY() - _start.getCenter().getY()) / 2,
-    	};
-    	double halfSegmentSize = Math.sqrt(halfSegment[0] * halfSegment[0] + halfSegment[1] * halfSegment[1]);
-    	
-    	// Obtain the radius vector (from center of the arc to the end)
-    	double[] radius = {
-    		(halfSegment[1]) / halfSegmentSize * _height + halfSegment[0],
-    		(-halfSegment[0]) / halfSegmentSize * _height + halfSegment[1]
-    	};
-    	double radiusSize = Math.sqrt(radius[0] * radius[0] + radius[1] * radius[1]);
-    	
-    	// Find the angle to turn around the radius vector to the quasi-tangent vector
-    	double sinTheta = _start.getRadius() / (2 * radiusSize);
-    	double cosTheta = Math.sqrt(1 - sinTheta * sinTheta) * (_turn ? -1 : 1);
-    	
-    	// Find the doubleAngle
-    	double sinTwoTheta = 2 * sinTheta * cosTheta;
-    	double cosTwoTheta = cosTheta * cosTheta - sinTheta * sinTheta;
-    	
-    	// Obtain the quasi-tangent vector
-    	double[] quasiTangent = {
-    		cosTwoTheta * radius[0] + sinTwoTheta * radius[1],
-    		-sinTwoTheta * radius[0] + cosTwoTheta * radius[1]
-    	};
-    	
-    	// Obtain the arrow tip position.
-    	double[] arrowTip = {
-    		_end.getCenter().getX() - radius[0] + quasiTangent[0],
-    		_end.getCenter().getY() - radius[1] + quasiTangent[1] 
-    	};
-    	
-    	// Obtain the arrow base position.
-    	double[] arrowBase = {
-    		(_turn ? -1 : 1) * (quasiTangent[1]) / radiusSize * ARROW_SIZE + arrowTip[0],
-    		(_turn ? 1 : -1) * (quasiTangent[0]) / radiusSize * ARROW_SIZE + arrowTip[1]
-    	};
-    	
-    	// Obtain the arrow left base and right base.
-    	double[] arrowLeft = {
-    		arrowBase[0] + quasiTangent[0] / radiusSize * (ARROW_SIZE / 2),
-    		arrowBase[1] + quasiTangent[1] / radiusSize * (ARROW_SIZE / 2)
-    	};
-    	double[] arrowRight = {
-    		arrowBase[0] - quasiTangent[0] / radiusSize * (ARROW_SIZE / 2),
-    		arrowBase[1] - quasiTangent[1] / radiusSize * (ARROW_SIZE / 2)
-    	};
-    	
-    	// Get all x- and y- coordinates.
-    	int[] xpoints = {(int) arrowLeft[0], (int) arrowRight[0], (int) arrowTip[0]};
-    	int[] ypoints = {(int) arrowLeft[1], (int) arrowRight[1], (int) arrowTip[1]};
-    	
-    	// Draw a triangle and return
-    	Polygon arrow = new Polygon(xpoints, ypoints, 3);
-    	return arrow;
+    	if(_start != _end) {
+	    	// Obtain the half segment vector from the start to the end.
+	    	double[] halfSegment = {
+	    		(_end.getCenter().getX() - _start.getCenter().getX()) / 2,
+	    		(_end.getCenter().getY() - _start.getCenter().getY()) / 2,
+	    	};
+	    	double halfSegmentSize = Math.sqrt(halfSegment[0] * halfSegment[0] + halfSegment[1] * halfSegment[1]);
+	    	
+	    	// Obtain the radius vector (from center of the arc to the end)
+	    	double[] radius = {
+	    		(halfSegment[1]) / halfSegmentSize * _height + halfSegment[0],
+	    		(-halfSegment[0]) / halfSegmentSize * _height + halfSegment[1]
+	    	};
+	    	double radiusSize = Math.sqrt(radius[0] * radius[0] + radius[1] * radius[1]);
+	    	
+	    	// Find the angle to turn around the radius vector to the quasi-tangent vector
+	    	double sinTheta = _end.getRadius() / (2 * radiusSize);
+	    	double cosTheta = Math.sqrt(1 - sinTheta * sinTheta) * (_turn ? -1 : 1);
+	    	
+	    	// Find the doubleAngle
+	    	double sinTwoTheta = 2 * sinTheta * cosTheta;
+	    	double cosTwoTheta = cosTheta * cosTheta - sinTheta * sinTheta;
+	    	
+	    	// Obtain the quasi-tangent vector
+	    	double[] quasiTangent = {
+	    		cosTwoTheta * radius[0] + sinTwoTheta * radius[1],
+	    		-sinTwoTheta * radius[0] + cosTwoTheta * radius[1]
+	    	};
+	    	
+	    	// Obtain the arrow tip position.
+	    	double[] arrowTip = {
+	    		_end.getCenter().getX() - radius[0] + quasiTangent[0],
+	    		_end.getCenter().getY() - radius[1] + quasiTangent[1] 
+	    	};
+	    	
+	    	// Obtain the arrow base position.
+	    	double[] arrowBase = {
+	    		(_turn ? -1 : 1) * (quasiTangent[1]) / radiusSize * ARROW_SIZE + arrowTip[0],
+	    		(_turn ? 1 : -1) * (quasiTangent[0]) / radiusSize * ARROW_SIZE + arrowTip[1]
+	    	};
+	    	
+	    	// Obtain the arrow left base and right base.
+	    	double[] arrowLeft = {
+	    		arrowBase[0] + quasiTangent[0] / radiusSize * (ARROW_SIZE / 2),
+	    		arrowBase[1] + quasiTangent[1] / radiusSize * (ARROW_SIZE / 2)
+	    	};
+	    	double[] arrowRight = {
+	    		arrowBase[0] - quasiTangent[0] / radiusSize * (ARROW_SIZE / 2),
+	    		arrowBase[1] - quasiTangent[1] / radiusSize * (ARROW_SIZE / 2)
+	    	};
+	    	
+	    	// Get all x- and y- coordinates.
+	    	int[] xpoints = {(int) arrowLeft[0], (int) arrowRight[0], (int) arrowTip[0]};
+	    	int[] ypoints = {(int) arrowLeft[1], (int) arrowRight[1], (int) arrowTip[1]};
+	    	
+	    	// Draw a triangle and return
+	    	Polygon arrow = new Polygon(xpoints, ypoints, 3);
+	    	return arrow;
+    	}
+    	else {
+    		double[] arrowTangent = {
+        		Math.cos(_angle + Math.PI / 4),
+        		Math.sin(_angle + Math.PI / 4)
+    		};
+    		
+    		// Obtain the center of the arc.
+        	double[] arrowTip = {
+        		_start.getCenter().getX() + Math.cos(_angle - Math.PI / 4) * _start.getRadius(),
+        		_start.getCenter().getY() + Math.sin(_angle - Math.PI / 4) * _start.getRadius()
+        	};
+        	
+        	// Obtain the arrow base position.
+	    	double[] arrowBase = {
+        		_start.getCenter().getX() + Math.cos(_angle - Math.PI / 4) * (_start.getRadius() + ARROW_SIZE),
+        		_start.getCenter().getY() + Math.sin(_angle - Math.PI / 4) * (_start.getRadius() + ARROW_SIZE)
+	    	};
+	    	
+	    	// Obtain the arrow left base and right base.
+	    	double[] arrowLeft = {
+	    		arrowBase[0] + arrowTangent[0] * (ARROW_SIZE / 2),
+	    		arrowBase[1] + arrowTangent[1] * (ARROW_SIZE / 2)
+	    	};
+	    	double[] arrowRight = {
+	    		arrowBase[0] - arrowTangent[0] * (ARROW_SIZE / 2),
+	    		arrowBase[1] - arrowTangent[1] * (ARROW_SIZE / 2)
+	    	};
+
+	    	// Get all x- and y- coordinates.
+	    	int[] xpoints = {(int) arrowLeft[0], (int) arrowRight[0], (int) arrowTip[0]};
+	    	int[] ypoints = {(int) arrowLeft[1], (int) arrowRight[1], (int) arrowTip[1]};
+	    	
+	    	// Draw a triangle and return
+	    	Polygon arrow = new Polygon(xpoints, ypoints, 3);
+	    	return arrow;
+    	}
     }
 
     public Shape getBackward() {
-    	
-    	// Obtain the half segment vector from the start to the end.
-    	double[] halfSegment = {
-    		(_end.getCenter().getX() - _start.getCenter().getX()) / 2,
-    		(_end.getCenter().getY() - _start.getCenter().getY()) / 2,
-    	};
-    	double halfSegmentSize = Math.sqrt(halfSegment[0] * halfSegment[0] + halfSegment[1] * halfSegment[1]);
-    	
-    	// Obtain the radius vector (from center of the arc to the start)
-    	double[] radius = {
-    		(halfSegment[1]) / halfSegmentSize * _height - halfSegment[0],
-    		(-halfSegment[0]) / halfSegmentSize * _height - halfSegment[1]
-    	};
-    	double radiusSize = Math.sqrt(radius[0] * radius[0] + radius[1] * radius[1]);
-    	
-    	// Find the angle to turn around the radius vector to the quasi-tangent vector
-    	double sinTheta = _start.getRadius() / (2 * radiusSize);
-    	double cosTheta = Math.sqrt(1 - sinTheta * sinTheta) * (_turn ? 1 : -1);
-    	
-    	// Find the doubleAngle
-    	double sinTwoTheta = 2 * sinTheta * cosTheta;
-    	double cosTwoTheta = cosTheta * cosTheta - sinTheta * sinTheta;
-    	
-    	// Obtain the quasi-tangent vector
-    	double[] quasiTangent = {
-    		cosTwoTheta * radius[0] + sinTwoTheta * radius[1],
-    		-sinTwoTheta * radius[0] + cosTwoTheta * radius[1]
-    	};
-    	
-    	// Obtain the arrow tip position.
-    	double[] arrowTip = {
-    		_start.getCenter().getX() - radius[0] + quasiTangent[0],
-    		_start.getCenter().getY() - radius[1] + quasiTangent[1] 
-    	};
-    	
-    	// Obtain the arrow base position.
-    	double[] arrowBase = {
-    		(_turn ? 1 : -1) * (quasiTangent[1]) / radiusSize * ARROW_SIZE + arrowTip[0],
-    		(_turn ? -1 : 1) * (quasiTangent[0]) / radiusSize * ARROW_SIZE + arrowTip[1]
-    	};
-    	
-    	// Obtain the arrow left base and right base.
-    	double[] arrowLeft = {
-    		arrowBase[0] + quasiTangent[0] / radiusSize * (ARROW_SIZE / 2),
-    		arrowBase[1] + quasiTangent[1] / radiusSize * (ARROW_SIZE / 2)
-    	};
-    	double[] arrowRight = {
-    		arrowBase[0] - quasiTangent[0] / radiusSize * (ARROW_SIZE / 2),
-    		arrowBase[1] - quasiTangent[1] / radiusSize * (ARROW_SIZE / 2)
-    	};
-    	
-    	// Get all x- and y- coordinates.
-    	int[] xpoints = {(int) arrowLeft[0], (int) arrowRight[0], (int) arrowTip[0]};
-    	int[] ypoints = {(int) arrowLeft[1], (int) arrowRight[1], (int) arrowTip[1]};
-    	
-    	// Draw a triangle and return
-    	Polygon arrow = new Polygon(xpoints, ypoints, 3);
-    	return arrow;
+
+    	if(_start != _end) {
+	    	// Obtain the half segment vector from the start to the end.
+	    	double[] halfSegment = {
+	    		(_end.getCenter().getX() - _start.getCenter().getX()) / 2,
+	    		(_end.getCenter().getY() - _start.getCenter().getY()) / 2,
+	    	};
+	    	double halfSegmentSize = Math.sqrt(halfSegment[0] * halfSegment[0] + halfSegment[1] * halfSegment[1]);
+	    	
+	    	// Obtain the radius vector (from center of the arc to the start)
+	    	double[] radius = {
+	    		(halfSegment[1]) / halfSegmentSize * _height - halfSegment[0],
+	    		(-halfSegment[0]) / halfSegmentSize * _height - halfSegment[1]
+	    	};
+	    	double radiusSize = Math.sqrt(radius[0] * radius[0] + radius[1] * radius[1]);
+	    	
+	    	// Find the angle to turn around the radius vector to the quasi-tangent vector
+	    	double sinTheta = _start.getRadius() / (2 * radiusSize);
+	    	double cosTheta = Math.sqrt(1 - sinTheta * sinTheta) * (_turn ? 1 : -1);
+	    	
+	    	// Find the doubleAngle
+	    	double sinTwoTheta = 2 * sinTheta * cosTheta;
+	    	double cosTwoTheta = cosTheta * cosTheta - sinTheta * sinTheta;
+	    	
+	    	// Obtain the quasi-tangent vector
+	    	double[] quasiTangent = {
+	    		cosTwoTheta * radius[0] + sinTwoTheta * radius[1],
+	    		-sinTwoTheta * radius[0] + cosTwoTheta * radius[1]
+	    	};
+	    	
+	    	// Obtain the arrow tip position.
+	    	double[] arrowTip = {
+	    		_start.getCenter().getX() - radius[0] + quasiTangent[0],
+	    		_start.getCenter().getY() - radius[1] + quasiTangent[1] 
+	    	};
+	    	
+	    	// Obtain the arrow base position.
+	    	double[] arrowBase = {
+	    		(_turn ? 1 : -1) * (quasiTangent[1]) / radiusSize * ARROW_SIZE + arrowTip[0],
+	    		(_turn ? -1 : 1) * (quasiTangent[0]) / radiusSize * ARROW_SIZE + arrowTip[1]
+	    	};
+	    	
+	    	// Obtain the arrow left base and right base.
+	    	double[] arrowLeft = {
+	    		arrowBase[0] + quasiTangent[0] / radiusSize * (ARROW_SIZE / 2),
+	    		arrowBase[1] + quasiTangent[1] / radiusSize * (ARROW_SIZE / 2)
+	    	};
+	    	double[] arrowRight = {
+	    		arrowBase[0] - quasiTangent[0] / radiusSize * (ARROW_SIZE / 2),
+	    		arrowBase[1] - quasiTangent[1] / radiusSize * (ARROW_SIZE / 2)
+	    	};
+	    	
+	    	// Get all x- and y- coordinates.
+	    	int[] xpoints = {(int) arrowLeft[0], (int) arrowRight[0], (int) arrowTip[0]};
+	    	int[] ypoints = {(int) arrowLeft[1], (int) arrowRight[1], (int) arrowTip[1]};
+	    	
+	    	// Draw a triangle and return
+	    	Polygon arrow = new Polygon(xpoints, ypoints, 3);
+	    	return arrow;
+    	}
+    	else {
+    		double[] arrowTangent = {
+        		Math.cos(_angle - Math.PI / 4),
+        		Math.sin(_angle - Math.PI / 4)
+    		};
+    		
+    		// Obtain the center of the arc.
+        	double[] arrowTip = {
+        		_start.getCenter().getX() + Math.cos(_angle + Math.PI / 4) * _start.getRadius(),
+        		_start.getCenter().getY() + Math.sin(_angle + Math.PI / 4) * _start.getRadius()
+        	};
+        	
+        	// Obtain the arrow base position.
+	    	double[] arrowBase = {
+        		_start.getCenter().getX() + Math.cos(_angle + Math.PI / 4) * (_start.getRadius() + ARROW_SIZE),
+        		_start.getCenter().getY() + Math.sin(_angle + Math.PI / 4) * (_start.getRadius() + ARROW_SIZE)
+	    	};
+	    	
+	    	// Obtain the arrow left base and right base.
+	    	double[] arrowLeft = {
+	    		arrowBase[0] + arrowTangent[0] * (ARROW_SIZE / 2),
+	    		arrowBase[1] + arrowTangent[1] * (ARROW_SIZE / 2)
+	    	};
+	    	double[] arrowRight = {
+	    		arrowBase[0] - arrowTangent[0] * (ARROW_SIZE / 2),
+	    		arrowBase[1] - arrowTangent[1] * (ARROW_SIZE / 2)
+	    	};
+
+	    	// Get all x- and y- coordinates.
+	    	int[] xpoints = {(int) arrowLeft[0], (int) arrowRight[0], (int) arrowTip[0]};
+	    	int[] ypoints = {(int) arrowLeft[1], (int) arrowRight[1], (int) arrowTip[1]};
+	    	
+	    	// Draw a triangle and return
+	    	Polygon arrow = new Polygon(xpoints, ypoints, 3);
+	    	return arrow;
+    	}
     }
     
     public void setHeight(double h) {
@@ -438,6 +555,22 @@ public class Edge implements Cloneable, DiagramObject {
 
 	public String getNodeString() {
 		return "(" + getStartNode().getLabel().getText() + ", " + getEndNode().getLabel().getText() + ")";
+	}
+
+	public void setOffset(double offset) {
+		_offset = offset;
+	}
+
+	public double getOffset() {
+		return _offset;
+	}
+
+	public void setAngle(double angle) {
+		_angle = angle;
+	}
+
+	public double getAngle() {
+		return _angle;
 	}
 
 }

@@ -121,11 +121,11 @@ public class DrawingPanel extends JPanel {
            if (e.getCurrent()) {
                g2.setColor(java.awt.Color.PINK);
            }
-           if (e.getDirection() == EdgeDirection.SINGLE && e.getStartNode() != e.getEndNode()) {
+           if (e.getDirection() == EdgeDirection.SINGLE) {
                 Shape end = e.getForward();
                 g2.fill(end);
            }
-           else if (e.getDirection() == EdgeDirection.DOUBLE && e.getStartNode() != e.getEndNode()) {
+           else if (e.getDirection() == EdgeDirection.DOUBLE) {
                 g2.fill(e.getForward());
                 g2.fill(e.getBackward());
            }

@@ -19,6 +19,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
+import java.awt.geom.Arc2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -840,7 +841,8 @@ public class MainFrame extends javax.swing.JFrame {
 			//if it's to a node that the mouse is in the middle of; third case
 			//is if we just want to draw to a mouse point.
 			if (con != null && _edgeStart == con)
-				drawingPanel1._progressLine = Edge.getSelfLoop(_edgeStart);
+				drawingPanel1._progressLine = new Arc2D.Double(con.getCenter().getX(), con.getCenter().getY(),
+						con.getRadius() * 2, con.getRadius() * 2, 180, 540, Arc2D.OPEN);
 			else if (con != null)
 				drawingPanel1._progressLine = new Line2D.Double(point_start, point_end);
 			else
@@ -864,44 +866,58 @@ public class MainFrame extends javax.swing.JFrame {
 		//Otherwise, if we are in the middle of resizing an edge, then correctly resize the edge.
 		else if (_edgeDragged != null) {
 			
-			// Find the vector from mouse to start node.
-			double[] vectorA = {
-				_edgeDragged.getStartNode().getCenter().getX() - _mouseLoc.getX(),
-				_edgeDragged.getStartNode().getCenter().getY() - _mouseLoc.getY()
-			};
-			double vectorASize = Math.sqrt(vectorA[0] * vectorA[0] + vectorA[1] * vectorA[1]);
-				
-			// Find the vector from the mouse to the end
-			double[] vectorB = {
-				_edgeDragged.getEndNode().getCenter().getX() - _mouseLoc.getX(),
-				_edgeDragged.getEndNode().getCenter().getY() - _mouseLoc.getY()
-			};
-			double vectorBSize = Math.sqrt(vectorB[0] * vectorB[0] + vectorB[1] * vectorB[1]);
-				
-			double[] vectorC = {
-				_edgeDragged.getEndNode().getCenter().getX() - _edgeDragged.getStartNode().getCenter().getX(),
-				_edgeDragged.getEndNode().getCenter().getY() - _edgeDragged.getStartNode().getCenter().getY()
-			};
-			double vectorCSize = Math.sqrt(vectorC[0] * vectorC[0] + vectorC[1] * vectorC[1]);
-				
-			double crossAB = vectorA[0] * vectorB[1] - vectorA[1] * vectorB[0];
-			_edgeDragged.setTurn(crossAB > 0);
+			// When the start node and end node are different.
+			if(_edgeDragged.getStartNode() != _edgeDragged.getEndNode()) {
 			
-			double cosTheta = (vectorASize * vectorASize + vectorBSize * vectorBSize - vectorCSize * vectorCSize) / (2 * vectorASize * vectorBSize);
-			
-			double height; 
-			if(Math.abs(crossAB) < Double.MIN_VALUE) {
-				height = -1000000.0;
+				// Find the vector A from mouse to start node.
+				double[] vectorA = {
+					_edgeDragged.getStartNode().getCenter().getX() - _mouseLoc.getX(),
+					_edgeDragged.getStartNode().getCenter().getY() - _mouseLoc.getY()
+				};
+				double vectorASize = Math.sqrt(vectorA[0] * vectorA[0] + vectorA[1] * vectorA[1]);
+					
+				// Find the vector B from the mouse to the end
+				double[] vectorB = {
+					_edgeDragged.getEndNode().getCenter().getX() - _mouseLoc.getX(),
+					_edgeDragged.getEndNode().getCenter().getY() - _mouseLoc.getY()
+				};
+				double vectorBSize = Math.sqrt(vectorB[0] * vectorB[0] + vectorB[1] * vectorB[1]);
+					
+				// Find the vector C from start to end.
+				double[] vectorC = {
+					_edgeDragged.getEndNode().getCenter().getX() - _edgeDragged.getStartNode().getCenter().getX(),
+					_edgeDragged.getEndNode().getCenter().getY() - _edgeDragged.getStartNode().getCenter().getY()
+				};
+				double vectorCSize = Math.sqrt(vectorC[0] * vectorC[0] + vectorC[1] * vectorC[1]);
+					
+				// Find the cross product of A and B
+				double crossAB = vectorA[0] * vectorB[1] - vectorA[1] * vectorB[0];
+				_edgeDragged.setTurn(crossAB > 0);
+				
+				// Find the cosine of the angle between vector A and B
+				double cosTheta = (vectorASize * vectorASize + vectorBSize * vectorBSize - vectorCSize * vectorCSize) / (2 * vectorASize * vectorBSize);
+				
+				double height; 
+				if(Math.abs(crossAB) < Double.MIN_VALUE) {
+					height = -1000000.0;
+				}
+				else {
+					double radius = (vectorASize * vectorBSize * vectorCSize) / (Math.abs(crossAB) * 2);
+					height = Math.sqrt(radius * radius - (vectorCSize / 2) * (vectorCSize / 2));
+				}
+	
+				_edgeDragged.setHeight(height * ((crossAB * cosTheta > 0) ? 1 : -1));
 			}
+			// The start node and the end node are the same (doing self-loop).
 			else {
-				double radius = (vectorASize * vectorBSize * vectorCSize) / (Math.abs(crossAB) * 2);
-				height = Math.sqrt(radius * radius - (vectorCSize / 2) * (vectorCSize / 2));
-			}
 
-			if(crossAB * cosTheta > 0)
-				_edgeDragged.setHeight(height);
-			else 
-				_edgeDragged.setHeight(-height);
+				double[] vectorA = {
+					_mouseLoc.getX() - _edgeDragged.getStartNode().getCenter().getX(),
+					_mouseLoc.getY() - _edgeDragged.getStartNode().getCenter().getY()
+				};
+				double vectorAAngle = Math.atan2(vectorA[1], vectorA[0]);
+				_edgeDragged.setAngle(vectorAAngle + _edgeDragged.getOffset());
+			}
 		}
 
 		//Repaint at the end
@@ -943,6 +959,9 @@ public class MainFrame extends javax.swing.JFrame {
 			for (Edge e : drawingPanel1.getDiagram().getEdges()) {
 				if (e.intersects(evt.getPoint().x,evt.getPoint().y)) {
 					_edgeDragged = e;
+					double dx = evt.getX() - e.getStartNode().getCenter().getX();
+					double dy = evt.getY() - e.getStartNode().getCenter().getY();
+					e.setOffset(e.getAngle() - Math.atan2(dy, dx));
 					return;
 				}
 			}
