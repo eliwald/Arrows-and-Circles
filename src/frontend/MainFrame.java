@@ -14,6 +14,7 @@ import java.awt.AWTException;
 import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.Robot;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -946,6 +947,7 @@ public class MainFrame extends javax.swing.JFrame {
 					}
 				}
 				for (Edge e : drawingPanel1.getDiagram().getEdges()){
+					Rectangle boundingBox = e.getLabel().getBounds();
 					if (e.intersects(evt.getPoint().x,evt.getPoint().y)){
 						e.setSelected(true);
 						e.getTextField().setVisible(true);
@@ -971,12 +973,15 @@ public class MainFrame extends javax.swing.JFrame {
 						drawingPanel1.repaint();
 						return;
 					}
-					else if (e.getLabel().contains(evt.getPoint())){
+					else if (boundingBox.contains(evt.getPoint().x, evt.getPoint().y)){
 						System.out.println("line");
 						resetSelected();
 						e.getLabel().setVisible(false);
 						e.getTextField().setVisible(true);
+						e.getTextField().grabFocus();
+						e.getTextField().selectAll();
 						_edgesSelected.add(e);
+						e.setSelected(true);
 						return;
 					}
 				}
