@@ -207,16 +207,6 @@ public class Diagram implements Cloneable {
 						//Add all characters coming out a node to the temp_edge_labels set.
 						if (!temp_edge_labels.contains(s))
 							temp_edge_labels.add(s);
-						//If a node has duplicate edges, and we haven't already alerted the user, then alert the user.
-						else {
-							if (!already_seen.contains(s)) {
-								if (!n.getTextField().getText().equals(""))
-									message += "Node " + n.getTextField().getText() + " has a duplicate edge labeled " + s + ".\n";
-								else
-									message += "There is a node with a duplicate label " + s + ".\n";
-								already_seen.add(s);
-							}
-						}
 					}
 				}
 			}
