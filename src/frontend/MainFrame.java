@@ -907,6 +907,8 @@ public class MainFrame extends javax.swing.JFrame {
 						return; //If we find a node or edge, just return; we don't want to ctrl
 						//select multiple things if nodes are stacked on top of each other.
 					}
+					n.getTextField().setVisible(false);
+					n.getLabel().setVisible(true);
 				}
 				for (Edge e : drawingPanel1.getDiagram().getEdges()){
 					if (e.intersects(evt.getPoint().x,evt.getPoint().y)){
