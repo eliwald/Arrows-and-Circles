@@ -12,6 +12,7 @@ import backend.InvalidDFSMException;
 import backend.Node;
 import java.awt.AWTException;
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -735,6 +736,7 @@ public class MainFrame extends javax.swing.JFrame {
 				JFrame aboutFrame = new JFrame("About");
 				aboutFrame.setVisible(true);
 				JTabbedPane tabs = new JTabbedPane();
+				tabs.setPreferredSize(new Dimension(400, 200));
 				aboutFrame.add(tabs);
 				JScrollPane controls = new JScrollPane();
 				controls.setName("Key Bindings");
