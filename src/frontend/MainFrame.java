@@ -10,6 +10,7 @@ import backend.EdgeDirection;
 import backend.InvalidDFSMException;
 import backend.Node;
 import java.awt.AWTException;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Point;
@@ -18,6 +19,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
@@ -102,6 +104,9 @@ public class MainFrame extends javax.swing.JFrame {
 	 * 		the simulation moves forwards or backwards, it checks to make sure that whatever is
 	 * 		in the text field is equal to this instance variable.  Otherwise it alerts the user
 	 * 		and gives them the opportunity to restart.
+	 * 
+	 * _helpText is the label displayed at the bottom of the main frame to alert the user to
+	 * 		keybindings.
 	 */
 	private Node _edgeStart;
 	private Node _resizing;
@@ -120,6 +125,7 @@ public class MainFrame extends javax.swing.JFrame {
 	private boolean _autoChange;
 	private boolean _backwardClicked;
 	private String _currentInputString;
+	private JLabel _helpText;
 
 	//The file paths of image resources, and other global static variables we want to define.
 	private static final String PLAY_FILEPATH = "./src/img/play.png";
@@ -127,6 +133,9 @@ public class MainFrame extends javax.swing.JFrame {
 	private static final String FWD_FILEPATH = "./src/img/fwd.png";
 	private static final String BWD_FILEPATH = "./src/img/bwd.png";
 	private static final String STOP_FILEPATH = "./src/img/stop.png";
+	
+	private static final String help_message_text = "Double Click: New Node | \"S\": Snap Mouse To Nearest Node | Ctrl-Click Component: Add Component To Selected Components";
+	private static final String help_message_text_in_node = "Double Click: Toggle Accept State | Shift-DragClick: Create New Edge | Click Triangle On Selected: Toggle Start State";
 	
 	//If we are within 3 pixels of another node, then snap to that node.
 	private static int SNAP_DIFFERENCE = 7;
@@ -182,6 +191,8 @@ public class MainFrame extends javax.swing.JFrame {
 		_simTimer = new Timer(1000, new SimListener());
 		_autoChange = false;
 		_backwardClicked = false;
+		_helpText = new JLabel();
+		_helpText.setHorizontalAlignment(JLabel.CENTER);
 		try {
 			_robot = new Robot();
 		} catch (AWTException ex) {
@@ -308,7 +319,6 @@ public class MainFrame extends javax.swing.JFrame {
 		}
 		jSplitPane3.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
 		jSplitPane3.setResizeWeight(0.9);
-		jSplitPane3.setEnabled(false);
 
 		jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
@@ -348,7 +358,7 @@ public class MainFrame extends javax.swing.JFrame {
 				jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
 				.addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 355, Short.MAX_VALUE)
 				.addGroup(jPanel1Layout.createSequentialGroup()
-						.addGap(29, 29, 29)
+						.addGap(48, 48, 48)
 						.addComponent(_singlyBtn)
 						.addGap(18, 18, 18)
 						.addComponent(_doublyBtn)
@@ -372,7 +382,7 @@ public class MainFrame extends javax.swing.JFrame {
 
 		jPanel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
-		jTextArea1.setColumns(20);
+		jTextArea1.setColumns(30);
 		jTextArea1.setEditable(false);
 		jTextArea1.setRows(5);
 		jScrollPane2.setViewportView(jTextArea1);
@@ -438,6 +448,21 @@ public class MainFrame extends javax.swing.JFrame {
 		jLabel1.setHorizontalAlignment(SwingConstants.CENTER);
 		jLabel1.setText("Simulation");
 		jLabel1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+		
+		JLabel simTextAreaLabel = new JLabel();
+		simTextAreaLabel.setHorizontalAlignment(JLabel.CENTER);
+		simTextAreaLabel.setFont(newTextFieldFont);
+		simTextAreaLabel.setText("Simulation Console");
+		
+		JLabel minWait = new JLabel();
+		minWait.setHorizontalAlignment(JLabel.CENTER);
+		minWait.setFont(newTextFieldFont);
+		minWait.setText("0s");
+		
+		JLabel maxWait = new JLabel();
+		maxWait.setHorizontalAlignment(JLabel.CENTER);
+		maxWait.setFont(newTextFieldFont);
+		maxWait.setText("3s");
 
 		javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
 		jPanel2.setLayout(jPanel2Layout);
@@ -445,7 +470,7 @@ public class MainFrame extends javax.swing.JFrame {
 				jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
 				.addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 355, Short.MAX_VALUE)
 				.addGroup(jPanel2Layout.createSequentialGroup()
-						.addGap(45, 45, 45)
+						.addGap(10, 10, 10)
 						.addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
 								.addGroup(jPanel2Layout.createSequentialGroup()
 										.addComponent(_rewindBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -455,11 +480,15 @@ public class MainFrame extends javax.swing.JFrame {
 										.addComponent(_playPauseBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
 										.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 										.addComponent(_forwardBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
-										.addComponent(_slider, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
-										.addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 262, Short.MAX_VALUE)
-										.addComponent(_simSlide, javax.swing.GroupLayout.PREFERRED_SIZE,163,javax.swing.GroupLayout.PREFERRED_SIZE)
-										.addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-										.addGap(48, 48, 48))
+										.addGroup(jPanel2Layout.createSequentialGroup()
+												.addComponent(minWait, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+												.addComponent(_slider, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
+												.addComponent(maxWait, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
+												.addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 262, Short.MAX_VALUE)
+												.addComponent(_simSlide, javax.swing.GroupLayout.PREFERRED_SIZE,163,javax.swing.GroupLayout.PREFERRED_SIZE)
+												.addComponent(simTextAreaLabel, javax.swing.GroupLayout.PREFERRED_SIZE,300,javax.swing.GroupLayout.PREFERRED_SIZE)
+												.addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+												.addGap(10, 10, 10))
 		);
 		jPanel2Layout.setVerticalGroup(
 				jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -471,19 +500,25 @@ public class MainFrame extends javax.swing.JFrame {
 								.addComponent(_stopBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
 								.addComponent(_playPauseBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
 								.addComponent(_forwardBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
-								.addComponent(_slider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-								.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-								.addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-								.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-								.addComponent(_simSlide, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-								.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-								.addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 246, Short.MAX_VALUE)
-								.addContainerGap())
+								.addGroup(jPanel2Layout.createParallelGroup()
+										.addComponent(minWait, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+										.addComponent(_slider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+										.addComponent(maxWait, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
+										.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+										.addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+										.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+										.addComponent(_simSlide, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+										.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+										.addComponent(simTextAreaLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+										.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+										.addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 246, Short.MAX_VALUE)
+										.addContainerGap())
 		);
 
 		jSplitPane3.setLeftComponent(jPanel2);
 
 		jSplitPane2.setLeftComponent(jSplitPane3);
+		jSplitPane2.setOneTouchExpandable(true);
 
 		jMenu3.setText("File");
 
@@ -556,24 +591,22 @@ public class MainFrame extends javax.swing.JFrame {
 		jMenuBar2.add(jMenu7);
 
 		setJMenuBar(jMenuBar2);
-		
-		JLabel helpText = new JLabel();
-		helpText.setHorizontalAlignment(JLabel.CENTER);
-		helpText.setText("Double Click: New Node | Single Click Component: Select Component | Ctrl-Click Component: Add Component To Selected Components");
+
+		_helpText.setText(help_message_text);
 
 		javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
 		getContentPane().setLayout(layout);
 		layout.setHorizontalGroup(
 				layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-				.addComponent(helpText, javax.swing.GroupLayout.DEFAULT_SIZE, 980, Short.MAX_VALUE)
-				.addComponent(jSplitPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 980, Short.MAX_VALUE)
+				.addComponent(_helpText, javax.swing.GroupLayout.DEFAULT_SIZE, 980, Short.MAX_VALUE)
+				.addComponent(jSplitPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 1000, Short.MAX_VALUE)
 		);
 		layout.setVerticalGroup(
 				layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
 				.addGroup(layout.createSequentialGroup()
-						.addComponent(jSplitPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 601, Short.MAX_VALUE)
+						.addComponent(jSplitPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 700, Short.MAX_VALUE)
 						.addGap(1)
-						.addComponent(helpText, javax.swing.GroupLayout.DEFAULT_SIZE, 10, 10)
+						.addComponent(_helpText, javax.swing.GroupLayout.DEFAULT_SIZE, 10, 10)
 						.addGap(2))
 		);
 
@@ -681,6 +714,7 @@ public class MainFrame extends javax.swing.JFrame {
 			add.getTextField().setVisible(true);
 			add.getLabel().setVisible(false);
 			_nodesSelected.add(add);
+			_helpText.setText(help_message_text_in_node);
 		}
 		//Otherwise, it's a single click
 		else{
@@ -957,12 +991,17 @@ public class MainFrame extends javax.swing.JFrame {
 	private void drawingPanel1MouseMoved(java.awt.event.MouseEvent evt) {
 		_mouseLoc = evt.getPoint();
 		_edgeStart = null;
-		if (MouseEvent.getMouseModifiersText(evt.getModifiers()).contains("Shift")){
-			for (Node n : drawingPanel1.getDiagram().getNodes()) {
-				if (n.getCircle().contains(evt.getPoint()))
+		boolean changed_help_text = false;
+		for (Node n : drawingPanel1.getDiagram().getNodes()) {
+			if (n.getCircle().contains(evt.getPoint())) {
+				if (MouseEvent.getMouseModifiersText(evt.getModifiers()).contains("Shift"))
 					_edgeStart = n;
+				_helpText.setText(help_message_text_in_node);
+				changed_help_text = true;
 			}
 		}
+		if (!changed_help_text) 
+			_helpText.setText(help_message_text);
 	}
 
 	/**
@@ -977,7 +1016,7 @@ public class MainFrame extends javax.swing.JFrame {
 				if (n.getCircle().contains(_mouseLoc)) {
 					drawingPanel1.clearSelected(); //clear all selected nodes/edges
 
-					//Create the new edge, reset all variabels associated with maintaining the edge being drawn.
+					//Create the new edge, reset all variables associated with maintaining the edge being drawn.
 					Edge newEdge = new Edge(_edgeStart,n,_edgeStart.getCenter(),_edgeStart.getCenter(),drawingPanel1,_edgeType);
 					newEdge.getTextField().grabFocus();
 					newEdge.getLabel().setVisible(false);
@@ -1419,26 +1458,35 @@ public class MainFrame extends javax.swing.JFrame {
 
 		_curr = _simSlide.getValue();
 	}
-
-	private void _sliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event__sliderStateChanged
-		// TODO add your handling code here:
+	
+	
+	private void _sliderStateChanged(javax.swing.event.ChangeEvent evt) {
 		_simTimer.setDelay(_slider.getMaximum() - _slider.getValue());
-	}//GEN-LAST:event__sliderStateChanged
+	}
 
-	private void _doublyBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event__doublyBtnActionPerformed
-		// TODO add your handling code here:
+	private void _doublyBtnActionPerformed(java.awt.event.ActionEvent evt) {
+		for (Edge e : _edgesSelected) {
+			e.setDirection(EdgeDirection.DOUBLE);
+		}
 		_edgeType = EdgeDirection.DOUBLE;
-	}//GEN-LAST:event__doublyBtnActionPerformed
+		drawingPanel1.repaint();
+	}
 
-	private void _undirectedBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event__undirectedBtnActionPerformed
-		// TODO add your handling code here:
+	private void _undirectedBtnActionPerformed(java.awt.event.ActionEvent evt) {
+		for (Edge e : _edgesSelected) {
+			e.setDirection(EdgeDirection.NONE);
+		}
 		_edgeType = EdgeDirection.NONE;
-	}//GEN-LAST:event__undirectedBtnActionPerformed
+		drawingPanel1.repaint();
+	}
 
-	private void _singlyBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event__singlyBtnActionPerformed
-		// TODO add your handling code here:
+	private void _singlyBtnActionPerformed(java.awt.event.ActionEvent evt) {
+		for (Edge e : _edgesSelected) {
+			e.setDirection(EdgeDirection.SINGLE);
+		}
 		_edgeType = EdgeDirection.SINGLE;
-	}//GEN-LAST:event__singlyBtnActionPerformed
+		drawingPanel1.repaint();
+	}
 
 	/******************************************************************************************************************
 	 * HELPER FUNCTIONS AND CLASSES																					  *
