@@ -1,8 +1,20 @@
 package manager;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.ArrayList;
+
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import backend.Diagram;
+
+import com.google.gson.stream.*;
 
 /**
  * Represents a single project (single tab) of the FSM/Graph Diagram.
@@ -22,62 +34,103 @@ public class DiagramProject {
 	
 	/** The object that keeps track of recent changes to the diagram.
 	 * It is useful for undo and redo features. */
-	private DiagramHistory _history;
+	private HistoryStack _history;
+
+	/** Boolean indicating whether the project is from a file, not a newly created one. */
+	private boolean _loaded;
 	
-	/**
-	 * Constructs a new diagram project object with blank diagram.
-	 * @return The diagram project.
-	 * @throws IOException
-	 */
-	public DiagramProject() {
-		_filename = null;
-		_history = new DiagramHistory(MAX_HISTORY);
-	}
-
-	/**
-	 * Constructs a project from the given diagram and uses the specified filename.
-	 * @param filename The absolute path to the project file.
-	 * @return The diagram project.
-	 * @throws IOException 
-	 */
-	public DiagramProject(Diagram diagram, String filename) {
-		_filename = filename;
-		_history = new DiagramHistory(MAX_HISTORY, diagram);
-	}
-
-	/**
-	 * The factory that saves the current diagram project object by writing down 
-	 * the data to the file.
-	 * @param dp The current diagram project.
-	 * @return The diagram project.
-	 * @throws IOException 
-	 */
-	public static void saveProject(DiagramProject dp) throws IOException {
-		// TODO: implement opening the project file and populate data.
-		throw new UnsupportedOperationException("Not yet implemented.");
+	/** Last saved revision number */
+	private int _savedRevision; 
+	
+	/** Factory method that creates a new project. */
+	public static DiagramProject newProject() {
+		DiagramProject project = new DiagramProject();
+		project._filename = "";
+		project._history = new HistoryStack(MAX_HISTORY);
+		project._loaded = false;
+		project._savedRevision = -1;
+		return project;
 	}
 	
-	/**
-	 * Modifies the current diagram object by using the specified action object
-	 * which implements the DiagramModifyAction interface.
-	 * @param action The action object that would modify the current diagram
-	 * 		with its modify method (interface of DiagramModifyAction). 
-	 * 		The implemented modify method must be robust and do not break.
-	 * @return A boolean indicating whether the modification of the current 
-	 * 		diagram is a success or not.
-	 * @throws CloneNotSupportedException is thrown if the current diagram is not cloneable.
-	 */
-	public boolean apply(DiagramModifyAction action) throws CloneNotSupportedException {
+	/** Factory method that loads the saved project from a file. 
+	 * @throws FileNotFoundException */
+	public static DiagramProject[] openProject() {
 		
-		// Create a new clone of the current diagram.
-		Diagram newDiagram = (Diagram) _history.getCurrentDiagram().clone();
-		
-		// Try to modify the diagram, and see if it is successful.
-		boolean success = action.modify(newDiagram);
-		if(success) {
-			_history.add(newDiagram, action.message());
+		// Pop up the file chooser for user to choose files.
+		File[] files = openFileChooser();
+		if(files == null) {
+			return null; // No files selected.
 		}
 		
-		return success;
+		// Trying to create diagram objects.
+		ArrayList<DiagramProject> projects = new ArrayList<DiagramProject>();
+		for(int i = 0; i < files.length; i++) {
+			File file = files[i];
+			Reader reader;
+			try {
+				reader = new FileReader(file);
+			} catch (FileNotFoundException e) {
+				continue;
+			}
+			Diagram loadedDiagram = getDiagramFromReader(reader);
+			if(loadedDiagram == null) {
+				// TODO: The file we tried to load is actually not a diagram file.
+				continue;
+			}
+			
+			DiagramProject project = new DiagramProject();
+			project._filename = file.getName();
+			project._history = new HistoryStack(MAX_HISTORY, loadedDiagram);
+			project._loaded = true;
+			project._savedRevision = 0;
+			
+			projects.add(project);
+		}
+		
+		return (DiagramProject[]) projects.toArray();
 	}
+
+	private static Diagram getDiagramFromReader(Reader reader) {
+		JsonReader jsonReader = new JsonReader(reader);
+		try {
+			while(jsonReader.hasNext()) {
+				
+			}
+		} catch (IOException e) {
+			return null;
+		}
+		return null;
+	}
+	
+	private static File[] openFileChooser() {
+		JFileChooser chooser = new JFileChooser();
+		FileFilter filter = new FileNameExtensionFilter("Diagram JSON File", "json");
+		chooser.addChoosableFileFilter(filter);
+		chooser.setAcceptAllFileFilterUsed(false);
+		
+		int returnVal = chooser.showOpenDialog(null);
+		if(returnVal == JFileChooser.APPROVE_OPTION) {
+			return chooser.getSelectedFiles();
+		} else {
+			return null;
+		}
+	}
+
+	private static File saveFileChooser() {
+		JFileChooser chooser = new JFileChooser();
+		FileFilter filter = new FileNameExtensionFilter("Diagram JSON File", "json");
+		chooser.addChoosableFileFilter(filter);
+		chooser.setAcceptAllFileFilterUsed(false);
+		chooser.setMultiSelectionEnabled(true);
+		
+		int returnVal = chooser.showSaveDialog(null);
+		if(returnVal == JFileChooser.APPROVE_OPTION) {
+			return chooser.getSelectedFile();
+		} else {
+			return null;
+		}
+	}
+
+	
+	
 }
