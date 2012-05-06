@@ -935,42 +935,8 @@ public class MainFrame extends javax.swing.JFrame {
 		Point temp = _mouseLoc;
 		_mouseLoc = evt.getPoint();
 
-		//If _nodeDragged, which is set when someone presses down on a node (in MousePressed), is not null, then drag the appropriate nodes:
-		if (_nodeDragged != null && drawingPanel1.contains(_mouseLoc)){
-
-			//If the node is not selected, then just move that one node.
-			if (!_nodeDragged.isSelected() || _nodesSelected.size() == 1){
-				double snappedX = _mouseLoc.getX() - _nodeDragged.getOffset().getX();
-				double snappedY = _mouseLoc.getY() - _nodeDragged.getOffset().getY();
-				for (Node n : drawingPanel1.getDiagram().getNodes()) {
-					if (n != _nodeDragged) {
-						if (Math.abs(_mouseLoc.getX() - _nodeDragged.getOffset().getX() - n.getCenter().getX()) <= SNAP_DIFFERENCE) {
-							snappedX = n.getCenter().getX();
-						}
-						if (Math.abs(_mouseLoc.getY() - _nodeDragged.getOffset().getY() - n.getCenter().getY()) <= SNAP_DIFFERENCE) {
-							snappedY = n.getCenter().getY();
-						}
-					}
-				}
-				_nodeDragged.setCenter(snappedX, snappedY);
-				_nodeDragged.resetCircle();
-			}
-
-
-			//Otherwise, move all the selected nodes.
-			else {
-				for (Node n : _nodesSelected){
-					int difX = _mouseLoc.x - temp.x;
-					int difY = _mouseLoc.y - temp.y;
-					n.setCenter(n.getCenter().x + difX, n.getCenter().y + difY);
-					n.resetCircle();
-				}
-			}
-
-		}
-
-		//Otherwise, if we are in the middle of creating an edge, then handle drawing the progress edge on the screen.
-		else if (_edgeStart != null) {
+		//If we are in the middle of creating an edge, then handle drawing the progress edge on the screen.
+		if (_edgeStart != null) {
 			Node con = null;
 
 			//Check to see if there is a close node to which we can snap the end of the progress line.
@@ -1012,6 +978,40 @@ public class MainFrame extends javax.swing.JFrame {
 				drawingPanel1._progressLine = new Line2D.Double(point_start, point_end);
 			else
 				drawingPanel1._progressLine = new Line2D.Double(point_start, _mouseLoc);
+
+		}
+
+		//Else if _nodeDragged, which is set when someone presses down on a node (in MousePressed), is not null, then drag the appropriate nodes:
+		else if (_nodeDragged != null && drawingPanel1.contains(_mouseLoc)){
+
+			//If the node is not selected, then just move that one node.
+			if (!_nodeDragged.isSelected() || _nodesSelected.size() == 1){
+				double snappedX = _mouseLoc.getX() - _nodeDragged.getOffset().getX();
+				double snappedY = _mouseLoc.getY() - _nodeDragged.getOffset().getY();
+				for (Node n : drawingPanel1.getDiagram().getNodes()) {
+					if (n != _nodeDragged) {
+						if (Math.abs(_mouseLoc.getX() - _nodeDragged.getOffset().getX() - n.getCenter().getX()) <= SNAP_DIFFERENCE) {
+							snappedX = n.getCenter().getX();
+						}
+						if (Math.abs(_mouseLoc.getY() - _nodeDragged.getOffset().getY() - n.getCenter().getY()) <= SNAP_DIFFERENCE) {
+							snappedY = n.getCenter().getY();
+						}
+					}
+				}
+				_nodeDragged.setCenter(snappedX, snappedY);
+				_nodeDragged.resetCircle();
+			}
+
+
+			//Otherwise, move all the selected nodes.
+			else {
+				for (Node n : _nodesSelected){
+					int difX = _mouseLoc.x - temp.x;
+					int difY = _mouseLoc.y - temp.y;
+					n.setCenter(n.getCenter().x + difX, n.getCenter().y + difY);
+					n.resetCircle();
+				}
+			}
 
 		}
 
@@ -1144,6 +1144,7 @@ public class MainFrame extends javax.swing.JFrame {
 		boolean changed_help_text = false;
 		for (Node n : drawingPanel1.getDiagram().getNodes()) {
 			if (n.getCircle().contains(_mouseLoc) || (n.isStart() && n.getStartSymbol().contains(_mouseLoc))) {
+				System.out.println(MouseEvent.getMouseModifiersText(evt.getModifiers()));
 				if (n.getCircle().contains(_mouseLoc) && MouseEvent.getMouseModifiersText(evt.getModifiers()).contains("Shift"))
 					_edgeStart = n;
 				if (n.isSelected())
