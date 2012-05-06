@@ -109,6 +109,10 @@ public class MainFrame extends javax.swing.JFrame {
 	 * 
 	 * _helpText is the label displayed at the bottom of the main frame to alert the user to
 	 * 		keybindings.
+	 * 
+	 * _shiftClicked is false if shift is not currently being held, and true otherwise.  We
+	 * 		need this variable because Mac OS doesn't recognize shift in Mouse Modifiers for
+	 * 		some reason.
 	 */
 	private Node _edgeStart;
 	private Node _resizing;
@@ -128,6 +132,7 @@ public class MainFrame extends javax.swing.JFrame {
 	private boolean _backwardClicked;
 	private String _currentInputString;
 	private JLabel _helpText;
+	private boolean _shiftClicked;
 
 	//The file paths of image resources, and other global static variables we want to define.
 	private static final String PLAY_FILEPATH = "./src/img/play.png";
@@ -1138,7 +1143,7 @@ public class MainFrame extends javax.swing.JFrame {
 		boolean changed_help_text = false;
 		for (Node n : drawingPanel1.getDiagram().getNodes()) {
 			if (n.getCircle().contains(_mouseLoc) || (n.isStart() && n.getStartSymbol().contains(_mouseLoc))) {
-				if (n.getCircle().contains(_mouseLoc) && MouseEvent.getMouseModifiersText(evt.getModifiers()).contains("Shift"))
+				if (n.getCircle().contains(_mouseLoc) && _shiftClicked)
 					_edgeStart = n;
 				if (n.isSelected())
 					_helpText.setText(help_message_text_in_node_selected);
@@ -1255,6 +1260,7 @@ public class MainFrame extends javax.swing.JFrame {
 		}
 		//Otherwise if "shift" is pressed, get ready to create a new edge from the node over which we are hovering.
 		else if (evt.getKeyCode() == KeyEvent.VK_SHIFT) {
+			_shiftClicked = true;
 			for (Node n : drawingPanel1.getDiagram().getNodes()) {
 				if (n.getCircle().contains(_mouseLoc)) {
 					_edgeStart = n;
@@ -1271,8 +1277,10 @@ public class MainFrame extends javax.swing.JFrame {
 	 * @param evt	The KeyEvent associated with the key being released.
 	 */
 	private void drawingPanel1KeyReleased(java.awt.event.KeyEvent evt) {
-		if (drawingPanel1._progressLine == null && evt.getKeyCode() == KeyEvent.VK_SHIFT)
+		if (drawingPanel1._progressLine == null && evt.getKeyCode() == KeyEvent.VK_SHIFT) {
+			_shiftClicked = false;
 			_edgeStart = null;
+		}
 	}
 
 	/******************************************************************************************************************
