@@ -1187,6 +1187,7 @@ public class MainFrame extends javax.swing.JFrame {
 			//If no end point was found, reset the line.
 			drawingPanel1._progressLine = null;
 			_edgeStart = null;
+			_shiftClicked = false;
 		}
 		//If no edge is being drawn, reset all the nodes/resizing boxes/edges being dragged, upon mouse release
 		_resizing = null;
@@ -1277,9 +1278,10 @@ public class MainFrame extends javax.swing.JFrame {
 	 * @param evt	The KeyEvent associated with the key being released.
 	 */
 	private void drawingPanel1KeyReleased(java.awt.event.KeyEvent evt) {
-		if (drawingPanel1._progressLine == null && evt.getKeyCode() == KeyEvent.VK_SHIFT) {
+		if (evt.getKeyCode() == KeyEvent.VK_SHIFT) {
 			_shiftClicked = false;
-			_edgeStart = null;
+			if (drawingPanel1._progressLine == null)
+				_edgeStart = null;
 		}
 	}
 
