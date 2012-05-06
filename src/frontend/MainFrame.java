@@ -141,8 +141,8 @@ public class MainFrame extends javax.swing.JFrame {
 	private static final String STOP_FILEPATH = "./src/img/stop.png";
 	
 	private static final String help_message_text = "Double Click: New Node | \"S\": Snap Mouse To Nearest Node | Ctrl-Click Component: Add Component To Selected Components";
-	private static final String help_message_text_in_node_unselected = "Click To Select | Double Click: Toggle Accept State | Shift-DragClick: Create New Edge | Click-Drag: Move It Around";
-	private static final String help_message_text_in_node_selected = "Click Text: Change Name | Delete/Backspace: Delete Node | Click Triangle: Toggle Start State";
+	private static final String help_message_text_in_node_unselected = "Click To Select | Double Click: Toggle Accept State | Shift-DragClick: New Edge | Click-Drag: Move It Around";
+	private static final String help_message_text_in_node_selected = "Shift-DragClick: New Edge | Double Click: Toggle Accept | Delete/Backspace: Delete Node | Click Triangle: Toggle Start State";
 	
 	//If we are within 3 pixels of another node, then snap to that node.
 	private static int SNAP_DIFFERENCE = 7;
@@ -471,6 +471,11 @@ public class MainFrame extends javax.swing.JFrame {
 		maxWait.setFont(newTextFieldFont);
 		maxWait.setText("3s");
 		
+		JLabel simulationTimeSliderLabel = new JLabel();
+		simulationTimeSliderLabel.setHorizontalAlignment(JLabel.CENTER);
+		simulationTimeSliderLabel.setFont(newTextFieldFont);
+		simulationTimeSliderLabel.setText("Interval Between Simulation Steps");
+		
 		JLabel simulationStepSlider = new JLabel();
 		simulationStepSlider.setFont(newTextFieldFont);
 		simulationStepSlider.setHorizontalAlignment(JLabel.CENTER);
@@ -492,6 +497,7 @@ public class MainFrame extends javax.swing.JFrame {
 										.addComponent(_playPauseBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
 										.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 										.addComponent(_forwardBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+										.addComponent(simulationTimeSliderLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
 										.addGroup(jPanel2Layout.createSequentialGroup()
 												.addComponent(minWait, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
 												.addComponent(_slider, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -514,20 +520,22 @@ public class MainFrame extends javax.swing.JFrame {
 								.addComponent(_playPauseBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
 								.addComponent(_forwardBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
 								.addGroup(jPanel2Layout.createParallelGroup()
-										.addComponent(minWait, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
-										.addComponent(_slider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-										.addComponent(maxWait, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE))
-										.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-										.addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-										.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-										.addComponent(simulationStepSlider, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
-										.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-										.addComponent(_simSlide, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-										.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-										.addComponent(simTextAreaLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-										.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-										.addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 246, Short.MAX_VALUE)
-										.addContainerGap())
+										.addComponent(simulationTimeSliderLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
+										.addGroup(jPanel2Layout.createParallelGroup()
+												.addComponent(minWait, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
+												.addComponent(_slider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+												.addComponent(maxWait, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE))
+												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+												.addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+												.addComponent(simulationStepSlider, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
+												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+												.addComponent(_simSlide, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+												.addComponent(simTextAreaLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+												.addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 246, Short.MAX_VALUE)
+												.addContainerGap())
 		);
 		jSplitPane3.setLeftComponent(jPanel2);
 		final BasicSplitPaneUI splitPaneUI = (BasicSplitPaneUI) jSplitPane3.getUI();
