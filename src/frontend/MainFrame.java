@@ -891,9 +891,10 @@ public class MainFrame extends javax.swing.JFrame {
 		else{
 			//If Ctrl is clicked, we are selecting multiple nodes/edges
 			if (mod.equals("Ctrl+Button1")) {
-
 				//Iterate over all edges and nodes, toggling selection for each node and edge
 				for (Node n : drawingPanel1.getDiagram().getNodes()){
+					n.getTextField().setVisible(false);
+					n.getLabel().setVisible(true);
 					if (n.getCircle().contains(evt.getPoint())){
 						if (n.isSelected()){
 							n.setSelected(false);
@@ -904,11 +905,10 @@ public class MainFrame extends javax.swing.JFrame {
 							_nodesSelected.add(n);
 						}
 						drawingPanel1.repaint();
+						System.out.println("returning after ctrl-click");
 						return; //If we find a node or edge, just return; we don't want to ctrl
 						//select multiple things if nodes are stacked on top of each other.
 					}
-					n.getTextField().setVisible(false);
-					n.getLabel().setVisible(true);
 				}
 				for (Edge e : drawingPanel1.getDiagram().getEdges()){
 					if (e.intersects(evt.getPoint().x,evt.getPoint().y)){
