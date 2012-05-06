@@ -2,6 +2,8 @@ package backend;
 
 
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.geom.Arc2D;
 
 import frontend.DrawingPanel;
@@ -575,5 +577,8 @@ public class Edge implements Cloneable, DiagramObject {
 	public double getAngle() {
 		return _angle;
 	}
-
+	
+	
+	
+	
 }
