@@ -878,8 +878,7 @@ public class MainFrame extends javax.swing.JFrame {
 			}
 
 			//Otherwise, reset all the selected nodes, and add a new node centered at the click.
-			_nodesSelected = Collections.synchronizedSet(new HashSet<Node>());
-			_edgesSelected = Collections.synchronizedSet(new HashSet<Edge>());
+			resetSelected();
 			Node add = drawingPanel1.addNode(evt.getPoint());
 			add.setSelected(true);
 			add.getTextField().setVisible(true);
@@ -937,9 +936,7 @@ public class MainFrame extends javax.swing.JFrame {
 
 				//Otherwise, reset all the selected nodes and edges, iterate through each node/edge to
 				//change the variables which manage how they are drawn, and see if a new node/edge is selected
-				_edgesSelected = Collections.synchronizedSet(new HashSet<Edge>());
-				_nodesSelected = Collections.synchronizedSet(new HashSet<Node>());
-				drawingPanel1.clearSelected();
+				resetSelected();
 
 				for (Node n : drawingPanel1.getDiagram().getNodes()){
 					if (n.getCircle().contains(evt.getPoint()) || (n.isStart() && n.getStartSymbol().contains(evt.getPoint()))){
@@ -1235,8 +1232,6 @@ public class MainFrame extends javax.swing.JFrame {
 			//Find the node which the edge is ending at
 			for (Node n : drawingPanel1.getDiagram().getNodes()) {
 				if (n.getCircle().contains(_mouseLoc)) {
-					drawingPanel1.clearSelected(); //clear all selected nodes/edges
-
 					//Create the new edge, reset all variables associated with maintaining the edge being drawn.
 					Edge newEdge = new Edge(_edgeStart,n,_edgeStart.getCenter(),_edgeStart.getCenter(),drawingPanel1,_edgeType);
 					newEdge.getTextField().grabFocus();
@@ -1244,8 +1239,7 @@ public class MainFrame extends javax.swing.JFrame {
 					_edgeStart.addConnected(newEdge);
 					n.addConnected(newEdge);
 					drawingPanel1.getDiagram().addEdge(newEdge);
-					_nodesSelected = Collections.synchronizedSet(new HashSet<Node>());
-					_edgesSelected = Collections.synchronizedSet(new HashSet<Edge>());
+					resetSelected();
 					_edgesSelected.add(newEdge);
 					_edgeStart = null;
 					_shiftClicked = false;
@@ -1298,8 +1292,7 @@ public class MainFrame extends javax.swing.JFrame {
 				drawingPanel1.remove(e.getTextField());
 				drawingPanel1.getDiagram().getEdges().remove(e);
 			}
-			_nodesSelected = Collections.synchronizedSet(new HashSet<Node>());
-			_edgesSelected = Collections.synchronizedSet(new HashSet<Edge>());
+			resetSelected();
 		}
 		//Otherwise if "s" is pressed, snap to the nearest node.
 		else if(evt.getKeyCode() == KeyEvent.VK_S && evt.getModifiers() != 2) {
@@ -1388,7 +1381,6 @@ public class MainFrame extends javax.swing.JFrame {
 	private void jMenuItem8ActionPerformed(java.awt.event.ActionEvent evt) {
 		exitPrompt();
 		System.exit(0);
-
 	}
 	
 	/**
@@ -1800,6 +1792,15 @@ public class MainFrame extends javax.swing.JFrame {
 		int answer = JOptionPane.showOptionDialog(this, "There is unsaved work! Would you like to save before closing" +
 				" this tab?", "Closing Unsaved Tab", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE, null, opts, opts[1]);
 		return answer;
+	}
+	
+	/**
+	 * This resets all the selected nodes/edges.
+	 */
+	private void resetSelected() {
+		drawingPanel1.clearSelected();
+		_nodesSelected = Collections.synchronizedSet(new HashSet<Node>());
+		_edgesSelected = Collections.synchronizedSet(new HashSet<Edge>());
 	}
 
 	/**
