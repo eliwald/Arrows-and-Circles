@@ -552,7 +552,10 @@ public class Edge implements Cloneable, DiagramObject {
     public String getName() {
         return ("Edge " + getNodeString() +  ": " + _area.getText());
     }
-
+    
+    /**
+     * @return
+     */
 	public String getNodeString() {
 		return "(" + getStartNode().getLabel().getText() + ", " + getEndNode().getLabel().getText() + ")";
 	}

@@ -38,10 +38,14 @@ import java.util.ListIterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
+import javax.swing.JSlider;
 import javax.swing.JTabbedPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
@@ -158,7 +162,7 @@ public class MainFrame extends javax.swing.JFrame {
 	private javax.swing.JButton _playPauseBtn;
 	private javax.swing.JButton _rewindBtn;
 	private javax.swing.JRadioButton _singlyBtn;
-	private javax.swing.JSlider _slider;
+	private javax.swing.JSlider _speedSlider, _slider;
 	private javax.swing.JButton _stopBtn;
 	private javax.swing.JRadioButton _undirectedBtn;
 	private frontend.DrawingPanel drawingPanel1;
@@ -182,6 +186,7 @@ public class MainFrame extends javax.swing.JFrame {
 	private javax.swing.JMenuItem jMenuItemUndo;
 	private javax.swing.JMenuItem jMenuItemSelectAll;
 	private javax.swing.JMenuItem jMenuItemShowTrans;
+	private javax.swing.JMenuItem jMenuItemAbout;
 	private javax.swing.JPanel jPanel1;
 	private javax.swing.JPanel jPanel2;
 	private javax.swing.JScrollPane jScrollPane1;
@@ -240,7 +245,7 @@ public class MainFrame extends javax.swing.JFrame {
 		jScrollPane2 = new javax.swing.JScrollPane();
 		jTextArea1 = new javax.swing.JTextArea();
 		jTextField1 = new javax.swing.JTextField();
-		_slider = new javax.swing.JSlider();
+		_speedSlider = new javax.swing.JSlider();
 		_simSlide = new javax.swing.JSlider();
 		_rewindBtn = new javax.swing.JButton();
 		_stopBtn = new javax.swing.JButton();
@@ -260,6 +265,7 @@ public class MainFrame extends javax.swing.JFrame {
 		jMenuItemRedo = new javax.swing.JMenuItem();
 		jMenuItemSelectAll = new javax.swing.JMenuItem();
 		jMenuItemShowTrans = new javax.swing.JMenuItem();
+		jMenuItemAbout = new javax.swing.JMenuItem();
 		jMenuTools = new javax.swing.JMenu();
 		jMenuHelp = new javax.swing.JMenu();
 
@@ -313,11 +319,11 @@ public class MainFrame extends javax.swing.JFrame {
 		drawingPanel1.setLayout(drawingPanel1Layout);
 		drawingPanel1Layout.setHorizontalGroup(
 				drawingPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGap(0, 950, Short.MAX_VALUE)
+				.addGap(0, 1900, Short.MAX_VALUE)
 		);
 		drawingPanel1Layout.setVerticalGroup(
 				drawingPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGap(0, 950, Short.MAX_VALUE)
+				.addGap(0, 1900, Short.MAX_VALUE)
 		);
 
 		jScrollPane1.setViewportView(drawingPanel1);
@@ -363,7 +369,7 @@ public class MainFrame extends javax.swing.JFrame {
 		});
 
 		jLabel1.setHorizontalAlignment(SwingConstants.CENTER);
-		jLabel2.setText("Toolbox");
+		jLabel2.setText("Edges");
 		jLabel2.setHorizontalAlignment(SwingConstants.CENTER);
 		jLabel2.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
@@ -416,9 +422,9 @@ public class MainFrame extends javax.swing.JFrame {
 			}
 		});
 
-		_slider.setMaximum(3000);
-		_slider.setValue(1500);
-		_slider.addChangeListener(new javax.swing.event.ChangeListener() {
+		_speedSlider.setMaximum(3000);
+		_speedSlider.setValue(1500);
+		_speedSlider.addChangeListener(new javax.swing.event.ChangeListener() {
 			public void stateChanged(javax.swing.event.ChangeEvent evt) {
 				_sliderStateChanged(evt);
 			}
@@ -508,7 +514,7 @@ public class MainFrame extends javax.swing.JFrame {
 										.addComponent(simulationTimeSliderLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
 										.addGroup(jPanel2Layout.createSequentialGroup()
 												.addComponent(minWait, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-												.addComponent(_slider, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
+												.addComponent(_speedSlider, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
 												.addComponent(maxWait, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
 												.addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 262, Short.MAX_VALUE)
 												.addComponent(simulationStepSlider, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -531,7 +537,7 @@ public class MainFrame extends javax.swing.JFrame {
 										.addComponent(simulationTimeSliderLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
 										.addGroup(jPanel2Layout.createParallelGroup()
 												.addComponent(minWait, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
-												.addComponent(_slider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+												.addComponent(_speedSlider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
 												.addComponent(maxWait, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE))
 												.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 												.addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -705,8 +711,10 @@ public class MainFrame extends javax.swing.JFrame {
 						}
 					}
 				}
+				String disp = builder.toString();
+				if (disp.equals("")) disp = "There are no transitions in this FSM.";
 				String[] opts = {"OK"};
-				JOptionPane.showOptionDialog(jSplitPane2, builder.toString(), "Transitions", JOptionPane.DEFAULT_OPTION, 
+				JOptionPane.showOptionDialog(jSplitPane2, disp, "Transitions", JOptionPane.DEFAULT_OPTION, 
 		JOptionPane.INFORMATION_MESSAGE, null, opts, opts[0]);
 			}
 			
@@ -719,6 +727,29 @@ public class MainFrame extends javax.swing.JFrame {
 		jMenuBar2.add(jMenuTools);
 
 		jMenuHelp.setText("Help");
+		jMenuItemAbout.setText("About");
+		jMenuHelp.add(jMenuItemAbout);
+		jMenuItemAbout.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				JFrame aboutFrame = new JFrame("About");
+				aboutFrame.setVisible(true);
+				JTabbedPane tabs = new JTabbedPane();
+				aboutFrame.add(tabs);
+				JScrollPane controls = new JScrollPane();
+				controls.setName("Key Bindings");
+				JScrollPane dev = new JScrollPane();
+				dev.setName("Development");
+				tabs.add(controls);
+				tabs.add(dev);
+				aboutFrame.pack();
+			}
+			
+		});
+		
+		
 		jMenuBar2.add(jMenuHelp);
 
 		setJMenuBar(jMenuBar2);
@@ -741,9 +772,16 @@ public class MainFrame extends javax.swing.JFrame {
 						.addGap(2))
 		);
 
+		//add zoom slider; totally separate from rest of UI (i.e. doesn't ever move, not part of any group or layout, etc).
+        _slider = new JSlider(JSlider.VERTICAL, -3, 3, 0);
+        _slider.setPaintTicks(true);
+        _slider.setSize(25, 100);
+        _slider.setName("Zoom");
+        this.add(_slider);
+        _slider.setVisible(true);
+		
 		pack();
 	}                   
-
 
 	/**
 	 * Called when a new tab is opened.  Creates a new drawing panel and pane associated with the new tab.
@@ -788,11 +826,11 @@ public class MainFrame extends javax.swing.JFrame {
 		drawingPanel1.setLayout(drawingPanel1Layout);
 		drawingPanel1Layout.setHorizontalGroup(
 				drawingPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGap(0, 950, Short.MAX_VALUE)
+				.addGap(0, 1900, Short.MAX_VALUE)
 		);
 		drawingPanel1Layout.setVerticalGroup(
 				drawingPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGap(0, 950, Short.MAX_VALUE)
+				.addGap(0, 1900, Short.MAX_VALUE)
 		);
 
 		jTabbedPane1.addTab("Untitled", jScrollPane1);
@@ -918,6 +956,21 @@ public class MainFrame extends javax.swing.JFrame {
 						e.getTextField().grabFocus();
 						e.getLabel().setVisible(false);
 						_edgesSelected.add(e);
+						EdgeDirection dir = e.getDirection();
+						switch (dir){
+							case DOUBLE:
+								_doublyBtn.setSelected(true);
+								_edgeType = EdgeDirection.DOUBLE;
+								break;
+							case SINGLE:
+								_singlyBtn.setSelected(true);
+								_edgeType = EdgeDirection.SINGLE;
+								break;
+							default:
+								_undirectedBtn.setSelected(true);
+								_edgeType = EdgeDirection.NONE;
+							
+						}
 						drawingPanel1.repaint();
 						return;
 					}
@@ -1144,7 +1197,6 @@ public class MainFrame extends javax.swing.JFrame {
 		boolean changed_help_text = false;
 		for (Node n : drawingPanel1.getDiagram().getNodes()) {
 			if (n.getCircle().contains(_mouseLoc) || (n.isStart() && n.getStartSymbol().contains(_mouseLoc))) {
-				System.out.println(MouseEvent.getMouseModifiersText(evt.getModifiers()));
 				if (n.getCircle().contains(_mouseLoc) && MouseEvent.getMouseModifiersText(evt.getModifiers()).contains("Shift"))
 					_edgeStart = n;
 				if (n.isSelected())
@@ -1233,7 +1285,9 @@ public class MainFrame extends javax.swing.JFrame {
 			_edgesSelected = Collections.synchronizedSet(new HashSet<Edge>());
 		}
 		//Otherwise if "s" is pressed, snap to the nearest node.
-		else if(evt.getKeyCode() == KeyEvent.VK_S) {
+		else if(evt.getKeyCode() == KeyEvent.VK_S && evt.getModifiers() != 2) {
+			System.out.println(evt.getModifiers());
+			System.out.println(KeyEvent.VK_CONTROL);
 			Node currNode = null;
 
 			int dist;
@@ -1309,7 +1363,12 @@ public class MainFrame extends javax.swing.JFrame {
 		// TODO add your handling code here:
 		exitPrompt();
 		int currIndex = jTabbedPane1.getSelectedIndex();
-		jTabbedPane1.remove(currIndex);
+		if (currIndex >= 0){
+			jTabbedPane1.remove(currIndex);
+		}
+		else{
+			return;
+		}
 		if (jTabbedPane1.getSelectedComponent() != null){
 			jScrollPane1 = (JScrollPane)(jTabbedPane1.getSelectedComponent());
 			drawingPanel1 = (DrawingPanel)jScrollPane1.getViewport().getView();
@@ -1392,7 +1451,7 @@ public class MainFrame extends javax.swing.JFrame {
 					jTextArea1.setText("Start ");
 
 				//Append the name of the next object in the simulation to the text area.
-				jTextArea1.append(e.getName() + "\n");
+				jTextArea1.setText(jTextArea1.getText() + (e.getName() + "\n"));
 
 				//Select the correct character in the input string, so the user knows which edge he's taking.
 				jTextField1.grabFocus();
@@ -1405,11 +1464,11 @@ public class MainFrame extends javax.swing.JFrame {
 				//If this is the last element in the list, then clean up and stop simulation.
 				if (!_iter.hasNext()) {
 					_playPauseBtn.setIcon(new ImageIcon(PLAY_FILEPATH));
-					jTextArea1.append("FINISHED: Ended at " + e.getName() + ".\n");
+					jTextArea1.setText(jTextArea1.getText() + ("FINISHED: Ended at " + e.getName() + ".\n"));
 					if (((Node)e).isEnd())
-						jTextArea1.append("FSM Accepted the input string.\n");
+						jTextArea1.setText(jTextArea1.getText() + ("FSM Accepted the input string.\n"));
 					else
-						jTextArea1.append("FSM Rejected the input string.\n");
+						jTextArea1.setText(jTextArea1.getText() + ("FSM Rejected the input string.\n"));
 
 					_sim = null;
 					_iter = null;
@@ -1498,7 +1557,7 @@ public class MainFrame extends javax.swing.JFrame {
 				jTextArea1.setText("");
 				String[] tempArray = temp.split("\n");
 				for (int i = 0; i < tempArray.length - 1; i ++) {
-					jTextArea1.append(tempArray[i] + "\n");
+					jTextArea1.setText(jTextArea1.getText() + (tempArray[i] + "\n"));
 				}
 			}
 			else if (answer == 0) {
@@ -1613,7 +1672,7 @@ public class MainFrame extends javax.swing.JFrame {
 	
 	
 	private void _sliderStateChanged(javax.swing.event.ChangeEvent evt) {
-		_simTimer.setDelay(_slider.getMaximum() - _slider.getValue());
+		_simTimer.setDelay(_speedSlider.getMaximum() - _speedSlider.getValue());
 	}
 
 	private void _doublyBtnActionPerformed(java.awt.event.ActionEvent evt) {
@@ -1670,7 +1729,6 @@ public class MainFrame extends javax.swing.JFrame {
 		 */
 		try {
 			for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-//				System.out.println(info.getName());
 				if ("Nimbus".equals(info.getName())) {
 					javax.swing.UIManager.setLookAndFeel(info.getClassName());
 					break;

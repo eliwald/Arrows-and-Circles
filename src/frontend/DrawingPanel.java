@@ -10,6 +10,7 @@ import java.awt.Point;
 import java.awt.RenderingHints;
 
 import javax.swing.JPanel;
+import javax.swing.JSlider;
 
 import manager.DiagramProject;
 import backend.*;
@@ -37,12 +38,13 @@ public class DrawingPanel extends JPanel {
     public DrawingPanel() {
         _diagram = new Diagram();
         this.setBackground(Color.WHITE);
+
     }
     
     public Diagram getDiagram() {
         return _diagram;
     }
-
+    
     public void clearSelected(){
         for (Node n : _diagram.getNodes()){
             n.setSelected(false);
