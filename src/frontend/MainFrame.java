@@ -1801,7 +1801,12 @@ public class MainFrame extends javax.swing.JFrame {
 	 */
 	public void zoomOut() {
 		for (Node n : drawingPanel1.getDiagram().getNodes()){
-			if (n.getRadius() <= Node.MIN_RADIUS) return;
+			if (n.getRadius()*0.9 <= Node.MIN_RADIUS){
+//				Dimension d = new Dimension((int) (n.getRadius()*30),(int) (n.getRadius()*30));
+//				drawingPanel1.setSize(d);
+//				drawingPanel1.setPreferredSize(d);
+				return;
+			}
 		}
 
 		for (Node n : drawingPanel1.getDiagram().getNodes()){
@@ -1844,7 +1849,7 @@ public class MainFrame extends javax.swing.JFrame {
 		else{
 			newX = oldCenter.x;
 		}
-		if (oldCenter.y < center.y){
+		if (oldCenter.y > center.y){
 			if (in){
 				newY = oldCenter.y*0.9;
 			}
@@ -1852,7 +1857,7 @@ public class MainFrame extends javax.swing.JFrame {
 				newY = oldCenter.y/0.9;
 			}
 		}
-		else if (oldCenter.y > center.y){
+		else if (oldCenter.y < center.y){
 			if (in){
 				newY = oldCenter.y/0.9;
 			}
