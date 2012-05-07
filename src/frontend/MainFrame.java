@@ -747,7 +747,7 @@ public class MainFrame extends javax.swing.JFrame {
 						"</tr></tbody></table></p>" +
 						
 						
-						"<p><b>Mouse Modifiers</b><table> <tbody><tr><tr> <td>Shift (hold)</td> " +
+						"<p><b>Mouse Modifier Keys</b><table> <tbody><tr><tr> <td>Shift (hold)</td> " +
 						"<td> Drag from a node to create new edge</td>  </tr>" +
 						"<tr> <td>Ctrl (hold)</td> " +
 						"<td> Click to select/deselect multiple nodes/edges</td>  </tr>" +
