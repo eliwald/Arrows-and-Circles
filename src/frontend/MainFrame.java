@@ -327,85 +327,12 @@ public class MainFrame extends javax.swing.JFrame {
 
 		jScrollPane1.setViewportView(drawingPanel1);
 		jScrollPane1.getVerticalScrollBar().setUnitIncrement(16);
-		for (MouseWheelListener m : jScrollPane1.getMouseWheelListeners()){
-			jScrollPane1.removeMouseWheelListener(m);
-		}
-		drawingPanel1.addMouseWheelListener(new MouseWheelListener(){
-			@Override
-			public void mouseWheelMoved(MouseWheelEvent e) {
-				// TODO Auto-generated method stub
-				
-				if (e.getWheelRotation()>0 ){
-					for (Node n : drawingPanel1.getDiagram().getNodes()){
-						if (n.getRadius() <= Node.MIN_RADIUS) return;
-					}
-					//zoom out
-					for (Node n : drawingPanel1.getDiagram().getNodes()){
-						int centerX = jScrollPane1.getHorizontalScrollBar().getValue();
-						int centerY = jScrollPane1.getVerticalScrollBar().getValue();
-						Point2D.Double p = getNewCenter(n.getCenter(), new Point(centerX, centerY),false);
-						n.setCenter(p.x, p.y);
-						n.setRadius(n.getRadius()*0.9);
-						drawingPanel1.setSize((int)(drawingPanel1.getWidth()*0.9), (int)(drawingPanel1.getHeight()*0.9));
-					}
-				}
-				else {
-					//zoom in
-					for (Node n : drawingPanel1.getDiagram().getNodes()){
-						int centerX = jScrollPane1.getHorizontalScrollBar().getValue();
-						int centerY = jScrollPane1.getVerticalScrollBar().getValue();
-						Point2D.Double p = getNewCenter(n.getCenter(), new Point(centerX, centerY),true);
-						n.setCenter(p.x, p.y);
-						n.setRadius(n.getRadius()/0.9);
-						drawingPanel1.setSize((int)(drawingPanel1.getWidth()/0.9), (int)(drawingPanel1.getHeight()/0.9));
-					}
-				}
-			}
+		this.setScrolling();
+	
 			
-			public Point2D.Double getNewCenter(Point2D.Double oldCenter, Point center, boolean in){
-				double newX, newY;
-				if (oldCenter.x < center.x){
-					if (in){
-						newX = oldCenter.x*0.9;
-					}
-					else{
-						newX = oldCenter.x/0.9;
-					}
-				}
-				else if (oldCenter.x > center.x){
-					if (in){
-						newX = oldCenter.x/0.9;
-					}
-					else{
-						newX = oldCenter.x*0.9;
-					}
-				}
-				else{
-					newX = oldCenter.x;
-				}
-				if (oldCenter.y < center.y){
-					if (in){
-						newY = oldCenter.y*0.9;
-					}
-					else{
-						newY = oldCenter.y/0.9;
-					}
-				}
-				else if (oldCenter.y > center.y){
-					if (in){
-						newY = oldCenter.y/0.9;
-					}
-					else{
-						newY = oldCenter.y*0.9;
-					}
-				}
-				else{
-					newY= oldCenter.y;
-				}
-				return new Point2D.Double(newX, newY);
-			}
 			
-		});
+			
+		
 		
 		jTabbedPane1.addTab("Untitled", jScrollPane1);
 
@@ -928,6 +855,7 @@ public class MainFrame extends javax.swing.JFrame {
 
 		jTabbedPane1.addTab("Untitled", jScrollPane1);
 		jTabbedPane1.setSelectedIndex(jTabbedPane1.getTabCount() - 1);
+		setScrolling();
 	}
 
 	/**
@@ -1844,9 +1772,97 @@ public class MainFrame extends javax.swing.JFrame {
 		drawingPanel1.repaint();
 	}
 
+
 	/******************************************************************************************************************
 	 * HELPER FUNCTIONS AND CLASSES																					  *
 	 ******************************************************************************************************************/
+	/**
+	 * This method is called to set the mousewheellistener of the current drawing panel.	
+	 */
+	public void setScrolling(){
+		for (MouseWheelListener m : jScrollPane1.getMouseWheelListeners()){
+			jScrollPane1.removeMouseWheelListener(m);
+		}
+		drawingPanel1.addMouseWheelListener(new MouseWheelListener(){
+			@Override
+			public void mouseWheelMoved(MouseWheelEvent e) {
+				// TODO Auto-generated method stub
+				
+				if (e.getWheelRotation()>0 ){
+					for (Node n : drawingPanel1.getDiagram().getNodes()){
+						if (n.getRadius() <= Node.MIN_RADIUS) return;
+					}
+					//zoom out
+					for (Node n : drawingPanel1.getDiagram().getNodes()){
+						int centerX = jScrollPane1.getHorizontalScrollBar().getValue();
+						int centerY = jScrollPane1.getVerticalScrollBar().getValue();
+						Point2D.Double p = getNewCenter(n.getCenter(), new Point(centerX, centerY),false);
+						n.setCenter(p.x, p.y);
+						n.setRadius(n.getRadius()*0.9);
+					}
+					Dimension d = new Dimension((int)(drawingPanel1.getWidth()*0.9), (int)(drawingPanel1.getHeight()*0.9));
+					drawingPanel1.setSize(d);
+					drawingPanel1.setPreferredSize(d);
+				}
+				else {
+					//zoom in
+					for (Node n : drawingPanel1.getDiagram().getNodes()){
+						int centerX = jScrollPane1.getHorizontalScrollBar().getValue();
+						int centerY = jScrollPane1.getVerticalScrollBar().getValue();
+						Point2D.Double p = getNewCenter(n.getCenter(), new Point(centerX, centerY),true);
+						n.setCenter(p.x, p.y);
+						n.setRadius(n.getRadius()/0.9);						
+					}
+					Dimension d = new Dimension((int)(drawingPanel1.getWidth()/0.9), (int)(drawingPanel1.getHeight()/0.9));
+					drawingPanel1.setSize(d);
+					drawingPanel1.setPreferredSize(d);
+				}
+			}
+			public Point2D.Double getNewCenter(Point2D.Double oldCenter, Point center, boolean in){
+				double newX, newY;
+				if (oldCenter.x < center.x){
+					if (in){
+						newX = oldCenter.x*0.9;
+					}
+					else{
+						newX = oldCenter.x/0.9;
+					}
+				}
+				else if (oldCenter.x > center.x){
+					if (in){
+						newX = oldCenter.x/0.9;
+					}
+					else{
+						newX = oldCenter.x*0.9;
+					}
+				}
+				else{
+					newX = oldCenter.x;
+				}
+				if (oldCenter.y < center.y){
+					if (in){
+						newY = oldCenter.y*0.9;
+					}
+					else{
+						newY = oldCenter.y/0.9;
+					}
+				}
+				else if (oldCenter.y > center.y){
+					if (in){
+						newY = oldCenter.y/0.9;
+					}
+					else{
+						newY = oldCenter.y*0.9;
+					}
+				}
+				else{
+					newY= oldCenter.y;
+				}
+				return new Point2D.Double(newX, newY);
+			}
+		});
+	}
+	
 	
 	/**
 	 * Listener used for the simulation timer, so that when the timer goes off,
@@ -1926,5 +1942,5 @@ public class MainFrame extends javax.swing.JFrame {
 			}
 		});
 	}
-}
+		}
 

@@ -50,7 +50,7 @@ public class Node implements DiagramObject, Cloneable {
 	public Node(double x, double y, DrawingPanel container) {
 		_container = container;
 		_center = new Point2D.Double(x, y);
-		_radius = 30;
+		_radius = container.getWidth()/30;
 		_connected = new HashSet<Edge>();
 		_color = Color.BLACK;
 		_startState = false;
