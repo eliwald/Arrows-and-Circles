@@ -9,6 +9,7 @@ import java.io.Reader;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.InputMismatchException;
 import java.util.List;
 
 import javax.swing.JFileChooser;
@@ -16,6 +17,7 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import backend.Diagram;
+import backend.Node;
 
 import com.google.gson.stream.*;
 
@@ -74,15 +76,46 @@ public class DiagramProject {
 		// Creates a JSON Reader based on the given reader.
 		JsonReader jsonReader = new JsonReader(reader);
 		
-		// Create a new diagram to construct.
-		Diagram diagram = new Diagram();
-		
 		// Start reading data.
 		jsonReader.beginObject();
 		
-		// First, expect the name of the 
+		// === READING DIAGRAM NAME ===
+		Diagram diagram = new Diagram();
+		if(!jsonReader.nextName().equals("name")) {
+			throw new IOException();
+		}
+		diagram.setName(jsonReader.nextString());
 		
-		
+		// === READING DIAGRAM NODES ===
+		ArrayList<Node> nodes = new ArrayList<Node>();
+		if(!jsonReader.nextName().equals("nodes")) {
+			throw new IOException();
+		}
+		jsonReader.beginArray();
+		while(jsonReader.hasNext()) {
+			
+			// === READING EACH NODE ===
+			jsonReader.beginObject();
+			
+			if(!jsonReader.nextName().equals("x")) {
+				throw new IOException();
+			}
+			double x = jsonReader.nextDouble();
+			
+			if(!jsonReader.nextName().equals("y")) {
+				throw new IOException();
+			}
+			double y = jsonReader.nextDouble();
+			
+			
+			
+			
+			
+			
+			jsonReader.endObject();
+		}
+		jsonReader.endArray();
+
 		
 		
 		return null;
