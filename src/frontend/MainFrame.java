@@ -23,6 +23,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.awt.geom.Arc2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
@@ -35,18 +37,21 @@ import java.util.ListIterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
+import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JTabbedPane;
+import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
+import javax.swing.table.TableColumn;
 import javax.swing.Timer;
 
 /**
@@ -329,7 +334,79 @@ public class MainFrame extends javax.swing.JFrame {
 
 		jScrollPane1.setViewportView(drawingPanel1);
 		jScrollPane1.getVerticalScrollBar().setUnitIncrement(16);
+		for (MouseWheelListener m : jScrollPane1.getMouseWheelListeners()){
+			jScrollPane1.removeMouseWheelListener(m);
+		}
+		drawingPanel1.addMouseWheelListener(new MouseWheelListener(){
 
+			@Override
+			public void mouseWheelMoved(MouseWheelEvent e) {
+				// TODO Auto-generated method stub
+				if (e.getWheelRotation()>0){
+					//zoom out
+					for (Node n : drawingPanel1.getDiagram().getNodes()){
+						Point2D.Double p = getNewCenter(n.getCenter(), e.getPoint(),false);
+						n.setCenter(p.x, p.y);
+						n.setRadius(n.getRadius()*0.9);
+						drawingPanel1.setSize((int)(drawingPanel1.getWidth()*0.9), (int)(drawingPanel1.getHeight()*0.9));
+					}
+				}
+				else{
+					//zoom in
+					for (Node n : drawingPanel1.getDiagram().getNodes()){
+						Point2D.Double p = getNewCenter(n.getCenter(), e.getPoint(),true);
+						n.setCenter(p.x, p.y);
+						n.setRadius(n.getRadius()/0.9);
+						drawingPanel1.setSize((int)(drawingPanel1.getWidth()/0.9), (int)(drawingPanel1.getHeight()/0.9));
+					}
+				}
+			}
+			
+			public Point2D.Double getNewCenter(Point2D.Double oldCenter, Point center, boolean in){
+				double newX, newY;
+				if (oldCenter.x < center.x){
+					if (in){
+						newX = oldCenter.x*0.9;
+					}
+					else{
+						newX = oldCenter.x/0.9;
+					}
+				}
+				else if (oldCenter.x > center.x){
+					if (in){
+						newX = oldCenter.x/0.9;
+					}
+					else{
+						newX = oldCenter.x*0.9;
+					}
+				}
+				else{
+					newX = oldCenter.x;
+				}
+				if (oldCenter.y < center.y){
+					if (in){
+						newY = oldCenter.y*0.9;
+					}
+					else{
+						newY = oldCenter.y/0.9;
+					}
+				}
+				else if (oldCenter.y > center.y){
+					if (in){
+						newY = oldCenter.y/0.9;
+					}
+					else{
+						newY = oldCenter.y*0.9;
+					}
+				}
+				else{
+					newY= oldCenter.y;
+				}
+				return new Point2D.Double(newX, newY);
+			}
+			
+		});
+		
 		jTabbedPane1.addTab("Untitled", jScrollPane1);
 
 		jSplitPane2.setRightComponent(jTabbedPane1);
@@ -738,12 +815,34 @@ public class MainFrame extends javax.swing.JFrame {
 				JTabbedPane tabs = new JTabbedPane();
 				tabs.setPreferredSize(new Dimension(400, 200));
 				aboutFrame.add(tabs);
+				JEditorPane edPane1 = new JEditorPane();
+				edPane1.setEditable(false);
+				edPane1.setContentType("text/html");
+				edPane1.setText("<html> <p><b>Key Controls</b><table> <tbody><tr><td>Ctrl-A</td>" +
+						"<td>Select all</td></tr><tr> <td>Ctrl-S</td> <td>Save current tab</td> " +
+						"</tr> <tr> <td>Ctrl-O</td> <td>Open tab from file</td> </tr><tr> <td>Ctrl-T</td> " +
+						"<td>Open new blank tab</td>  </tr>  <tr>" +
+						" <td>Ctrl-W</td> <td>Close current tab</td> </tr> <tr> <td>Ctrl-Q</td> " +
+						"<td>Quit program</td>" +
+						"<tr> <td>Ctrl-Z</td> <td>Undo</td>" +
+						"<tr> <td>Ctrl-Y</td> <td>Redo</td> </tr></tbody></table></p>" + 
+						"<p><b>Mouse Click Modifiers</b><table> <tbody><tr></tr></tbody></table></p>");
 				JScrollPane controls = new JScrollPane();
+				controls.setViewportView(edPane1);
 				controls.setName("Key Bindings");
-				JScrollPane dev = new JScrollPane();
+				edPane1.setVisible(true);
+				edPane1.setSize(400,200);
+				
+				JEditorPane edPane2 = new JEditorPane();
+				edPane2.setEditable(false);
+				edPane2.setContentType("text/html");
+				edPane2.setText("<html> <b>Developers</b><br> <br>Abhabongse (Plane) Janthong<br>Edward (Eddie) Grystar"+
+						"<br>Elias (Eli) Wald <br>Sanford (Sandy) Student<br><br><b>For CS32 Spring 2012</b>");
+				
+				JScrollPane dev = new JScrollPane(edPane2);
 				dev.setName("Development");
-				tabs.add(controls);
 				tabs.add(dev);
+				tabs.add(controls);
 				aboutFrame.pack();
 			}
 			
@@ -773,12 +872,12 @@ public class MainFrame extends javax.swing.JFrame {
 		);
 
 		//add zoom slider; totally separate from rest of UI (i.e. doesn't ever move, not part of any group or layout, etc).
-        _slider = new JSlider(JSlider.VERTICAL, -3, 3, 0);
-        _slider.setPaintTicks(true);
-        _slider.setSize(25, 100);
-        _slider.setName("Zoom");
-        this.add(_slider);
-        _slider.setVisible(true);
+//        _slider = new JSlider(JSlider.VERTICAL, -3, 3, 0);
+//        _slider.setPaintTicks(true);
+//        _slider.setSize(25, 100);
+//        _slider.setName("Zoom");
+//        this.add(_slider);
+//        _slider.setVisible(true);
 		
 		pack();
 	}                   

@@ -65,7 +65,7 @@ public class Node implements DiagramObject, Cloneable {
 			setBorder(Border border) {}};
 		
 		int size = _container.getDiagram().getNodes().size();
-		String s = "n_"+ size;
+		String s = "q_"+ size;
 		_area.setText(s);
 		_area.setVisible(true);
 		_area.setOpaque(false);
@@ -75,7 +75,7 @@ public class Node implements DiagramObject, Cloneable {
 		_area.setEditable(true);
 		_area.setEnabled(true);
         _area.setBackground(new Color(0,0,0,0));
-		_label = new JLabel("<html>n<sub>"+size+"</sub>");
+		_label = new JLabel("<html>q<sub>"+size+"</sub>");
 		_area.getDocument().addDocumentListener(new MyDocListener(_label));
         _area.addKeyListener(new EnterListener(_container, _area));
 		_label.setVisible(true);
