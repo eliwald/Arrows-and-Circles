@@ -6,8 +6,17 @@ import java.awt.event.MouseEvent;
 
 import backend.*;
 
+/**
+ * This MouseListener is used in the MainFrame to detect when the user acts on the canvas.
+ * 
+ * It is added to the DrawingPanel in the MainFrame.
+ * 
+ * @author ewald
+ *
+ */
 public class DrawingPanelMouseListener extends MouseAdapter {
 	
+	//Needs a reference to the main frame's objects.
 	private MainFrame _frame;
 	
 	public DrawingPanelMouseListener(MainFrame frame) {

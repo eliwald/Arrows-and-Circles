@@ -14,7 +14,7 @@ import frontend.*;
  * @author ewald
  *
  */
-public class Edge implements Cloneable, DiagramObject {
+public class Edge implements DiagramObject {
 	
 	/*
 	 * _start and _end are the Start/End nodes of the edge.
@@ -356,10 +356,16 @@ public class Edge implements Cloneable, DiagramObject {
     	}
     }
     
+    /**
+     * @return		The curve to draw on the screen.
+     */
     public Arc2D getCurve() {
     	return _curve;
     }
 
+    /**
+     * @return		The forward arrow to draw on the screen.
+     */
     public Shape getForward() {
     	
     	if(_start != _end) {
@@ -458,7 +464,10 @@ public class Edge implements Cloneable, DiagramObject {
 	    	return arrow;
     	}
     }
-
+    
+    /**
+     * @return		The backward arrow to draw on the screen.
+     */
     public Shape getBackward() {
 
     	if(_start != _end) {
@@ -558,105 +567,149 @@ public class Edge implements Cloneable, DiagramObject {
     	}
     }
     
+    /**
+     * @param h		The height to set for the edge.
+     */
     public void setHeight(double h) {
     	_height = h;
     }
     
+    /**
+     * @param t		The turn to set for the edge (used in drawing).
+     */
     public void setTurn(boolean t) {
     	_turn = t;
     }
-
+    
+    /**
+     * @return		True if edge is selected; false otherwise.
+     */
     public boolean isSelected(){
         return _selected;
     }
 
+    /**
+     * @param selected		True if the edge should be selected.
+     */
     public void setSelected(boolean selected){
         _selected = selected;
     }
-
+    
+    /**
+     * @return		The text field drawn next to the edge.
+     */
 	public JTextField getTextField(){
 		return _area;
 	}
-
+	
+	/**
+	 * @param label		The textField to set next to the edge.
+	 */
 	public void setFieldText(JTextField label) {
 		_area = label;
 	}
 
+	/**
+	 * @return		The JLabel drawn next to the edge.
+	 */
     public JLabel getLabel(){
         return _label;
     }
-
+    
+    /**
+     * @param s		The text to set on the JLabel.
+     */
     public void setLabel(String s){
         _label.setText(s);
     }
-
-	public void setStartNode(Node start) {
-		_start = start;
-	}
-
+    
+    /**
+     * @return		The start node.
+     */
 	public Node getStartNode() {
 		return _start;
 	}
-
-	public void setEndNode(Node end) {
-		_end = end;
-	}
-
+	
+	/**
+	 * @return		The end node.
+	 */
 	public Node getEndNode() {
 		return _end;
 	}
-
+	
+	/**
+	 * @param d		The edge direction to set.
+	 */
 	public void setDirection(EdgeDirection d){
 		_direction = d;
 	}
 
+	/**
+	 * @return		The edge direction.
+	 */
 	public EdgeDirection getDirection() {
 		return _direction;
 	}
 
-	public Object clone() throws CloneNotSupportedException {
-		Edge cloned = (Edge) super.clone();
-		cloned.setStartNode((Node) getStartNode().clone());
-		cloned.setEndNode((Node) getEndNode().clone());
-		cloned.setDirection(getDirection());
-		return cloned;
-	}
-
+	/**
+	 * @param val		Whether or not this is the current edge in simulation.
+	 */
     public void setCurrent(boolean val) {
         _current = val;
     }
-
+    
+    /**
+     * @return		Whether or not this is the current edge in simulation.
+     */
     public boolean getCurrent() {
         return _current;
     }
-
+    
+    /**
+     * Return the name of this edge.
+     */
     public String getName() {
         return ("Edge " + getNodeString() +  ": " + _area.getText());
     }
     
     /**
-     * @return
+     * @return		Helper to get name; returns the string of which nodes the edge goes to and from.
      */
 	public String getNodeString() {
 		return "(" + getStartNode().getLabel().getText() + ", " + getEndNode().getLabel().getText() + ")";
 	}
-
+	
+	/**
+	 * @param offset		Sets the offset of this Edge to the mouse.
+	 */	
 	public void setOffset(double offset) {
 		_offset = offset;
 	}
-
+	
+	/**
+	 * @return		Returns the offset.
+	 */
 	public double getOffset() {
 		return _offset;
 	}
-
+	
+	/**
+	 * @param angle		Sets the angle of this edge (for self looping).
+	 */
 	public void setAngle(double angle) {
 		_angle = angle;
 	}
-
+	
+	/**
+	 * @return		The angle of the edge.
+	 */
 	public double getAngle() {
 		return _angle;
 	}
 	
+	/**
+	 * @return		The arc-chord height.
+	 */
 	public double getHeight() {
 		return _height;
 	}

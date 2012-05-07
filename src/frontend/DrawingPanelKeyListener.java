@@ -3,12 +3,18 @@ package frontend;
 import java.awt.Point;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.util.Collection;
-import java.util.HashSet;
 
 import backend.Edge;
 import backend.Node;
 
+/**
+ * This KeyListener is used in the MainFrame to detect when the user acts on the canvas.
+ * 
+ * It is added to the DrawingPanel in the MainFrame.
+ * 
+ * @author ewald
+ *
+ */
 public class DrawingPanelKeyListener extends KeyAdapter {
 	private MainFrame _frame;
 	public DrawingPanelKeyListener(MainFrame frame) {
