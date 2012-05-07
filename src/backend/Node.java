@@ -14,11 +14,10 @@ import frontend.*;
 
 /**
  * This is the node class. This contains data for both visual and logical representation of a node for FSMs/graphs.
- * @author ewald
- * 
  *
+ * @author ewald
  */
-public class Node implements DiagramObject, Cloneable {
+public class Node implements DiagramObject {
 	/*
 	 * _center is the center point of this node.
 	 * 
@@ -46,7 +45,8 @@ public class Node implements DiagramObject, Cloneable {
 	private JLabel _label;
 	private Polygon _startSymbol;
 	private java.awt.geom.Ellipse2D.Double _circle;
-
+	
+	//Static variables used to draw the node.
 	public static final double MIN_RADIUS = 20;
 	public static final double DEFAULT_RADIUS = 30;
 
@@ -63,7 +63,6 @@ public class Node implements DiagramObject, Cloneable {
 		_center = new Point2D.Double(x, y);
 		_radius = DEFAULT_RADIUS;
 		_connected = new HashSet<Edge>();
-		_color = Color.BLACK;
 		_startState = false;
 		_endState = false;
 		_offset = new Point(0,0);
@@ -73,14 +72,19 @@ public class Node implements DiagramObject, Cloneable {
 	}
 
 	/**
-	 * Second constructor used when opening from a file.
+	 * The constructor used when opening from a file.
+	 * @param x				The x-coordinate of the center.
+	 * @param y				The y-coordinate of the center.
+	 * @param radius		The radius of the node.
+	 * @param isStart		Whether or not the node is a start node.
+	 * @param isAccept		Whether or not the node is an accept node.
+	 * @param label			The String to put on the label text.
 	 */
 	public Node (double x, double y, double radius, boolean isStart, boolean isAccept, String label) {
 		_center = new Point2D.Double(x, y);
 		_radius = radius;
 		_startState = isStart;
 		_endState = isAccept;
-		_color = Color.BLACK;
 		_offset = new Point(0,0);
 		_connected = new HashSet<Edge>();
 		_selected = false;
@@ -275,23 +279,6 @@ public class Node implements DiagramObject, Cloneable {
 	public JLabel getLabel(){
 		return _label;
 	}
-	
-	/**
-	 * Returns a full clone of this node (as opposed to a shallow clone).
-	 */
-	public Object clone() throws CloneNotSupportedException {
-		Node clonedObject = (Node) super.clone();
-		clonedObject._center = (Double) _center.clone();
-		clonedObject._radius = _radius;
-		clonedObject._connected = new HashSet<Edge>();
-		for(Edge e : _connected) {
-			clonedObject._connected.add((Edge) e.clone());
-		}
-		clonedObject._startState = _startState;
-		clonedObject._endState = _endState;
-		return clonedObject;
-	}
-
 
 	/**
 	 * Returns a rectangle to be used for resizing this node.

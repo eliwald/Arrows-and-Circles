@@ -7,7 +7,7 @@ import java.util.*;
  * @author ewald
  *
  */
-public class Diagram implements Cloneable {
+public class Diagram {
 	private Collection<Node> _nodes;
 	private Collection<Edge> _edges;
 	private String _name;
@@ -50,23 +50,6 @@ public class Diagram implements Cloneable {
 
 	public Collection<Edge> getEdges() {
 		return _edges;
-	}
-
-	public Object clone() throws CloneNotSupportedException {
-		Diagram cloned = (Diagram) super.clone();
-		cloned.setName(getName());
-		cloned.setRevision(getRevision());
-		Collection<Node> cloned_nodes = new HashSet<Node>();
-		Collection<Node> old_nodes = getNodes();
-		Collection<Edge> cloned_edges = new HashSet<Edge>();
-		Collection<Edge> old_edges = getEdges();
-		for (Node n : old_nodes) {
-			cloned_nodes.add((Node) n.clone());
-		}
-		for (Edge e : old_edges) {
-			cloned_edges.add((Edge) e.clone());
-		}
-		return cloned;
 	}
 	
 	/**

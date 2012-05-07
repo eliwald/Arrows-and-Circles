@@ -14,7 +14,7 @@ import frontend.*;
  * @author ewald
  *
  */
-public class Edge implements Cloneable, DiagramObject {
+public class Edge implements DiagramObject {
 	
 	/*
 	 * _start and _end are the Start/End nodes of the edge.
@@ -622,66 +622,94 @@ public class Edge implements Cloneable, DiagramObject {
     public void setLabel(String s){
         _label.setText(s);
     }
-
+    
+    /**
+     * @return		The start node.
+     */
 	public Node getStartNode() {
 		return _start;
 	}
-
+	
+	/**
+	 * @return		The end node.
+	 */
 	public Node getEndNode() {
 		return _end;
 	}
-
+	
+	/**
+	 * @param d		The edge direction to set.
+	 */
 	public void setDirection(EdgeDirection d){
 		_direction = d;
 	}
 
+	/**
+	 * @return		The edge direction.
+	 */
 	public EdgeDirection getDirection() {
 		return _direction;
 	}
 
-	public Object clone() throws CloneNotSupportedException {
-		Edge cloned = (Edge) super.clone();
-		cloned.setStartNode((Node) getStartNode().clone());
-		cloned.setEndNode((Node) getEndNode().clone());
-		cloned.setDirection(getDirection());
-		return cloned;
-	}
-
+	/**
+	 * @param val		Whether or not this is the current edge in simulation.
+	 */
     public void setCurrent(boolean val) {
         _current = val;
     }
-
+    
+    /**
+     * @return		Whether or not this is the current edge in simulation.
+     */
     public boolean getCurrent() {
         return _current;
     }
-
+    
+    /**
+     * Return the name of this edge.
+     */
     public String getName() {
         return ("Edge " + getNodeString() +  ": " + _area.getText());
     }
     
     /**
-     * @return
+     * @return		Helper to get name; returns the string of which nodes the edge goes to and from.
      */
 	public String getNodeString() {
 		return "(" + getStartNode().getLabel().getText() + ", " + getEndNode().getLabel().getText() + ")";
 	}
-
+	
+	/**
+	 * @param offset		Sets the offset of this Edge to the mouse.
+	 */	
 	public void setOffset(double offset) {
 		_offset = offset;
 	}
-
+	
+	/**
+	 * @return		Returns the offset.
+	 */
 	public double getOffset() {
 		return _offset;
 	}
-
+	
+	/**
+	 * @param angle		Sets the angle of this edge (for self looping).
+	 */
 	public void setAngle(double angle) {
 		_angle = angle;
 	}
-
+	
+	/**
+	 * @return		The angle of the edge.
+	 */
 	public double getAngle() {
 		return _angle;
 	}
 	
+	/**
+	 * @return		The arc-chord height.
+	 */
 	public double getHeight() {
 		return _height;
 	}

@@ -8,6 +8,14 @@ import java.awt.geom.*;
 import backend.Edge;
 import backend.Node;
 
+/**
+ * This MouseMotionListener is used in the MainFrame to detect when the user acts on the canvas.
+ * 
+ * It is added to the DrawingPanel in the MainFrame.
+ * 
+ * @author ewald
+ *
+ */
 public class DrawingPanelMouseMotionListener extends MouseMotionAdapter {
 	private MainFrame _frame;
 	
