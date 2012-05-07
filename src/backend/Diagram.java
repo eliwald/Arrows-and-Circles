@@ -276,6 +276,16 @@ public class Diagram implements Cloneable {
 		}
 		return simulation;
 	}
+	
+//	public List<Set<DiagramObject>> nondeterministicSimulation(String input) throws InvalidDFSMException {
+//		String tempInput;
+//		Node tempDest = null;
+//		Set<DiagramObject> one_step = new HashSet<DiagramObject>();
+//		LinkedList<Set<DiagramObject>> simulation = new LinkedList<Set<DiagramObject>>();
+//		
+//		
+//		return null;
+//	}
 
 	public void setRevision(int revision) {
 		_revision = revision;

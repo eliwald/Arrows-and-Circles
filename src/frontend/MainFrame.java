@@ -149,7 +149,7 @@ public class MainFrame extends javax.swing.JFrame {
 	private static final String help_message_text = "Double Click: New Node | \"S\": Snap Mouse To Nearest Node | Ctrl-Click Component: Add Component To Selected Components";
 	private static final String help_message_text_in_node_unselected = "Click To Select | Double Click: Toggle Accept State | Shift-DragClick: New Edge | Click-Drag: Move It Around";
 	private static final String help_message_text_in_node_selected = "Shift-DragClick: New Edge | Double Click: Toggle Accept | Delete/Backspace: Delete Node | Click Triangle: Toggle Start State";
-	private static final String help_messate_text_in_edge = "To Delete: If Text Is Selected, Hit Enter; Then Delete | Toggle Direction: Lower Left Pane | To Rename: Single Click Edge";
+	private static final String help_messate_text_in_edge = "To Delete: If Text Is Selected, Hit Enter; Then Delete | Direction: Lower Left Pane | Multiple Labels: Comma Separated";
 	
 	//If we are within 3 pixels of another node, then snap to that node.
 	private static int SNAP_DIFFERENCE = 7;
@@ -950,10 +950,6 @@ public class MainFrame extends javax.swing.JFrame {
 					Rectangle boundingBox = e.getLabel().getBounds();
 					if (e.intersects(evt.getPoint().x,evt.getPoint().y)){
 						e.setSelected(true);
-						e.getTextField().setVisible(true);
-						e.getTextField().selectAll();
-						e.getTextField().grabFocus();
-						e.getLabel().setVisible(false);
 						_edgesSelected.add(e);
 						EdgeDirection dir = e.getDirection();
 						switch (dir){
@@ -1547,7 +1543,7 @@ public class MainFrame extends javax.swing.JFrame {
 
 		//Clear all the currently selected (PINK) nodes.
 		drawingPanel1.clearCurrent();
-
+		
 		//If there is a previous node to go to
 		if (_iter.hasPrevious()) {
 			//If the input text has changed, alert the user.
@@ -1568,35 +1564,39 @@ public class MainFrame extends javax.swing.JFrame {
 					_backwardClicked = true;
 					_iter.previous();
 				}
-				int curIndex = _iter.nextIndex();
+				if (_iter.hasPrevious()) {
+					int curIndex = _iter.nextIndex();
 
-				//Get the previous node.  Set it to be current.
-				DiagramObject e = _iter.previous();
-				e.setCurrent(true);
+					//Get the previous node.  Set it to be current.
+					DiagramObject e = _iter.previous();
+					e.setCurrent(true);
 
-				//Set the appropriate place of the second slider
-				if (!_autoChange) {
-					_autoChange = true;
-					_simSlide.setValue(Math.min(1000, _simSlide.getValue() - (int) Math.ceil(((double)1000)/_sim.size())));
-					_autoChange = false;
+					//Set the appropriate place of the second slider
+					if (!_autoChange) {
+						_autoChange = true;
+						_simSlide.setValue(Math.min(1000, _simSlide.getValue() - (int) Math.ceil(((double)1000)/_sim.size())));
+						_autoChange = false;
+					}
+
+					//Set this old value of the slider so that we can remember the previous place.
+					_curr = _simSlide.getValue();
+
+					//Select the correct character in the input string, so the user knows which edge he's taking.
+					jTextField1.grabFocus();
+					if (curIndex - 1 >= 0)
+						jTextField1.select(curIndex - 1, curIndex);
+					drawingPanel1.grabFocus();
+
+					//Take the last line of the text area off (remove the last node alert).
+					String temp = jTextArea1.getText();
+					jTextArea1.setText("");
+					String[] tempArray = temp.split("\n");
+					for (int i = 0; i < tempArray.length - 1; i ++) {
+						jTextArea1.setText(jTextArea1.getText() + (tempArray[i] + "\n"));
+					}
 				}
-
-				//Set this old value of the slider so that we can remember the previous place.
-				_curr = _simSlide.getValue();
-
-				//Select the correct character in the input string, so the user knows which edge he's taking.
-				jTextField1.grabFocus();
-				if (curIndex - 1 >= 0)
-					jTextField1.select(curIndex - 1, curIndex);
-				drawingPanel1.grabFocus();
-
-				//Take the last line of the text area off (remove the last node alert).
-				String temp = jTextArea1.getText();
-				jTextArea1.setText("");
-				String[] tempArray = temp.split("\n");
-				for (int i = 0; i < tempArray.length - 1; i ++) {
-					jTextArea1.setText(jTextArea1.getText() + (tempArray[i] + "\n"));
-				}
+				else
+					backToStart();
 			}
 			else if (answer == 0) {
 				_sim = null;
@@ -1609,12 +1609,8 @@ public class MainFrame extends javax.swing.JFrame {
 		}
 
 		//Otherwise, if there is on previous, we are back to the start.
-		else {
-			jTextField1.select(0, 0);
-			_playPauseBtn.setIcon(new ImageIcon(PLAY_FILEPATH));
-			jTextArea1.setText("BACK TO START");
-			_backwardClicked = false;
-		}
+		else
+			backToStart();
 		drawingPanel1.repaint();
 	}
 	
@@ -1683,20 +1679,6 @@ public class MainFrame extends javax.swing.JFrame {
 		}
 		
 		int diff = _simSlide.getValue() - _curr;
-		if (diff == 0 && _sim.size() == 0) {
-			return;
-		}
-		if (_sim.size() == 0 && diff > 0) {
-			_autoChange = true;
-			simulation_move_forward();
-			_autoChange = false;
-			return;
-		}
-		if (_sim.size() == 0 && diff > 0) {
-			_autoChange = true;
-			simulation_move_backward();
-			_autoChange = false;
-		}
 		if (Math.abs(diff) < 1000/_sim.size()) {
 			return;
 		}
@@ -1713,11 +1695,6 @@ public class MainFrame extends javax.swing.JFrame {
 				_autoChange = true;
 				simulation_move_forward();
 				if (_sim == null) {
-					_autoChange = false;
-					return;
-				}
-				if (_sim.size() == 0) {
-					_simSlide.setValue(0);
 					_autoChange = false;
 					return;
 				}
@@ -1785,6 +1762,22 @@ public class MainFrame extends javax.swing.JFrame {
 	private class SimListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			simulation_move_forward();
+		}
+	}
+	
+	/**
+	 * Helper used in stepping forward/backward to alert user we are back to the start.
+	 */
+	public void backToStart() {
+		jTextField1.select(0, 0);
+		_playPauseBtn.setIcon(new ImageIcon(PLAY_FILEPATH));
+		jTextArea1.setText("BACK TO START");
+		_backwardClicked = false;
+		//Set the appropriate place of the second slider
+		if (!_autoChange) {
+			_autoChange = true;
+			_simSlide.setValue(Math.min(1000, _simSlide.getValue() - (int) Math.ceil(((double)1000)/_sim.size())));
+			_autoChange = false;
 		}
 	}
 	
