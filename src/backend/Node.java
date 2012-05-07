@@ -15,14 +15,27 @@ import frontend.*;
 /**
  * This is the node class. This contains data for both visual and logical representation of a node for FSMs/graphs.
  * @author ewald
+ * 
  *
  */
 public class Node implements DiagramObject, Cloneable {
+	/*
+	 * _center is the center point of this node.
+	 * 
+	 * _radius is the node's radius in pixels.
+	 * 
+	 * _area is the JTextField into which the user types when renaming the node.
+	 * 
+	 * _connected is a collection of all edges that connect to this node.
+	 * 
+	 * _startState is true if and only if this node is a start state.
+	 * 
+	 * _endState is true if and only if this node is an accept state.
+	 */
 	private Point2D.Double _center;
 	private double _radius;
 	private JTextField _area;
 	private Collection<Edge> _connected;
-	private Color _color;
 	private boolean _startState;
 	private boolean _endState;
 	private Point _offset;
