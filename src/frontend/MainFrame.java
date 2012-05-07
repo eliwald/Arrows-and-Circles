@@ -144,7 +144,6 @@ public class MainFrame extends javax.swing.JFrame {
 	private Timer _simTimer;
 	private EdgeDirection _edgeType;
 	private javax.swing.JSlider _simSlide;
-	private int _curr;
 	private boolean _autoChange;
 	private boolean _backwardClicked;
 	private String _currentInputString;
@@ -1477,7 +1476,6 @@ public class MainFrame extends javax.swing.JFrame {
 				_autoChange = true;
 				_simSlide.setValue(0);
 				_autoChange = false;
-				_curr = 0;
 			}
 		}
 
@@ -1512,7 +1510,6 @@ public class MainFrame extends javax.swing.JFrame {
 				if (!_autoChange) {
 					_autoChange = true;
 					_simSlide.setValue(Math.min(MAX_SIM_SLIDER_VAL, _simSlide.getValue() + (int) Math.ceil(((double)MAX_SIM_SLIDER_VAL)/_sim.size())));
-					_curr = _simSlide.getValue();
 					_autoChange = false;
 				}
 
@@ -1544,7 +1541,6 @@ public class MainFrame extends javax.swing.JFrame {
 
 					_sim = null;
 					_iter = null;
-					_curr = 0;
 					if (_simTimer.isRunning()) {
 						_simTimer.stop();
 					}
@@ -1615,9 +1611,6 @@ public class MainFrame extends javax.swing.JFrame {
 						_simSlide.setValue(Math.min(MAX_SIM_SLIDER_VAL, _simSlide.getValue() - (int) Math.ceil(((double)MAX_SIM_SLIDER_VAL)/_sim.size())));
 						_autoChange = false;
 					}
-
-					//Set this old value of the slider so that we can remember the previous place.
-					_curr = _simSlide.getValue();
 
 					//Select the correct character in the input string, so the user knows which edge he's taking.
 					jTextField1.grabFocus();
