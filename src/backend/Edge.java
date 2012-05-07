@@ -19,8 +19,6 @@ import frontend.*;
 public class Edge implements Cloneable, DiagramObject {
 	private Node _start;
 	private Node _end;
-	private Point2D.Double _point_start;
-	private Point2D.Double _point_end;
 	private EdgeDirection _direction;
 	private JTextField _area;
     private JLabel _label;
@@ -40,28 +38,50 @@ public class Edge implements Cloneable, DiagramObject {
 	private static final int RADIUS_TOLERANCE = 6;
     
 
-	public Edge(Node s, Node e, Point2D.Double start, Point2D.Double end, DrawingPanel container, EdgeDirection d) {
+	public Edge(Node s, Node e, DrawingPanel container, EdgeDirection d) {
 		_start = s;
 		_end = e;
         _container = container;
-        _area = new JTextField(){@Override public void
-			setBorder(Border border) {}};
+        _area = new JTextField();
+		_area.setBorder(null);
         _label = new JLabel();
-		_point_start = start;
-		_point_end = end;
         _selected = true;
         _angle = Math.PI / 4;
         _offset = 0;
 		_direction = d;
 		_curve = new Arc2D.Double(Arc2D.OPEN);
 
+        setAreaAndLabel();
+	}
+	/**
+	 * Constructor for opening a self-looping edge from a file.
+	 * @param start		Start Node
+	 * @param end		End Node (will be equal to start)
+	 * @param dir		Direction
+	 * @param label		Label
+	 * @param angle		Angle of the self arc
+	 */
+	public Edge(Node start, Node end, EdgeDirection dir, String label, double angle) {
+		
+	}
+	/**
+	 * Helper for opening from files.
+	 */
+	public void setContainerAndArea(DrawingPanel container) {
+		_container = container;
+		
+		setAreaAndLabel();
+	}
+	/**
+	 * Helper for the constructors
+	 */
+	private void setAreaAndLabel() {
         //added support for self loop
-        if (s == e) {
+        if (_start == _end) 
             _height = 5;
-        }
-        else {
+        else 
             _height = -100000.0;
-        }
+        
         _turn = true;
         this.resetArc();
 		_area.setText(DEFAULT_STRING);
@@ -85,7 +105,6 @@ public class Edge implements Cloneable, DiagramObject {
 		_label.setHorizontalAlignment(JTextField.CENTER);
 		_container.add(_label);
 		_container.add(_area);
-
 	}
 
     public static Arc2D getSelfLoop(Node n) {
@@ -498,22 +517,6 @@ public class Edge implements Cloneable, DiagramObject {
 		return _end;
 	}
 
-	public void setStartPoint(Point2D.Double start) {
-		_point_start = start;
-	}
-
-	public Point2D.Double getStartPoint() {
-		return _point_start;
-	}
-
-	public void setEndPoint(Point2D.Double end) {
-		_point_end = end;
-	}
-
-	public Point2D.Double getEndPoint() {
-		return _point_end;
-	}
-
 	public void setDirection(EdgeDirection d){
 		_direction = d;
 	}
@@ -526,8 +529,6 @@ public class Edge implements Cloneable, DiagramObject {
 		Edge cloned = (Edge) super.clone();
 		cloned.setStartNode((Node) getStartNode().clone());
 		cloned.setEndNode((Node) getEndNode().clone());
-		cloned.setStartPoint((Point2D.Double) getStartPoint().clone());
-		cloned.setEndPoint((Point2D.Double) getEndPoint().clone());
 		cloned.setDirection(getDirection());
 		return cloned;
 	}
