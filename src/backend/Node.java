@@ -1,21 +1,16 @@
 package backend;
 
-import frontend.DrawingPanel;
-
-import frontend.EnterListener;
-import frontend.MyDocListener;
+import java.awt.*;
+import java.awt.geom.*;
+import java.awt.geom.Point2D.Double;
 import java.util.Collection;
 import java.util.HashSet;
-import java.awt.geom.Point2D;
-import java.awt.Color;
-import java.awt.Point;
-import java.awt.Polygon;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Point2D.Double;
-import java.awt.geom.Rectangle2D;
+
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
+
+import frontend.*;
 
 /**
  * 
@@ -41,7 +36,15 @@ public class Node implements DiagramObject, Cloneable {
 
     public static final double MIN_RADIUS = 20;
     public static final double DEFAULT_RADIUS = 30;
-
+    
+    /**
+     * The constructor for the node takes the x,y to add the node to, and
+     * the DrawingPanel which contains this Node (used to add listeners
+     * to the Node's label).
+     * @param x
+     * @param y
+     * @param container
+     */
 	public Node(double x, double y, DrawingPanel container) {
 		_container = container;
 		_center = new Point2D.Double(x, y);
