@@ -50,7 +50,6 @@ public class Node implements DiagramObject, Cloneable {
 		_color = Color.BLACK;
 		_startState = false;
 		_endState = false;
-
 		_offset = new Point(0,0);
 		_selected = true;
 		double hypo = 2*_radius;

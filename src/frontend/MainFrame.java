@@ -162,8 +162,8 @@ public class MainFrame extends javax.swing.JFrame {
 	private static final int SNAP_DIFFERENCE = 7;
 	
 	//Zooming scale
-	private static final int CANVAS_WIDTH = 640;
-	private static final int CANVAS_HEIGHT = 480;
+	private static final int CANVAS_WIDTH = 1024;
+	private static final int CANVAS_HEIGHT = 1024;
 	
 	/*
 	 * These are the GUI components.
