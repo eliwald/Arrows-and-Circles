@@ -323,15 +323,7 @@ public class MainFrame extends javax.swing.JFrame {
 
 		javax.swing.GroupLayout drawingPanel1Layout = new javax.swing.GroupLayout(drawingPanel1);
 		drawingPanel1.setLayout(drawingPanel1Layout);
-//		drawingPanel1Layout.setHorizontalGroup(
-//				drawingPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-//				.addGap(0, 1900, Short.MAX_VALUE)
-//		);
-//		drawingPanel1Layout.setVerticalGroup(
-//				drawingPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-//				.addGap(0, 1900, Short.MAX_VALUE)
-//				
-//		);
+		drawingPanel1.setPreferredSize(new Dimension(950, 950));
 
 		jScrollPane1.setViewportView(drawingPanel1);
 		jScrollPane1.getVerticalScrollBar().setUnitIncrement(16);
@@ -932,14 +924,7 @@ public class MainFrame extends javax.swing.JFrame {
 
 		javax.swing.GroupLayout drawingPanel1Layout = new javax.swing.GroupLayout(drawingPanel1);
 		drawingPanel1.setLayout(drawingPanel1Layout);
-//		drawingPanel1Layout.setHorizontalGroup(
-//				drawingPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-//				.addGap(0, 1900, Short.MAX_VALUE)
-//		);
-//		drawingPanel1Layout.setVerticalGroup(
-//				drawingPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-//				.addGap(0, 1900, Short.MAX_VALUE)
-//		);
+		drawingPanel1.setPreferredSize(new Dimension(950, 950));
 
 		jTabbedPane1.addTab("Untitled", jScrollPane1);
 		jTabbedPane1.setSelectedIndex(jTabbedPane1.getTabCount() - 1);
