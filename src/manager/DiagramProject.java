@@ -6,7 +6,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
@@ -42,7 +45,17 @@ public class DiagramProject {
 	/** Last saved revision number */
 	private int _savedRevision; 
 	
-	/** Factory method that creates a new project. */
+	/**
+	 * Make sure the the constructor is private.
+	 */
+	private DiagramProject() {
+		// do nothing
+	}
+	
+	/**
+	 * Factory method that creates a new project. 
+	 * @return The new project.
+	 */
 	public static DiagramProject newProject() {
 		DiagramProject project = new DiagramProject();
 		project._filename = "";
@@ -52,42 +65,27 @@ public class DiagramProject {
 		return project;
 	}
 	
-	/** Factory method that loads the saved project from a file. 
-	 * @throws FileNotFoundException */
-	public static DiagramProject[] openProject() {
+	/** 
+	 * Factory method that loads the saved project from a file. 
+	 * @throws IOException 
+	 */
+	public static DiagramProject openProject(Reader reader) throws IOException {
 		
-		// Pop up the file chooser for user to choose files.
-		File[] files = openFileChooser();
-		if(files == null) {
-			return null; // No files selected.
-		}
+		// Creates a JSON Reader based on the given reader.
+		JsonReader jsonReader = new JsonReader(reader);
 		
-		// Trying to create diagram objects.
-		ArrayList<DiagramProject> projects = new ArrayList<DiagramProject>();
-		for(int i = 0; i < files.length; i++) {
-			File file = files[i];
-			Reader reader;
-			try {
-				reader = new FileReader(file);
-			} catch (FileNotFoundException e) {
-				continue;
-			}
-			Diagram loadedDiagram = getDiagramFromReader(reader);
-			if(loadedDiagram == null) {
-				// TODO: The file we tried to load is actually not a diagram file.
-				continue;
-			}
-			
-			DiagramProject project = new DiagramProject();
-			project._filename = file.getName();
-			project._history = new HistoryStack(MAX_HISTORY, loadedDiagram);
-			project._loaded = true;
-			project._savedRevision = 0;
-			
-			projects.add(project);
-		}
+		// Create a new diagram to construct.
+		Diagram diagram = new Diagram();
 		
-		return (DiagramProject[]) projects.toArray();
+		// Start reading data.
+		jsonReader.beginObject();
+		
+		// First, expect the name of the 
+		
+		
+		
+		
+		return null;
 	}
 
 	private static Diagram getDiagramFromReader(Reader reader) {
@@ -102,26 +100,36 @@ public class DiagramProject {
 		return null;
 	}
 	
-	private static File[] openFileChooser() {
-		JFileChooser chooser = new JFileChooser();
-		FileFilter filter = new FileNameExtensionFilter("Diagram JSON File", "json");
-		chooser.addChoosableFileFilter(filter);
-		chooser.setAcceptAllFileFilterUsed(false);
-		
-		int returnVal = chooser.showOpenDialog(null);
-		if(returnVal == JFileChooser.APPROVE_OPTION) {
-			return chooser.getSelectedFiles();
-		} else {
-			return null;
-		}
-	}
-
-	private static File saveFileChooser() {
+	/**
+	 * This procedure pops up a file chooser so that the user can select (multiple) files to load,
+	 * then it returns a list of File objects from the selected files.
+	 * @return List of File objects to open.
+	 */
+	private static List<File> openFileChooser() {
 		JFileChooser chooser = new JFileChooser();
 		FileFilter filter = new FileNameExtensionFilter("Diagram JSON File", "json");
 		chooser.addChoosableFileFilter(filter);
 		chooser.setAcceptAllFileFilterUsed(false);
 		chooser.setMultiSelectionEnabled(true);
+		
+		int returnVal = chooser.showOpenDialog(null);
+		if(returnVal == JFileChooser.APPROVE_OPTION) {
+			return Arrays.asList(chooser.getSelectedFiles());
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * This procedure pops up a file chooser so that the user can select one file to save to,
+	 * then it returns a File object to write data to.
+	 * @return File object to save to.
+	 */
+	private static File saveFileChooser() {
+		JFileChooser chooser = new JFileChooser();
+		FileFilter filter = new FileNameExtensionFilter("Diagram JSON File", "json");
+		chooser.addChoosableFileFilter(filter);
+		chooser.setAcceptAllFileFilterUsed(false);
 		
 		int returnVal = chooser.showSaveDialog(null);
 		if(returnVal == JFileChooser.APPROVE_OPTION) {
