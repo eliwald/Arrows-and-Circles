@@ -356,10 +356,16 @@ public class Edge implements Cloneable, DiagramObject {
     	}
     }
     
+    /**
+     * @return		The curve to draw on the screen.
+     */
     public Arc2D getCurve() {
     	return _curve;
     }
 
+    /**
+     * @return		The forward arrow to draw on the screen.
+     */
     public Shape getForward() {
     	
     	if(_start != _end) {
@@ -458,7 +464,10 @@ public class Edge implements Cloneable, DiagramObject {
 	    	return arrow;
     	}
     }
-
+    
+    /**
+     * @return		The backward arrow to draw on the screen.
+     */
     public Shape getBackward() {
 
     	if(_start != _end) {
@@ -558,48 +567,64 @@ public class Edge implements Cloneable, DiagramObject {
     	}
     }
     
+    /**
+     * @param h		The height to set for the edge.
+     */
     public void setHeight(double h) {
     	_height = h;
     }
     
+    /**
+     * @param t		The turn to set for the edge (used in drawing).
+     */
     public void setTurn(boolean t) {
     	_turn = t;
     }
-
+    
+    /**
+     * @return		True if edge is selected; false otherwise.
+     */
     public boolean isSelected(){
         return _selected;
     }
 
+    /**
+     * @param selected		True if the edge should be selected.
+     */
     public void setSelected(boolean selected){
         _selected = selected;
     }
-
+    
+    /**
+     * @return		The text field drawn next to the edge.
+     */
 	public JTextField getTextField(){
 		return _area;
 	}
-
+	
+	/**
+	 * @param label		The textField to set next to the edge.
+	 */
 	public void setFieldText(JTextField label) {
 		_area = label;
 	}
 
+	/**
+	 * @return		The JLabel drawn next to the edge.
+	 */
     public JLabel getLabel(){
         return _label;
     }
-
+    
+    /**
+     * @param s		The text to set on the JLabel.
+     */
     public void setLabel(String s){
         _label.setText(s);
     }
 
-	public void setStartNode(Node start) {
-		_start = start;
-	}
-
 	public Node getStartNode() {
 		return _start;
-	}
-
-	public void setEndNode(Node end) {
-		_end = end;
 	}
 
 	public Node getEndNode() {
