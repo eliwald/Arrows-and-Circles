@@ -19,6 +19,8 @@ import java.awt.Rectangle;
 import java.awt.Robot;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -157,7 +159,11 @@ public class MainFrame extends javax.swing.JFrame {
 	private static final String help_messate_text_in_edge = "To Delete: If Text Is Selected, Hit Enter; Then Delete | Direction: Lower Left Pane | Multiple Labels: Comma Separated";
 	
 	//If we are within 3 pixels of another node, then snap to that node.
-	private static int SNAP_DIFFERENCE = 7;
+	private static final int SNAP_DIFFERENCE = 7;
+	
+	//Zooming scale
+	private static final int CANVAS_WIDTH = 640;
+	private static final int CANVAS_HEIGHT = 480;
 	
 	/*
 	 * These are the GUI components.
@@ -193,8 +199,6 @@ public class MainFrame extends javax.swing.JFrame {
 	private javax.swing.JMenuItem jMenuItemSelectAll;
 	private javax.swing.JMenuItem jMenuItemShowTrans;
 	private javax.swing.JMenuItem jMenuItemAbout;
-	private javax.swing.JMenuItem jMenuItemZoomIn;
-	private javax.swing.JMenuItem jMenuItemZoomOut;
 	private javax.swing.JPanel jPanel1;
 	private javax.swing.JPanel jPanel2;
 	private javax.swing.JScrollPane jScrollPane1;
@@ -239,8 +243,6 @@ public class MainFrame extends javax.swing.JFrame {
 		jSplitPane2 = new javax.swing.JSplitPane();
 		jTabbedPane1 = new javax.swing.JTabbedPane();
 		jScrollPane1 = new javax.swing.JScrollPane();
-		jMenuItemZoomIn = new javax.swing.JMenuItem();
-		jMenuItemZoomOut = new javax.swing.JMenuItem();
 		drawingPanel1 = new frontend.DrawingPanel();
 		jSplitPane3 = new javax.swing.JSplitPane();
 		jPanel1 = new javax.swing.JPanel();
@@ -324,7 +326,7 @@ public class MainFrame extends javax.swing.JFrame {
 
 		javax.swing.GroupLayout drawingPanel1Layout = new javax.swing.GroupLayout(drawingPanel1);
 		drawingPanel1.setLayout(drawingPanel1Layout);
-		drawingPanel1.setPreferredSize(new Dimension(950, 950));
+		drawingPanel1.setPreferredSize(new Dimension(CANVAS_WIDTH, CANVAS_HEIGHT));
 
 		jScrollPane1.setViewportView(drawingPanel1);
 		jScrollPane1.getVerticalScrollBar().setUnitIncrement(16);
@@ -716,27 +718,6 @@ public class MainFrame extends javax.swing.JFrame {
 			}	
 		});
 		
-		jMenuItemZoomIn.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_EQUALS, java.awt.event.InputEvent.CTRL_MASK));
-		jMenuItemZoomIn.setText("Zoom In");
-		jMenuTools.addSeparator();
-		jMenuTools.add(jMenuItemZoomIn);
-		jMenuItemZoomIn.addActionListener(new ActionListener(){
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				zoomIn();
-			}
-		});
-		
-		jMenuItemZoomOut.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_MINUS, java.awt.event.InputEvent.CTRL_MASK));
-		jMenuItemZoomOut.setText("Zoom Out");
-		jMenuTools.add(jMenuItemZoomOut);
-		jMenuItemZoomOut.addActionListener(new ActionListener(){
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				zoomOut();
-			}
-		});
-		
 		jMenuBar2.add(jMenu4);
 
 		jMenuTools.setText("Tools");
@@ -855,7 +836,7 @@ public class MainFrame extends javax.swing.JFrame {
 
 		javax.swing.GroupLayout drawingPanel1Layout = new javax.swing.GroupLayout(drawingPanel1);
 		drawingPanel1.setLayout(drawingPanel1Layout);
-		drawingPanel1.setPreferredSize(new Dimension(950, 950));
+		drawingPanel1.setPreferredSize(new Dimension(CANVAS_WIDTH, CANVAS_HEIGHT));
 
 		jTabbedPane1.addTab("Untitled", jScrollPane1);
 		jTabbedPane1.setSelectedIndex(jTabbedPane1.getTabCount() - 1);
@@ -1094,7 +1075,6 @@ public class MainFrame extends javax.swing.JFrame {
 					n.resetCircle();
 				}
 			}
-
 		}
 
 		//Otherwise, if we are in the middle of resizing, then correctly resize the node.
@@ -1293,6 +1273,7 @@ public class MainFrame extends javax.swing.JFrame {
 		_resizing = null;
 		_nodeDragged = null;
 		_edgeDragged = null;
+
 		drawingPanel1.repaint();
 	}
 
@@ -1779,98 +1760,7 @@ public class MainFrame extends javax.swing.JFrame {
 	/******************************************************************************************************************
 	 * HELPER FUNCTIONS AND CLASSES																					  *
 	 ******************************************************************************************************************/
-	
-	/**
-	 * The method to do zooming in.
-	 */
-	public void zoomIn() {
-		for (Node n : drawingPanel1.getDiagram().getNodes()){
-			int centerX = jScrollPane1.getHorizontalScrollBar().getValue() + jScrollPane1.getWidth()/2;
-			int centerY = jScrollPane1.getVerticalScrollBar().getValue() + jScrollPane1.getHeight()/2;
-			Point2D.Double p = getNewCenter(n.getCenter(), new Point(centerX, centerY),true);
-			n.setCenter(p.x, p.y);
-			n.setRadius(n.getRadius()/0.9);						
-		}
-		Dimension d = new Dimension((int)(drawingPanel1.getWidth()/0.9), (int)(drawingPanel1.getHeight()/0.9));
-		drawingPanel1.setSize(d);
-		drawingPanel1.setPreferredSize(d);
-	}
-	
-	/**
-	 * The method to do zooming out.
-	 */
-	public void zoomOut() {
-		for (Node n : drawingPanel1.getDiagram().getNodes()){
-			if (n.getRadius()*0.9 <= Node.MIN_RADIUS){
-//				Dimension d = new Dimension((int) (n.getRadius()*30),(int) (n.getRadius()*30));
-//				drawingPanel1.setSize(d);
-//				drawingPanel1.setPreferredSize(d);
-				return;
-			}
-		}
 
-		for (Node n : drawingPanel1.getDiagram().getNodes()){
-			int centerX = jScrollPane1.getHorizontalScrollBar().getValue() + jScrollPane1.getWidth()/2;
-			int centerY = jScrollPane1.getVerticalScrollBar().getValue() + jScrollPane1.getHeight()/2;
-			System.out.println(centerX + " " + centerY);
-			Point2D.Double p = getNewCenter(n.getCenter(), new Point(centerX, centerY),false);
-			n.setCenter(p.x, p.y);
-			n.setRadius(n.getRadius()*0.9);
-		}
-		Dimension d = new Dimension((int)(drawingPanel1.getWidth()*0.9), (int)(drawingPanel1.getHeight()*0.9));
-		drawingPanel1.setSize(d);
-		drawingPanel1.setPreferredSize(d);
-	}
-	
-	/**
-	 * Gets a new center for a node.
-	 * @param		oldCenter 	The old center of the node
-	 * @param		center 		The new center for the node
-	 * @param		in			True if zooming in; false otherwise.
-	 */
-	public Point2D.Double getNewCenter(Point2D.Double oldCenter, Point center, boolean in) {
-		double newX, newY;
-		if (oldCenter.x < center.x){
-			if (in){
-				newX = oldCenter.x*0.9;
-			}
-			else{
-				newX = oldCenter.x/0.9;
-			}
-		}
-		else if (oldCenter.x > center.x){
-			if (in){
-				newX = oldCenter.x/0.9;
-			}
-			else{
-				newX = oldCenter.x*0.9;
-			}
-		}
-		else{
-			newX = oldCenter.x;
-		}
-		if (oldCenter.y > center.y){
-			if (in){
-				newY = oldCenter.y*0.9;
-			}
-			else{
-				newY = oldCenter.y/0.9;
-			}
-		}
-		else if (oldCenter.y < center.y){
-			if (in){
-				newY = oldCenter.y/0.9;
-			}
-			else{
-				newY = oldCenter.y*0.9;
-			}
-		}
-		else{
-			newY= oldCenter.y;
-		}
-		return new Point2D.Double(newX, newY);
-	}
-	
 	/**
 	 * Listener used for the simulation timer, so that when the timer goes off,
 	 * simulation can move forwards.

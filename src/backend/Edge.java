@@ -578,7 +578,9 @@ public class Edge implements Cloneable, DiagramObject {
 		return _angle;
 	}
 	
-	
+	public double getHeight() {
+		return _height;
+	}
 	
 	
 }
