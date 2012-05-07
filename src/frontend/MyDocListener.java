@@ -62,7 +62,11 @@ public class MyDocListener implements DocumentListener{
 			String[] _greekCodes = {"&#x03B2;", "&#x03B1;","&#x03B5;", "&#x03B8;", "&#x0398;"};
 			while (i < e.getDocument().getLength()){
 				if (s.charAt(i) != '_'){
-					if (s.charAt(i)!= '\\'){
+					if (s.charAt(i)=='/'){
+						//special case because html.
+						html.append("&#x2F;");
+					}
+					else if (s.charAt(i)!= '\\'){
 						html.append(s.charAt(i));
 					}
 					else {
