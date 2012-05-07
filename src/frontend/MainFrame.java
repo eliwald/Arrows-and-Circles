@@ -167,6 +167,9 @@ public class MainFrame extends javax.swing.JFrame {
 	private javax.swing.JMenuItem jMenuItemSelectAll;
 	private javax.swing.JMenuItem jMenuItemShowTrans;
 	private javax.swing.JMenuItem jMenuItemAbout;
+	private javax.swing.JMenu jMenuExport;
+	private javax.swing.JMenuItem jMenuItemExportToLatex;
+	private javax.swing.JMenuItem jMenuItemExportToPNG;
 	private javax.swing.JPanel jPanel1;
 	private javax.swing.JPanel jPanel2;
 	private javax.swing.JScrollPane jScrollPane1;
@@ -243,6 +246,9 @@ public class MainFrame extends javax.swing.JFrame {
 		jMenuItemAbout = new javax.swing.JMenuItem();
 		jMenuTools = new javax.swing.JMenu();
 		jMenuHelp = new javax.swing.JMenu();
+		jMenuExport = new javax.swing.JMenu();
+		jMenuItemExportToLatex = new javax.swing.JMenuItem();
+		jMenuItemExportToPNG = new javax.swing.JMenuItem();
 
 		setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 		setTitle("Arrows & Circles");
@@ -645,23 +651,9 @@ public class MainFrame extends javax.swing.JFrame {
 		jMenuItemShowTrans.setText("Show Transitions");
 		jMenuTools.add(jMenuItemShowTrans);
 		jMenuItemShowTrans.addActionListener(new ActionListener(){
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				StringBuilder builder = new StringBuilder();
-				for (Node node : drawingPanel1.getDiagram().getNodes()){
-					for (Edge edge : node.getConnected()){
-						if (edge.getStartNode() == node && edge.getDirection() == EdgeDirection.SINGLE){
-							builder.append("<"+ node.getName() + ", edge labeled: " + edge.getTextField().getText() + " -> " + edge.getEndNode().getName() +  ">\n");
-						}
-					}
-				}
-				String disp = builder.toString();
-				if (disp.equals("")) disp = "There are no transitions in this FSM.";
-				String[] opts = {"OK"};
-
-				JOptionPane.showOptionDialog(jSplitPane2, disp, "Transitions", JOptionPane.DEFAULT_OPTION, 
-				JOptionPane.INFORMATION_MESSAGE, null, opts, opts[0]);
+				showTransitionActionPerformed(e);
 			}	
 		});
 		
@@ -678,6 +670,30 @@ public class MainFrame extends javax.swing.JFrame {
 		
 		
 		jMenuBar2.add(jMenuHelp);
+		
+		jMenuExport.setText("Export");
+		
+		jMenuItemExportToLatex.setText("Export to LaTeX");
+		jMenuItemExportToLatex.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				exportToLatexActionPerformed(e);
+			}
+		});
+		
+		jMenuItemExportToPNG.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				exportToPNGActionPerformed(e);
+			}
+		});
+		
+		jMenuItemExportToPNG.setText("Export to PNG");
+		
+		jMenuExport.add(jMenuItemExportToLatex);
+		jMenuExport.add(jMenuItemExportToPNG);
+		
+		jMenuBar2.add(jMenuExport);
 
 		setJMenuBar(jMenuBar2);
 		
@@ -750,21 +766,56 @@ public class MainFrame extends javax.swing.JFrame {
 	 * This is what happens when you click open.
 	 */
 	private void openActionPerformed(java.awt.event.ActionEvent evt) {
-		
+		//TODO: Add code to handle opening.
 	}
 	
 	/**
 	 * This is what happens when you click redo.
 	 */
 	private void redoActionPerformed(java.awt.event.ActionEvent evt) {
-		
+		//TODO: Add code to handle redo.
 	}
 	
 	/**
 	 * This is what happens when you click undo.
 	 */
 	private void undoActionPerformed(java.awt.event.ActionEvent evt) {
-		
+		//TODO: Add code to handle undo.
+	}
+	
+	/**
+	 * This is what happens when you click undo.
+	 */
+	private void exportToPNGActionPerformed(java.awt.event.ActionEvent evt) {
+		//TODO: Add code to handle undo.
+	}
+	
+	/**
+	 * This is what happens when you click undo.
+	 */
+	private void exportToLatexActionPerformed(java.awt.event.ActionEvent evt) {
+		//TODO: Add code to handle undo.
+	}
+	
+	/**
+	 * This is what gets called when the show transitions button is clicked.
+	 * @param evt
+	 */
+	private void showTransitionActionPerformed(java.awt.event.ActionEvent evt) {
+		StringBuilder builder = new StringBuilder();
+		for (Node node : drawingPanel1.getDiagram().getNodes()){
+			for (Edge edge : node.getConnected()){
+				if (edge.getStartNode() == node && edge.getDirection() == EdgeDirection.SINGLE){
+					builder.append("<"+ node.getName() + ", edge labeled: " + edge.getTextField().getText() + " -> " + edge.getEndNode().getName() +  ">\n");
+				}
+			}
+		}
+		String disp = builder.toString();
+		if (disp.equals("")) disp = "There are no transitions in this FSM.";
+		String[] opts = {"OK"};
+
+		JOptionPane.showOptionDialog(jSplitPane2, disp, "Transitions", JOptionPane.DEFAULT_OPTION, 
+		JOptionPane.INFORMATION_MESSAGE, null, opts, opts[0]);
 	}
 	
 	/**
@@ -793,6 +844,10 @@ public class MainFrame extends javax.swing.JFrame {
 		System.exit(0);
 	}
 	
+	/**
+	 * This gets called when you click select all.
+	 * @param evt
+	 */
 	private void selectAllActionPerformed(java.awt.event.ActionEvent evt) {
 		_nodesSelected = Collections.synchronizedSet(new HashSet<Node>());
 		_edgesSelected = Collections.synchronizedSet(new HashSet<Edge>());
