@@ -48,14 +48,32 @@ public class MyDocListener implements DocumentListener{
 				Logger.getLogger(Node.class.getName()).log(Level.SEVERE, null, ex);
 			}
 		}
+		/**
+		 * This method converts a string into an html string that displays subscripted integers and select greek characters.
+		 * @param e
+		 * @throws BadLocationException
+		 */
 		
 		public void setLabelText(DocumentEvent e) throws BadLocationException{
 			String s = e.getDocument().getText(0, e.getDocument().getLength());
 			StringBuilder html = new StringBuilder("<html>");
 			int i = 0;
+			String[] _greekChars = {"beta", "alpha", "epsilon", "theta", "Theta"};
+			String[] _greekCodes = {"&#x03B2;", "&#x03B1;","&#x03B5;", "&#x03B8;", "&#x0398;"};
 			while (i < e.getDocument().getLength()){
 				if (s.charAt(i) != '_'){
-					html.append(s.charAt(i));
+					if (s.charAt(i)!= '\\'){
+						html.append(s.charAt(i));
+					}
+					else {
+						for (int j = 0; j < _greekChars.length; j++){
+							String greekChar = _greekChars[j];
+							if (i+greekChar.length() < s.length() && s.substring(i+1, i+greekChar.length()+1).equals(greekChar)){
+								i+=greekChar.length();
+								html.append(_greekCodes[j]);
+							}
+						}
+					}
 					i++;
 				}
 				else{
