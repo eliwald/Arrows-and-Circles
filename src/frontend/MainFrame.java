@@ -154,7 +154,7 @@ public class MainFrame extends javax.swing.JFrame {
 	private static final String help_message_text = "Double Click: New Node | \"S\": Snap Mouse To Nearest Node | Ctrl-Click Component: Add Component To Selected Components";
 	private static final String help_message_text_in_node_unselected = "Click To Select | Double Click: Toggle Accept State | Shift-DragClick: New Edge | Click-Drag: Move It Around";
 	private static final String help_message_text_in_node_selected = "Shift-DragClick: New Edge | Double Click: Toggle Accept | Delete/Backspace: Delete Node | Click Triangle: Toggle Start State";
-	private static final String help_messate_text_in_edge = "To Delete: If Text Is Selected, Hit Enter; Then Delete | Toggle Direction: Lower Left Pane | To Rename: Single Click Edge";
+	private static final String help_messate_text_in_edge = "To Delete: If Text Is Selected, Hit Enter; Then Delete | Direction: Lower Left Pane | Multiple Labels: Comma Separated";
 	
 	//If we are within 3 pixels of another node, then snap to that node.
 	private static int SNAP_DIFFERENCE = 7;
@@ -481,7 +481,7 @@ public class MainFrame extends javax.swing.JFrame {
 
 		jPanel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
-		jTextArea1.setColumns(30);
+		jTextArea1.setColumns(27);
 		jTextArea1.setEditable(false);
 		jTextArea1.setRows(5);
 		jScrollPane2.setViewportView(jTextArea1);
@@ -508,7 +508,7 @@ public class MainFrame extends javax.swing.JFrame {
 			}
 		});
 
-		_simSlide.setMaximum(100);
+		_simSlide.setMaximum(1000);
 		_simSlide.setValue(0);
 		_simSlide.addChangeListener(new javax.swing.event.ChangeListener() {
 			public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -577,9 +577,9 @@ public class MainFrame extends javax.swing.JFrame {
 		jPanel2.setLayout(jPanel2Layout);
 		jPanel2Layout.setHorizontalGroup(
 				jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 355, Short.MAX_VALUE)
+				.addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 360, Short.MAX_VALUE)
 				.addGroup(jPanel2Layout.createSequentialGroup()
-						.addGap(10, 10, 10)
+						.addGap(15, 15, 15)
 						.addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
 								.addGroup(jPanel2Layout.createSequentialGroup()
 										.addComponent(_rewindBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -598,8 +598,8 @@ public class MainFrame extends javax.swing.JFrame {
 												.addComponent(simulationStepSlider, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
 												.addComponent(_simSlide, javax.swing.GroupLayout.PREFERRED_SIZE,163,javax.swing.GroupLayout.PREFERRED_SIZE)
 												.addComponent(simTextAreaLabel, javax.swing.GroupLayout.PREFERRED_SIZE,300,javax.swing.GroupLayout.PREFERRED_SIZE)
-												.addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-												.addGap(10, 10, 10))
+												.addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 330, javax.swing.GroupLayout.PREFERRED_SIZE))
+												.addGap(15, 15, 15))
 		);
 		jPanel2Layout.setVerticalGroup(
 				jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -872,12 +872,13 @@ public class MainFrame extends javax.swing.JFrame {
 		);
 
 		//add zoom slider; totally separate from rest of UI (i.e. doesn't ever move, not part of any group or layout, etc).
-//        _slider = new JSlider(JSlider.VERTICAL, -3, 3, 0);
-//        _slider.setPaintTicks(true);
-//        _slider.setSize(25, 100);
-//        _slider.setName("Zoom");
-//        this.add(_slider);
-//        _slider.setVisible(true);
+
+        /*_slider = new JSlider(JSlider.VERTICAL, -3, 3, 0);
+        _slider.setPaintTicks(true);
+        _slider.setSize(25, 100);
+        _slider.setName("Zoom");
+        this.add(_slider);
+        _slider.setVisible(true);*/
 		
 		pack();
 	}                   
@@ -1049,10 +1050,6 @@ public class MainFrame extends javax.swing.JFrame {
 					Rectangle boundingBox = e.getLabel().getBounds();
 					if (e.intersects(evt.getPoint().x,evt.getPoint().y)){
 						e.setSelected(true);
-						e.getTextField().setVisible(true);
-						e.getTextField().selectAll();
-						e.getTextField().grabFocus();
-						e.getLabel().setVisible(false);
 						_edgesSelected.add(e);
 						EdgeDirection dir = e.getDirection();
 						switch (dir){
@@ -1470,6 +1467,9 @@ public class MainFrame extends javax.swing.JFrame {
 	 */
 	private void jTextField1MousePressed(java.awt.event.MouseEvent evt) {
 		if (jTextField1.getText().equals("Input string here")){
+			if (_simTimer.isRunning()) {
+				_simTimer.stop();
+			}
 			jTextField1.setText("");
 		}
 		Font newTextFieldFont = new Font(jTextField1.getFont().getName(),Font.PLAIN,jTextField1.getFont().getSize());
@@ -1573,7 +1573,7 @@ public class MainFrame extends javax.swing.JFrame {
 				e.setCurrent(true);
 				if (!_autoChange) {
 					_autoChange = true;
-					_simSlide.setValue(_simSlide.getValue() + 100/_sim.size());
+					_simSlide.setValue(Math.min(1000, _simSlide.getValue() + (int) Math.ceil(((double)1000)/_sim.size())));
 					_curr = _simSlide.getValue();
 					_autoChange = false;
 				}
@@ -1602,7 +1602,7 @@ public class MainFrame extends javax.swing.JFrame {
 					if (((Node)e).isEnd())
 						jTextArea1.setText(jTextArea1.getText() + ("FSM Accepted the input string.\n"));
 					else
-						jTextArea1.setText(jTextArea1.getText() + ("FSM Rejected the input string.\n"));
+						jTextArea1.setText(jTextArea1.getText() + ("FSM Rejected the input string."));
 
 					_sim = null;
 					_iter = null;
@@ -1643,7 +1643,7 @@ public class MainFrame extends javax.swing.JFrame {
 
 		//Clear all the currently selected (PINK) nodes.
 		drawingPanel1.clearCurrent();
-
+		
 		//If there is a previous node to go to
 		if (_iter.hasPrevious()) {
 			//If the input text has changed, alert the user.
@@ -1664,35 +1664,39 @@ public class MainFrame extends javax.swing.JFrame {
 					_backwardClicked = true;
 					_iter.previous();
 				}
-				int curIndex = _iter.nextIndex();
+				if (_iter.hasPrevious()) {
+					int curIndex = _iter.nextIndex();
 
-				//Get the previous node.  Set it to be current.
-				DiagramObject e = _iter.previous();
-				e.setCurrent(true);
+					//Get the previous node.  Set it to be current.
+					DiagramObject e = _iter.previous();
+					e.setCurrent(true);
 
-				//Set the appropriate place of the second slider
-				if (!_autoChange) {
-					_autoChange = true;
-					_simSlide.setValue(_simSlide.getValue() - 100/_sim.size());
-					_autoChange = false;
+					//Set the appropriate place of the second slider
+					if (!_autoChange) {
+						_autoChange = true;
+						_simSlide.setValue(Math.min(1000, _simSlide.getValue() - (int) Math.ceil(((double)1000)/_sim.size())));
+						_autoChange = false;
+					}
+
+					//Set this old value of the slider so that we can remember the previous place.
+					_curr = _simSlide.getValue();
+
+					//Select the correct character in the input string, so the user knows which edge he's taking.
+					jTextField1.grabFocus();
+					if (curIndex - 1 >= 0)
+						jTextField1.select(curIndex - 1, curIndex);
+					drawingPanel1.grabFocus();
+
+					//Take the last line of the text area off (remove the last node alert).
+					String temp = jTextArea1.getText();
+					jTextArea1.setText("");
+					String[] tempArray = temp.split("\n");
+					for (int i = 0; i < tempArray.length - 1; i ++) {
+						jTextArea1.setText(jTextArea1.getText() + (tempArray[i] + "\n"));
+					}
 				}
-
-				//Set this old value of the slider so that we can remember the previous place.
-				_curr = _simSlide.getValue();
-
-				//Select the correct character in the input string, so the user knows which edge he's taking.
-				jTextField1.grabFocus();
-				if (curIndex - 1 >= 0)
-					jTextField1.select(curIndex - 1, curIndex);
-				drawingPanel1.grabFocus();
-
-				//Take the last line of the text area off (remove the last node alert).
-				String temp = jTextArea1.getText();
-				jTextArea1.setText("");
-				String[] tempArray = temp.split("\n");
-				for (int i = 0; i < tempArray.length - 1; i ++) {
-					jTextArea1.setText(jTextArea1.getText() + (tempArray[i] + "\n"));
-				}
+				else
+					backToStart();
 			}
 			else if (answer == 0) {
 				_sim = null;
@@ -1705,12 +1709,8 @@ public class MainFrame extends javax.swing.JFrame {
 		}
 
 		//Otherwise, if there is on previous, we are back to the start.
-		else {
-			jTextField1.select(0, 0);
-			_playPauseBtn.setIcon(new ImageIcon(PLAY_FILEPATH));
-			jTextArea1.setText("BACK TO START");
-			_backwardClicked = false;
-		}
+		else
+			backToStart();
 		drawingPanel1.repaint();
 	}
 	
@@ -1777,29 +1777,16 @@ public class MainFrame extends javax.swing.JFrame {
 		if (_autoChange) {
 			return;
 		}
+		
 		int diff = _simSlide.getValue() - _curr;
-		if (diff == 0 && _sim.size() == 0) {
-			return;
-		}
-		if (_sim.size() == 0 && diff > 0) {
-			_autoChange = true;
-			simulation_move_forward();
-			_autoChange = false;
-			return;
-		}
-		if (_sim.size() == 0 && diff > 0) {
-			_autoChange = true;
-			simulation_move_backward();
-			_autoChange = false;
-		}
-		if (Math.abs(diff) < 100/_sim.size()) {
+		if (Math.abs(diff) < 1000/_sim.size()) {
 			return;
 		}
 		if (diff < 0) {
 			while (diff < 0) {
 				_autoChange = true;
 				simulation_move_backward();
-				diff += 100/_sim.size();
+				diff += 1000/_sim.size();
 				_autoChange = false;
 			}
 		}
@@ -1811,12 +1798,7 @@ public class MainFrame extends javax.swing.JFrame {
 					_autoChange = false;
 					return;
 				}
-				if (_sim.size() == 0) {
-					_simSlide.setValue(0);
-					_autoChange = false;
-					return;
-				}
-				diff -= 100/_sim.size();
+				diff -= 1000/_sim.size();
 				_autoChange = false;
 			}
 		}
@@ -1880,6 +1862,22 @@ public class MainFrame extends javax.swing.JFrame {
 	private class SimListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			simulation_move_forward();
+		}
+	}
+	
+	/**
+	 * Helper used in stepping forward/backward to alert user we are back to the start.
+	 */
+	public void backToStart() {
+		jTextField1.select(0, 0);
+		_playPauseBtn.setIcon(new ImageIcon(PLAY_FILEPATH));
+		jTextArea1.setText("BACK TO START");
+		_backwardClicked = false;
+		//Set the appropriate place of the second slider
+		if (!_autoChange) {
+			_autoChange = true;
+			_simSlide.setValue(Math.min(1000, _simSlide.getValue() - (int) Math.ceil(((double)1000)/_sim.size())));
+			_autoChange = false;
 		}
 	}
 	
