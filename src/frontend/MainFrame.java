@@ -404,7 +404,7 @@ public class MainFrame extends javax.swing.JFrame {
 
 		jPanel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
-		jTextArea1.setColumns(30);
+		jTextArea1.setColumns(27);
 		jTextArea1.setEditable(false);
 		jTextArea1.setRows(5);
 		jScrollPane2.setViewportView(jTextArea1);
@@ -431,7 +431,7 @@ public class MainFrame extends javax.swing.JFrame {
 			}
 		});
 
-		_simSlide.setMaximum(100);
+		_simSlide.setMaximum(1000);
 		_simSlide.setValue(0);
 		_simSlide.addChangeListener(new javax.swing.event.ChangeListener() {
 			public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -500,9 +500,9 @@ public class MainFrame extends javax.swing.JFrame {
 		jPanel2.setLayout(jPanel2Layout);
 		jPanel2Layout.setHorizontalGroup(
 				jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 355, Short.MAX_VALUE)
+				.addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 360, Short.MAX_VALUE)
 				.addGroup(jPanel2Layout.createSequentialGroup()
-						.addGap(10, 10, 10)
+						.addGap(15, 15, 15)
 						.addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
 								.addGroup(jPanel2Layout.createSequentialGroup()
 										.addComponent(_rewindBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -521,8 +521,8 @@ public class MainFrame extends javax.swing.JFrame {
 												.addComponent(simulationStepSlider, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
 												.addComponent(_simSlide, javax.swing.GroupLayout.PREFERRED_SIZE,163,javax.swing.GroupLayout.PREFERRED_SIZE)
 												.addComponent(simTextAreaLabel, javax.swing.GroupLayout.PREFERRED_SIZE,300,javax.swing.GroupLayout.PREFERRED_SIZE)
-												.addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-												.addGap(10, 10, 10))
+												.addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 330, javax.swing.GroupLayout.PREFERRED_SIZE))
+												.addGap(15, 15, 15))
 		);
 		jPanel2Layout.setVerticalGroup(
 				jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -773,12 +773,12 @@ public class MainFrame extends javax.swing.JFrame {
 		);
 
 		//add zoom slider; totally separate from rest of UI (i.e. doesn't ever move, not part of any group or layout, etc).
-        _slider = new JSlider(JSlider.VERTICAL, -3, 3, 0);
+        /*_slider = new JSlider(JSlider.VERTICAL, -3, 3, 0);
         _slider.setPaintTicks(true);
         _slider.setSize(25, 100);
         _slider.setName("Zoom");
         this.add(_slider);
-        _slider.setVisible(true);
+        _slider.setVisible(true);*/
 		
 		pack();
 	}                   
@@ -1371,6 +1371,9 @@ public class MainFrame extends javax.swing.JFrame {
 	 */
 	private void jTextField1MousePressed(java.awt.event.MouseEvent evt) {
 		if (jTextField1.getText().equals("Input string here")){
+			if (_simTimer.isRunning()) {
+				_simTimer.stop();
+			}
 			jTextField1.setText("");
 		}
 		Font newTextFieldFont = new Font(jTextField1.getFont().getName(),Font.PLAIN,jTextField1.getFont().getSize());
@@ -1474,7 +1477,7 @@ public class MainFrame extends javax.swing.JFrame {
 				e.setCurrent(true);
 				if (!_autoChange) {
 					_autoChange = true;
-					_simSlide.setValue(_simSlide.getValue() + 100/_sim.size());
+					_simSlide.setValue(Math.min(1000, _simSlide.getValue() + (int) Math.ceil(((double)1000)/_sim.size())));
 					_curr = _simSlide.getValue();
 					_autoChange = false;
 				}
@@ -1503,7 +1506,7 @@ public class MainFrame extends javax.swing.JFrame {
 					if (((Node)e).isEnd())
 						jTextArea1.setText(jTextArea1.getText() + ("FSM Accepted the input string.\n"));
 					else
-						jTextArea1.setText(jTextArea1.getText() + ("FSM Rejected the input string.\n"));
+						jTextArea1.setText(jTextArea1.getText() + ("FSM Rejected the input string."));
 
 					_sim = null;
 					_iter = null;
@@ -1574,7 +1577,7 @@ public class MainFrame extends javax.swing.JFrame {
 				//Set the appropriate place of the second slider
 				if (!_autoChange) {
 					_autoChange = true;
-					_simSlide.setValue(_simSlide.getValue() - 100/_sim.size());
+					_simSlide.setValue(Math.min(1000, _simSlide.getValue() - (int) Math.ceil(((double)1000)/_sim.size())));
 					_autoChange = false;
 				}
 
@@ -1678,6 +1681,7 @@ public class MainFrame extends javax.swing.JFrame {
 		if (_autoChange) {
 			return;
 		}
+		
 		int diff = _simSlide.getValue() - _curr;
 		if (diff == 0 && _sim.size() == 0) {
 			return;
@@ -1693,14 +1697,14 @@ public class MainFrame extends javax.swing.JFrame {
 			simulation_move_backward();
 			_autoChange = false;
 		}
-		if (Math.abs(diff) < 100/_sim.size()) {
+		if (Math.abs(diff) < 1000/_sim.size()) {
 			return;
 		}
 		if (diff < 0) {
 			while (diff < 0) {
 				_autoChange = true;
 				simulation_move_backward();
-				diff += 100/_sim.size();
+				diff += 1000/_sim.size();
 				_autoChange = false;
 			}
 		}
@@ -1717,7 +1721,7 @@ public class MainFrame extends javax.swing.JFrame {
 					_autoChange = false;
 					return;
 				}
-				diff -= 100/_sim.size();
+				diff -= 1000/_sim.size();
 				_autoChange = false;
 			}
 		}
