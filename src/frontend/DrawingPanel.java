@@ -38,7 +38,7 @@ public class DrawingPanel extends JPanel {
     public DrawingPanel() {
         _diagram = new Diagram();
         this.setBackground(Color.WHITE);
-
+        this.setSize(1900,1900);
     }
     
     public Diagram getDiagram() {

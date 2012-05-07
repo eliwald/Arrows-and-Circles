@@ -323,14 +323,15 @@ public class MainFrame extends javax.swing.JFrame {
 
 		javax.swing.GroupLayout drawingPanel1Layout = new javax.swing.GroupLayout(drawingPanel1);
 		drawingPanel1.setLayout(drawingPanel1Layout);
-		drawingPanel1Layout.setHorizontalGroup(
-				drawingPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGap(0, 1900, Short.MAX_VALUE)
-		);
-		drawingPanel1Layout.setVerticalGroup(
-				drawingPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGap(0, 1900, Short.MAX_VALUE)
-		);
+//		drawingPanel1Layout.setHorizontalGroup(
+//				drawingPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+//				.addGap(0, 1900, Short.MAX_VALUE)
+//		);
+//		drawingPanel1Layout.setVerticalGroup(
+//				drawingPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+//				.addGap(0, 1900, Short.MAX_VALUE)
+//				
+//		);
 
 		jScrollPane1.setViewportView(drawingPanel1);
 		jScrollPane1.getVerticalScrollBar().setUnitIncrement(16);
@@ -338,23 +339,30 @@ public class MainFrame extends javax.swing.JFrame {
 			jScrollPane1.removeMouseWheelListener(m);
 		}
 		drawingPanel1.addMouseWheelListener(new MouseWheelListener(){
-
 			@Override
 			public void mouseWheelMoved(MouseWheelEvent e) {
 				// TODO Auto-generated method stub
-				if (e.getWheelRotation()>0){
+				
+				if (e.getWheelRotation()>0 ){
+					for (Node n : drawingPanel1.getDiagram().getNodes()){
+						if (n.getRadius() <= Node.MIN_RADIUS) return;
+					}
 					//zoom out
 					for (Node n : drawingPanel1.getDiagram().getNodes()){
-						Point2D.Double p = getNewCenter(n.getCenter(), e.getPoint(),false);
+						int centerX = jScrollPane1.getHorizontalScrollBar().getValue();
+						int centerY = jScrollPane1.getVerticalScrollBar().getValue();
+						Point2D.Double p = getNewCenter(n.getCenter(), new Point(centerX, centerY),false);
 						n.setCenter(p.x, p.y);
 						n.setRadius(n.getRadius()*0.9);
 						drawingPanel1.setSize((int)(drawingPanel1.getWidth()*0.9), (int)(drawingPanel1.getHeight()*0.9));
 					}
 				}
-				else{
+				else {
 					//zoom in
 					for (Node n : drawingPanel1.getDiagram().getNodes()){
-						Point2D.Double p = getNewCenter(n.getCenter(), e.getPoint(),true);
+						int centerX = jScrollPane1.getHorizontalScrollBar().getValue();
+						int centerY = jScrollPane1.getVerticalScrollBar().getValue();
+						Point2D.Double p = getNewCenter(n.getCenter(), new Point(centerX, centerY),true);
 						n.setCenter(p.x, p.y);
 						n.setRadius(n.getRadius()/0.9);
 						drawingPanel1.setSize((int)(drawingPanel1.getWidth()/0.9), (int)(drawingPanel1.getHeight()/0.9));
@@ -924,14 +932,14 @@ public class MainFrame extends javax.swing.JFrame {
 
 		javax.swing.GroupLayout drawingPanel1Layout = new javax.swing.GroupLayout(drawingPanel1);
 		drawingPanel1.setLayout(drawingPanel1Layout);
-		drawingPanel1Layout.setHorizontalGroup(
-				drawingPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGap(0, 1900, Short.MAX_VALUE)
-		);
-		drawingPanel1Layout.setVerticalGroup(
-				drawingPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGap(0, 1900, Short.MAX_VALUE)
-		);
+//		drawingPanel1Layout.setHorizontalGroup(
+//				drawingPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+//				.addGap(0, 1900, Short.MAX_VALUE)
+//		);
+//		drawingPanel1Layout.setVerticalGroup(
+//				drawingPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+//				.addGap(0, 1900, Short.MAX_VALUE)
+//		);
 
 		jTabbedPane1.addTab("Untitled", jScrollPane1);
 		jTabbedPane1.setSelectedIndex(jTabbedPane1.getTabCount() - 1);
