@@ -290,7 +290,7 @@ public class MainFrame extends javax.swing.JFrame {
 		jMenuItem1.setText("jMenuItem1");
 
 		setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-		setTitle("Arrows & Circles Alpha");
+		setTitle("Arrows & Circles");
 
 		jTabbedPane1.addChangeListener(new ChangeListener(){
 			public void stateChanged(ChangeEvent evt){
