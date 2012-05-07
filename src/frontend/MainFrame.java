@@ -4,57 +4,21 @@
  */
 package frontend;
 
-import backend.Diagram;
-import backend.DiagramObject;
-import backend.Edge;
-import backend.EdgeDirection;
-import backend.InvalidDFSMException;
-import backend.Node;
-import java.awt.AWTException;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.Robot;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.AdjustmentEvent;
-import java.awt.event.AdjustmentListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
-import java.awt.geom.Arc2D;
-import java.awt.geom.Line2D;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.geom.*;
+import java.util.*;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.ImageIcon;
-import javax.swing.JEditorPane;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
-import javax.swing.JSlider;
-import javax.swing.JTabbedPane;
-import javax.swing.JTable;
-import javax.swing.JTextArea;
-import javax.swing.JTextPane;
-import javax.swing.SwingConstants;
+
+import javax.swing.*;
+import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
-import javax.swing.table.TableColumn;
-import javax.swing.Timer;
+
+import backend.*;
 
 /**
  *
@@ -1441,6 +1405,10 @@ public class MainFrame extends javax.swing.JFrame {
 					jScrollPane1 = (JScrollPane)(jTabbedPane1.getSelectedComponent());
 					drawingPanel1 = (DrawingPanel)jScrollPane1.getViewport().getView();
 				}
+				else {
+					jScrollPane1 = null;
+					drawingPanel1 = null;
+				}
 			}
 		}
 		//If it has already been saved, then just copy above code to exit no matter what.
@@ -1455,6 +1423,10 @@ public class MainFrame extends javax.swing.JFrame {
 	 * of calling "_fwdButton.doClick()".
 	 */
 	private void simulation_move_forward() {
+		//If there are no tabs open, return.
+		if (drawingPanel1 == null)
+			return;
+		
 		//If simulation is not currently running, try starting it up.
 		if (_sim == null) {
 			//If the FSM is invalid, catch the error, display the message, and return.
@@ -1564,6 +1536,10 @@ public class MainFrame extends javax.swing.JFrame {
 	 * "_rwdButton.doClick()".
 	 */
 	private void simulation_move_backward() {
+		//If there are no tabs open, return.
+		if (drawingPanel1 == null)
+			return;
+		
 		//If the simulation is running, stop simulation.
 		if (_simTimer.isRunning()) {
 			_playPauseBtn.setIcon(new ImageIcon(PLAY_FILEPATH));
@@ -1575,7 +1551,7 @@ public class MainFrame extends javax.swing.JFrame {
 			return;
 		}
 
-		//Clear all the currently selected (PINK) nodes.
+		//Clear all the currently selected (RED) nodes.
 		drawingPanel1.clearCurrent();
 		
 		//If there is a previous node to go to
@@ -1650,6 +1626,10 @@ public class MainFrame extends javax.swing.JFrame {
 	 * @param evt		The ActionEvent associated with the stop.
 	 */
 	private void _stopBtnActionPerformed(java.awt.event.ActionEvent evt) {
+		//If there are no tabs open, return.
+		if (drawingPanel1 == null)
+			return;
+		
 		_sim = null;
 		_iter = null;
 		_simTimer.stop();
@@ -1664,6 +1644,10 @@ public class MainFrame extends javax.swing.JFrame {
 	 * @param evt		The ActionEvent associated with the play.
 	 */
 	private void _playPauseBtnActionPerformed(java.awt.event.ActionEvent evt) {
+		//If there are no tabs open, return.
+		if (drawingPanel1 == null)
+			return;
+		
 		if (!_simTimer.isRunning()) {
 			_playPauseBtn.setIcon(new ImageIcon(PAUSE_FILEPATH));
 			simulation_move_forward();
@@ -1748,6 +1732,10 @@ public class MainFrame extends javax.swing.JFrame {
 	 * @param evt
 	 */
 	private void _doublyBtnActionPerformed(java.awt.event.ActionEvent evt) {
+		//If there are no tabs open, return.
+		if (drawingPanel1 == null)
+			return;
+		
 		for (Edge e : _edgesSelected) {
 			e.setDirection(EdgeDirection.DOUBLE);
 		}
@@ -1760,6 +1748,10 @@ public class MainFrame extends javax.swing.JFrame {
 	 * @param evt
 	 */
 	private void _undirectedBtnActionPerformed(java.awt.event.ActionEvent evt) {
+		//If there are no tabs open, return.
+		if (drawingPanel1 == null)
+			return;
+		
 		for (Edge e : _edgesSelected) {
 			e.setDirection(EdgeDirection.NONE);
 		}
@@ -1772,6 +1764,10 @@ public class MainFrame extends javax.swing.JFrame {
 	 * @param evt
 	 */
 	private void _singlyBtnActionPerformed(java.awt.event.ActionEvent evt) {
+		//If there are no tabs open, return.
+		if (drawingPanel1 == null)
+			return;
+		
 		for (Edge e : _edgesSelected) {
 			e.setDirection(EdgeDirection.SINGLE);
 		}

@@ -4,27 +4,12 @@
  */
 package frontend;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.RenderingHints;
-
-import javax.swing.JPanel;
-import javax.swing.JSlider;
-
-import manager.DiagramProject;
-import backend.*;
-
-import java.awt.BasicStroke;
-import java.awt.Graphics;
-
-import java.awt.Polygon;
-import java.awt.Shape;
+import java.awt.*;
 import java.awt.geom.Ellipse2D;
 
-import java.awt.geom.Line2D;
-import java.awt.geom.QuadCurve2D;
+import javax.swing.JPanel;
+
+import backend.*;
 
 /**
  *
@@ -122,7 +107,8 @@ public class DrawingPanel extends JPanel {
 				g2.setStroke(new BasicStroke(2));
 			}
 			if (e.getCurrent()) {
-				g2.setColor(java.awt.Color.PINK);
+				g2.setStroke(new BasicStroke(2));
+				g2.setColor(new java.awt.Color(204, 0, 51));
 			}
 			if (e.getDirection() == EdgeDirection.SINGLE) {
 				Shape end = e.getForward();
@@ -133,6 +119,7 @@ public class DrawingPanel extends JPanel {
 				g2.fill(e.getBackward());
 			}
 			g2.draw(e.resetArc());
+			g2.setStroke(new BasicStroke(1));
 		}
 		if (_progressLine != null) {
 			g2.setColor(java.awt.Color.BLACK);
@@ -163,7 +150,8 @@ public class DrawingPanel extends JPanel {
 			}
 
 			if (n.getCurrent()) {
-				g2.setColor(java.awt.Color.PINK);
+				g2.setStroke(new BasicStroke(2));
+				g2.setColor(new java.awt.Color(204, 0, 51));
 			}
 
 			if (n.isEnd()) {
@@ -175,6 +163,7 @@ public class DrawingPanel extends JPanel {
 
 
 			g2.draw(ellipse);
+			g2.setStroke(new BasicStroke(1));
 			if (n.isStart()) {
 				if (n.isSelected()){
 					g2.setColor(java.awt.Color.BLUE);

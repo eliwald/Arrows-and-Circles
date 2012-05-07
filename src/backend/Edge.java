@@ -1,26 +1,15 @@
 package backend;
 
 
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.*;
 import java.awt.geom.Arc2D;
-
-import frontend.DrawingPanel;
-import frontend.EnterListener;
-import frontend.MyDocListener;
-
-import java.awt.Color;
-import java.awt.Point;
-import java.awt.Polygon;
-import java.awt.Shape;
-import java.awt.event.KeyListener;
-import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
+
+import frontend.*;
 
 /**
  * 
