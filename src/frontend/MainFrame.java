@@ -170,6 +170,9 @@ public class MainFrame extends javax.swing.JFrame {
 	private static final int CANVAS_WIDTH = 1024;
 	private static final int CANVAS_HEIGHT = 1024;
 	
+	//Max Value of the Sim Slider
+	private static final int MAX_SIM_SLIDER_VAL = 1000;
+	
 	/*
 	 * These are the GUI components.
 	 */
@@ -432,7 +435,7 @@ public class MainFrame extends javax.swing.JFrame {
 			}
 		});
 
-		_simSlide.setMaximum(1000);
+		_simSlide.setMaximum(MAX_SIM_SLIDER_VAL);
 		_simSlide.setValue(0);
 		_simSlide.addChangeListener(new javax.swing.event.ChangeListener() {
 			public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -1508,7 +1511,7 @@ public class MainFrame extends javax.swing.JFrame {
 				e.setCurrent(true);
 				if (!_autoChange) {
 					_autoChange = true;
-					_simSlide.setValue(Math.min(1000, _simSlide.getValue() + (int) Math.ceil(((double)1000)/_sim.size())));
+					_simSlide.setValue(Math.min(MAX_SIM_SLIDER_VAL, _simSlide.getValue() + (int) Math.ceil(((double)MAX_SIM_SLIDER_VAL)/_sim.size())));
 					_curr = _simSlide.getValue();
 					_autoChange = false;
 				}
@@ -1609,7 +1612,7 @@ public class MainFrame extends javax.swing.JFrame {
 					//Set the appropriate place of the second slider
 					if (!_autoChange) {
 						_autoChange = true;
-						_simSlide.setValue(Math.min(1000, _simSlide.getValue() - (int) Math.ceil(((double)1000)/_sim.size())));
+						_simSlide.setValue(Math.min(MAX_SIM_SLIDER_VAL, _simSlide.getValue() - (int) Math.ceil(((double)MAX_SIM_SLIDER_VAL)/_sim.size())));
 						_autoChange = false;
 					}
 
@@ -1713,32 +1716,29 @@ public class MainFrame extends javax.swing.JFrame {
 			return;
 		}
 		
-		int diff = _simSlide.getValue() - _curr;
-		if (Math.abs(diff) < 1000/_sim.size()) {
+		double percent = _simSlide.getValue()/(double)MAX_SIM_SLIDER_VAL;
+		double cur_percent = _backwardClicked ? ((double)_iter.nextIndex())/_sim.size() : ((double)_iter.previousIndex())/_sim.size();
+		
+		double diff_percent = Math.abs(percent - cur_percent);
+		
+		int num_times_to_step = (int) (_sim.size()*diff_percent);
+		if (num_times_to_step == 0)
 			return;
-		}
-		if (diff < 0) {
-			while (diff < 0) {
+		
+		if (percent < cur_percent) {
+			for (int i = 0; i < num_times_to_step; i ++) {
 				_autoChange = true;
 				simulation_move_backward();
-				diff += 1000/_sim.size();
 				_autoChange = false;
 			}
 		}
-		else if (diff > 0) {
-			while (diff > 0) {
+		else if (percent > cur_percent) {
+			for (int i = 0; i < num_times_to_step; i ++) {
 				_autoChange = true;
 				simulation_move_forward();
-				if (_sim == null) {
-					_autoChange = false;
-					return;
-				}
-				diff -= 1000/_sim.size();
 				_autoChange = false;
 			}
 		}
-
-		_curr = _simSlide.getValue();
 	}
 	
 	/**
@@ -1812,7 +1812,7 @@ public class MainFrame extends javax.swing.JFrame {
 		//Set the appropriate place of the second slider
 		if (!_autoChange) {
 			_autoChange = true;
-			_simSlide.setValue(Math.min(1000, _simSlide.getValue() - (int) Math.ceil(((double)1000)/_sim.size())));
+			_simSlide.setValue(Math.min(MAX_SIM_SLIDER_VAL, _simSlide.getValue() - (int) Math.ceil(((double)MAX_SIM_SLIDER_VAL)/_sim.size())));
 			_autoChange = false;
 		}
 	}
