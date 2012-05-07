@@ -3,20 +3,42 @@ package backend;
 
 import java.awt.*;
 import java.awt.geom.Arc2D;
-import java.awt.geom.Point2D;
 
 import javax.swing.JLabel;
 import javax.swing.JTextField;
-import javax.swing.border.Border;
 
 import frontend.*;
 
 /**
- * 
+ * The Edge class represents an edge drawn between two nodes on the screen.
  * @author ewald
  *
  */
 public class Edge implements Cloneable, DiagramObject {
+	
+	/*
+	 * _start and _end are the Start/End nodes of the edge.
+	 * 
+	 * _direction is the EdgeDirection (e.g. Singly directed).
+	 * 
+	 * _area and _label are the label and area drawn next to the edge.
+	 * 
+	 * _curve is the actual arc of the edge drawn on the canvas.
+	 * 
+	 * _height and _turn are complex variables that handle drawing the edge.
+	 * 
+	 * _selected is whether or not this edge is selected.
+	 * 
+	 * _angle is a complex variable that handles drawing self-looping edges.
+	 * 
+	 * _offset is used when dragging edges to get the offset from the center
+	 * 		to the mouse.
+	 * 
+	 * _container is the containing DrawingPanel, referenced so that the edge
+	 * 		can add and manipulate listeners.
+	 * 
+	 * _current is whether or not the edge is the current object in simulation.
+	 */
 	private Node _start;
 	private Node _end;
 	private EdgeDirection _direction;
@@ -30,6 +52,8 @@ public class Edge implements Cloneable, DiagramObject {
     private double _offset;
     private DrawingPanel _container;
     private boolean _current = false;
+    
+    //static constants used to draw the edge.
     private static final int ARROW_SIZE = 12;
     private static final int TEXTBOX_HEIGHT = 25;
     private static final int TEXTBOX_WIDTH = 40;
@@ -37,24 +61,29 @@ public class Edge implements Cloneable, DiagramObject {
     private static final String DEFAULT_STRING = "0";
 	private static final int RADIUS_TOLERANCE = 6;
     
-
+	/**
+	 * The default constructor is used when we are not creating an edge from opening a file.
+	 * @param s			Start Node
+	 * @param e			End Node
+	 * @param container	The containing DrawingPanel
+	 * @param d			The direction of this edge.
+	 */
 	public Edge(Node s, Node e, DrawingPanel container, EdgeDirection d) {
 		_start = s;
 		_end = e;
         _container = container;
-        _area = new JTextField();
-		_area.setBorder(null);
         _label = new JLabel();
         _selected = true;
         _angle = Math.PI / 4;
         _offset = 0;
 		_direction = d;
 		_curve = new Arc2D.Double(Arc2D.OPEN);
-
+		_turn = true;
         setAreaAndLabel();
 	}
 	/**
-	 * Constructor for opening a self-looping edge from a file.
+	 * Constructor for opening a self-looping edge from a file.  Need to call setContainerAndArea after
+	 * constructing with this constructor to set the container.
 	 * @param start		Start Node
 	 * @param end		End Node (will be equal to start)
 	 * @param dir		Direction
@@ -62,27 +91,63 @@ public class Edge implements Cloneable, DiagramObject {
 	 * @param angle		Angle of the self arc
 	 */
 	public Edge(Node start, Node end, EdgeDirection dir, String label, double angle) {
-		
+		_start = start;
+		_end = end;
+		_direction = dir;
+		_label = new JLabel(label);
+		_angle = angle;
+		_selected = false;
+		_offset = 0;
+		_curve = new Arc2D.Double(Arc2D.OPEN);
+		_turn = true;
 	}
+	
 	/**
-	 * Helper for opening from files.
+	 * Constructor for opening a non self-looping edge from a file.  Need to call setContainerAndArea after
+	 * constructing with this constructor to set the container.
+	 * @param start		Start Node
+	 * @param end		End Node (will be equal to start)
+	 * @param dir		Direction
+	 * @param label		Label
+	 * @param angle		Angle of the self arc
+	 */
+	public Edge(Node start, Node end, EdgeDirection dir, String label, double arc_chord_height, int arc_side) {
+		_start = start;
+		_end = end;
+		_direction = dir;
+		_label = new JLabel(label);
+		_angle = Math.PI / 4;
+		_selected = false;
+		_offset = 0;
+		_height = arc_chord_height;
+		if(arc_side > 0) _turn = true;
+		else _turn = false;
+	}
+	
+	/**
+	 * This method must be called directly after constructing an edge from a file.
+	 * This will set the container, area, and label of the edge.
 	 */
 	public void setContainerAndArea(DrawingPanel container) {
 		_container = container;
-		
 		setAreaAndLabel();
 	}
 	/**
-	 * Helper for the constructors
+	 * This method is called in every constructor to set the default text area and
+	 * label.
 	 */
 	private void setAreaAndLabel() {
+        _area = new JTextField();
+		_area.setBorder(null);
+		
+		_curve = new Arc2D.Double(Arc2D.OPEN);
+		
         //added support for self loop
         if (_start == _end) 
             _height = 5;
         else 
             _height = -100000.0;
         
-        _turn = true;
         this.resetArc();
 		_area.setText(DEFAULT_STRING);
 		_area.setVisible(true);
@@ -106,7 +171,12 @@ public class Edge implements Cloneable, DiagramObject {
 		_container.add(_label);
 		_container.add(_area);
 	}
-
+	
+	/**
+	 * This method gets a self loop, used if this edge's start node and end node are equal.
+	 * @param n		The node on which to self loop.
+	 * @return		The Arc that we should draw
+	 */
     public static Arc2D getSelfLoop(Node n) {
         double cx = n.getRadius() * .6;
         double cy = n.getRadius() * .6;
@@ -127,7 +197,12 @@ public class Edge implements Cloneable, DiagramObject {
 
         return c;
     }
-
+    
+    /**
+     * This method returns the shape that we should draw on the screen to
+     * represent the edge.
+     * @return		Returns the curve which defines the arc on the screen.
+     */
     public Shape resetArc() {
 
     	// If this is not the self-loop
@@ -199,6 +274,13 @@ public class Edge implements Cloneable, DiagramObject {
     	}
     }
     
+    /**
+     * The one-to-one theta function is used in drawing edges to determine
+     * which quadrant the edge should be drawn in.
+     * @param x		The x-coordinate in the x-y plane
+     * @param y		The y-coordinate in the x-y plane
+     * @return		A number between 0 and 4.
+     */
     public static double theta(double x, double y) {
     	double theta = y / (Math.abs(x) + Math.abs(y));
         if(x < 0) {
@@ -210,6 +292,13 @@ public class Edge implements Cloneable, DiagramObject {
 		return theta;
     }
     
+    /**
+     * This method returns true if the location passed in intersects this arc, and false
+     * otherwise.
+     * @param x		The x-coordinate of the mouse.
+     * @param y		The y-coordinate of the mouse.
+     * @return		Whether or not the mouse intersects this edge
+     */
     public boolean intersects(double x, double y) {
     	
     	if(_start != _end) {
