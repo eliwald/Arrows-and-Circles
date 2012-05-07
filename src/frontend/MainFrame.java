@@ -348,11 +348,6 @@ public class MainFrame extends javax.swing.JFrame {
 				jTextField1MousePressed(evt);
 			}
 		});
-		jTextField1.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				jTextField1ActionPerformed(evt);
-			}
-		});
 
 		_speedSlider.setMaximum(3000);
 		_speedSlider.setValue(1500);
@@ -548,20 +543,25 @@ public class MainFrame extends javax.swing.JFrame {
 		jMenuItem3.setText("New");
 		jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				jMenuItem3ActionPerformed(evt);
+				newTabActionPerformed(evt);
 			}
 		});
 		jMenu3.add(jMenuItem3);
 
 		jMenuItem4.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_MASK));
 		jMenuItem4.setText("Open");
+		jMenuItem4.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				openActionPerformed(evt);
+			}
+		});
 		jMenu3.add(jMenuItem4);
 
 		jMenuItem5.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
 		jMenuItem5.setText("Save");
 		jMenuItem5.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				jMenuItem5ActionPerformed(evt);
+				saveActionPerformed(evt);
 			}
 		});
 		jMenu3.add(jMenuItem5);
@@ -569,7 +569,7 @@ public class MainFrame extends javax.swing.JFrame {
 		jMenuItem7.setText("Save As...");
 		jMenuItem7.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				jMenuItem7ActionPerformed(evt);
+				saveAsActionPerformed(evt);
 			}
 		});
 		jMenu3.add(jMenuItem7);
@@ -578,7 +578,7 @@ public class MainFrame extends javax.swing.JFrame {
 		jMenuItem6.setText("Close Tab");
 		jMenuItem6.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				jMenuItem6ActionPerformed(evt);
+				closeTabActionPerformed(evt);
 			}
 		});
 		jMenu3.add(jMenuItem6);
@@ -587,7 +587,7 @@ public class MainFrame extends javax.swing.JFrame {
 		jMenuItem8.setText("Exit");
 		jMenuItem8.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				jMenuItem8ActionPerformed(evt);
+				quitActionPerformed(evt);
 			}
 		});
 		jMenu3.add(jMenuItem8);
@@ -598,32 +598,29 @@ public class MainFrame extends javax.swing.JFrame {
 
 		jMenuItemUndo.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Z, java.awt.event.InputEvent.CTRL_MASK));
 		jMenuItemUndo.setText("Undo");
+		jMenuItemUndo.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				undoActionPerformed(evt);
+			}
+		});
 		jMenu4.add(jMenuItemUndo);
 
 		jMenuItemRedo.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Y, java.awt.event.InputEvent.CTRL_MASK));
 		jMenuItemRedo.setText("Redo");
+		jMenuItemUndo.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				redoActionPerformed(evt);
+			}
+		});
 		jMenu4.add(jMenuItemRedo);
 
 		jMenuItemSelectAll.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.CTRL_MASK));
 		jMenuItemSelectAll.setText("Select All");
 		jMenuItemSelectAll.addActionListener(new ActionListener(){
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				_nodesSelected = Collections.synchronizedSet(new HashSet<Node>());
-				_edgesSelected = Collections.synchronizedSet(new HashSet<Edge>());
-				Diagram diagram = drawingPanel1.getDiagram();
-				for (Node n : diagram.getNodes()){
-					n.setSelected(true);
-					_nodesSelected.add(n);
-				}
-				for (Edge ed : diagram.getEdges()){
-					ed.setSelected(true);
-					_edgesSelected.add(ed);
-				}
-				drawingPanel1.repaint();
+				selectAllActionPerformed(e);
 			}
-			
 		});
 		jMenu4.add(jMenuItemSelectAll);
 		
@@ -688,14 +685,18 @@ public class MainFrame extends javax.swing.JFrame {
 		);
 
 		pack();
-	}                   
+	}
+
+	/******************************************************************************************************************
+	 * EXIT MENU, SIMULATION TEXT FIELD																				  *
+	 ******************************************************************************************************************/
 
 	/**
 	 * Called when a new tab is opened.  Creates a new drawing panel and pane associated with the new tab.
 	 * Sets all appropriate listeners, and adds the new tab.
 	 * @param evt	The ActionEvent associated with the tab menu item being clicked.
 	 */
-	private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {
+	private void newTabActionPerformed(java.awt.event.ActionEvent evt) {
 		javax.swing.JScrollPane newPane = new javax.swing.JScrollPane();
 		DrawingPanel newPanel = new DrawingPanel();
 		newPane.setViewportView(newPanel);
@@ -717,7 +718,7 @@ public class MainFrame extends javax.swing.JFrame {
 	 * This is what happens when you click save.
 	 * @param evt
 	 */
-	private void jMenuItem5ActionPerformed(java.awt.event.ActionEvent evt) {
+	private void saveActionPerformed(java.awt.event.ActionEvent evt) {
 		// TODO add your handling code here:
 	}
 
@@ -725,19 +726,29 @@ public class MainFrame extends javax.swing.JFrame {
 	 * This is what happens when you click save as.
 	 * @param evt
 	 */
-	private void jMenuItem7ActionPerformed(java.awt.event.ActionEvent evt) {
+	private void saveAsActionPerformed(java.awt.event.ActionEvent evt) {
 		// TODO add your handling code here:
 	}
-
-	/******************************************************************************************************************
-	 * EXIT MENU, SIMULATION TEXT FIELD																				  *
-	 ******************************************************************************************************************/
 	
 	/**
-	 * Gets called when an action is performed on the simulation text
-	 * field.  Nothing needs to happen; I think we can delete this.
+	 * This is what happens when you click open.
 	 */
-	private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {
+	private void openActionPerformed(java.awt.event.ActionEvent evt) {
+		
+	}
+	
+	/**
+	 * This is what happens when you click redo.
+	 */
+	private void redoActionPerformed(java.awt.event.ActionEvent evt) {
+		
+	}
+	
+	/**
+	 * This is what happens when you click undo.
+	 */
+	private void undoActionPerformed(java.awt.event.ActionEvent evt) {
+		
 	}
 	
 	/**
@@ -760,17 +771,32 @@ public class MainFrame extends javax.swing.JFrame {
 	 * This gets called when the user hits ctrl-Q to quit the program.
 	 * @param evt
 	 */
-	private void jMenuItem8ActionPerformed(java.awt.event.ActionEvent evt) {
+	private void quitActionPerformed(java.awt.event.ActionEvent evt) {
 		int ex = exitPrompt();
 		if (ex == 2) return;
 		System.exit(0);
+	}
+	
+	private void selectAllActionPerformed(java.awt.event.ActionEvent evt) {
+		_nodesSelected = Collections.synchronizedSet(new HashSet<Node>());
+		_edgesSelected = Collections.synchronizedSet(new HashSet<Edge>());
+		Diagram diagram = drawingPanel1.getDiagram();
+		for (Node n : diagram.getNodes()){
+			n.setSelected(true);
+			_nodesSelected.add(n);
+		}
+		for (Edge ed : diagram.getEdges()){
+			ed.setSelected(true);
+			_edgesSelected.add(ed);
+		}
+		drawingPanel1.repaint();
 	}
 	
 	/**
 	 * This gets called when the close tab action is performed.
 	 * @param evt
 	 */
-	private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {
+	private void closeTabActionPerformed(java.awt.event.ActionEvent evt) {
 		//TODO: Add to this if-statement the condition that checks whether or
 		//not the currently selected index has already been saved
 		if (jTabbedPane1.getSelectedIndex() != -1) {
@@ -1062,8 +1088,7 @@ public class MainFrame extends javax.swing.JFrame {
 	
 	/**
 	 * This gets called when the slider value changes that handles scrolling
-	 * quickly through simulation.  Eddie made this method, and I can't follow
-	 * the logic; he'll have to comment it.
+	 * quickly through simulation.
 	 */
 	private void _simSlideStateChanged(javax.swing.event.ChangeEvent evt) {
 		if (_sim == null) {
@@ -1073,11 +1098,13 @@ public class MainFrame extends javax.swing.JFrame {
 			return;
 		}
 		
+		//Get the difference in percentage between the slider and our current spot in simulation.
 		double percent = _simSlide.getValue()/(double)MAX_SIM_SLIDER_VAL;
 		double cur_percent = _backwardClicked ? ((double)_iter.nextIndex())/_sim.size() : ((double)_iter.previousIndex())/_sim.size();
 		
 		double diff_percent = Math.abs(percent - cur_percent);
 		
+		//Move forward or backward the correct number of times to make the percentages equal.
 		int num_times_to_step = (int) (_sim.size()*diff_percent);
 		if (num_times_to_step == 0)
 			return;
@@ -1209,6 +1236,20 @@ public class MainFrame extends javax.swing.JFrame {
 	}
 	
 	/**
+	 * Set the help text.  0 = general text, 1 = unselected node, 2 = selected node, 3 = edge.
+	 * @param text
+	 */
+	public void setHelpText(int text) {
+		switch (text) {
+			case 0: _helpText.setText(help_message_text);
+			case 1: _helpText.setText(help_message_text_in_node_unselected);
+			case 2: _helpText.setText(help_message_text_in_node_selected);
+			case 3: _helpText.setText(help_messate_text_in_edge);
+			default: _helpText.setText(help_message_text);
+		}
+	}
+	
+	/**
 	 * Getters for all the appropriate instance variables
 	 */
 	public DrawingPanel getDrawing() {
@@ -1256,20 +1297,6 @@ public class MainFrame extends javax.swing.JFrame {
 		if (_edgesSelected != null) {
 			for (Edge e : _edgesSelected)
 				e.getTextField().select(0, 0);
-		}
-	}
-	
-	/**
-	 * Set the help text.  0 = general text, 1 = unselected node, 2 = selected node, 3 = edge.
-	 * @param text
-	 */
-	public void setHelpText(int text) {
-		switch (text) {
-			case 0: _helpText.setText(help_message_text);
-			case 1: _helpText.setText(help_message_text_in_node_unselected);
-			case 2: _helpText.setText(help_message_text_in_node_selected);
-			case 3: _helpText.setText(help_messate_text_in_edge);
-			default: _helpText.setText(help_message_text);
 		}
 	}
 	
