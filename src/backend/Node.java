@@ -55,11 +55,43 @@ public class Node implements DiagramObject, Cloneable {
 		_endState = false;
 		_offset = new Point(0,0);
 		_selected = true;
+
+		setAreaAndLabel();
+    }
+	
+	/**
+	 * Second constructor used when opening from a file.
+	 */
+	public Node (double x, double y, double radius, boolean isStart, boolean isAccept, String label) {
+		_center = new Point2D.Double(x, y);
+		_radius = radius;
+		_startState = isStart;
+		_endState = isAccept;
+		_color = Color.BLACK;
+		_offset = new Point(0,0);
+		_connected = new HashSet<Edge>();
+		_selected = false;
+		_label = new JLabel(label);
+	}
+	
+	/**
+	 * Helper for opening a Node from a file.
+	 */
+	public void setContainerAndLabel(DrawingPanel container) {
+		_container = container;
+		
+		setAreaAndLabel();
+	}
+	
+	/**
+	 * Helper for both of the constructors.
+	 */
+	private void setAreaAndLabel() {
 		double hypo = 2*_radius;
 		double temp = hypo*hypo;
 		double dimension = Math.sqrt(temp/2);
-		_area = new JTextField(){@Override public void
-			setBorder(Border border) {}};
+		_area = new JTextField();
+		_area.setBorder(null);
 		
 		int size = _container.getDiagram().getNodes().size();
 		String s = "q_"+ size;
@@ -72,7 +104,8 @@ public class Node implements DiagramObject, Cloneable {
 		_area.setEditable(true);
 		_area.setEnabled(true);
         _area.setBackground(new Color(0,0,0,0));
-		_label = new JLabel("<html>q<sub>"+size+"</sub>");
+        if (_label == null || _label.equals(""))
+        	_label = new JLabel("<html>q<sub>"+size+"</sub>");
 		_area.getDocument().addDocumentListener(new HTMLParser(_label));
         _area.addKeyListener(new EnterListener(_container, _area));
 		_label.setVisible(true);
@@ -87,7 +120,7 @@ public class Node implements DiagramObject, Cloneable {
         _startSymbol.addPoint((int)(this.getCenter().x - this.getRadius()),(int) (this.getCenter().y));
         _startSymbol.addPoint((int)(this.getCenter().x - this.getRadius() - 20),(int) (this.getCenter().y + 10));
         _startSymbol.addPoint((int)(this.getCenter().x - this.getRadius() - 20),(int) (this.getCenter().y - 10));
-    }
+	}
 
     public Polygon getStartSymbol(){
         return _startSymbol;

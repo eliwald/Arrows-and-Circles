@@ -192,8 +192,7 @@ public class DrawingPanelMouseListener extends MouseAdapter {
 					_frame.resetSelected();
 					
 					//Create the new edge, reset all variables associated with maintaining the edge being drawn.
-					Edge newEdge = new Edge(_frame.getEdgeStart(),n,_frame.getEdgeStart().getCenter(),
-							_frame.getEdgeStart().getCenter(),_frame.getDrawing(),_frame.getEdgeType());
+					Edge newEdge = new Edge(_frame.getEdgeStart(),n,_frame.getDrawing(),_frame.getEdgeType());
 					newEdge.getTextField().grabFocus();
 					newEdge.getLabel().setVisible(false);
 					_frame.getEdgeStart().addConnected(newEdge);

@@ -1292,16 +1292,32 @@ public class MainFrame extends javax.swing.JFrame {
 		_nodeDragged = n;
 	}
 	
+	public Node getNodeDragged() {
+		return _nodeDragged;
+	}
+	
 	public void setResizing(Node n){
 		_resizing = n;
 	}
 	
+	public Node getResizing() {
+		return _resizing;
+	}
+	
 	public void setEdgeDragged(Edge e) {
 		_edgeDragged = e;
+	}	
+	
+	public Edge getEdgeDragged() {
+		return _edgeDragged;
 	}
 	
 	public void setSelectPoint(Point p) {
 		_selectPoint = p;
+	}
+	
+	public Point getSelectPoint() {
+		return _selectPoint;
 	}
 	
 	public EdgeDirection getEdgeType() {
@@ -1316,24 +1332,8 @@ public class MainFrame extends javax.swing.JFrame {
 		return _mouseLoc;
 	}
 	
-	public Point getSelectPoint() {
-		return _selectPoint;
-	}
-	
-	public Node getNodeDragged() {
-		return _nodeDragged;
-	}
-	
 	public Collection<Node> getNodesSelected() {
 		return _nodesSelected;
-	}
-	
-	public Node getResizing() {
-		return _resizing;
-	}
-	
-	public Edge getEdgeDragged() {
-		return _edgeDragged;
 	}
 	
 	public Collection<Edge> getEdgesSelected() {
