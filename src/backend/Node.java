@@ -10,18 +10,12 @@ import java.awt.geom.Point2D;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.Polygon;
-import java.awt.event.MouseAdapter;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D.Double;
 import java.awt.geom.Rectangle2D;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.text.BadLocationException;
 
 /**
  * 
@@ -46,11 +40,12 @@ public class Node implements DiagramObject, Cloneable {
 	private java.awt.geom.Ellipse2D.Double _circle;
 
     public static final double MIN_RADIUS = 20;
+    public static final double DEFAULT_RADIUS = 30;
 
 	public Node(double x, double y, DrawingPanel container) {
 		_container = container;
 		_center = new Point2D.Double(x, y);
-		_radius = container.getWidth()/30;
+		_radius = DEFAULT_RADIUS;
 		_connected = new HashSet<Edge>();
 		_color = Color.BLACK;
 		_startState = false;
