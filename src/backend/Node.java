@@ -73,7 +73,7 @@ public class Node implements DiagramObject, Cloneable {
 		_area.setEnabled(true);
         _area.setBackground(new Color(0,0,0,0));
 		_label = new JLabel("<html>q<sub>"+size+"</sub>");
-		_area.getDocument().addDocumentListener(new MyDocListener(_label));
+		_area.getDocument().addDocumentListener(new HTMLParser(_label));
         _area.addKeyListener(new EnterListener(_container, _area));
 		_label.setVisible(true);
 		_label.setOpaque(false);
