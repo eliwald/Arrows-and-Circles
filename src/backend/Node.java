@@ -31,6 +31,20 @@ public class Node implements DiagramObject, Cloneable {
 	 * _startState is true if and only if this node is a start state.
 	 * 
 	 * _endState is true if and only if this node is an accept state.
+	 * 
+	 * _offset is the offset from the mouse cursor to the center of the node. This is used for relocation via mouse drag.
+	 * 
+	 * _selected is true if and only if the node is currently selected.
+	 * 
+	 * _resizing is true if and only if the node is currently being resized.
+	 * 
+	 * _current is true if and only if this node is the current node in simulation.
+	 * 
+	 * _container is the DrawingPanel that contains this node.
+	 * 
+	 * _label is the JLabel used to display the html version of this node's name when the name is not being edited.
+	 * 
+	 * _startSymbol is the triangle used to toggle whether this node is a start state.
 	 */
 	private Point2D.Double _center;
 	private double _radius;
@@ -63,7 +77,6 @@ public class Node implements DiagramObject, Cloneable {
 		_center = new Point2D.Double(x, y);
 		_radius = DEFAULT_RADIUS;
 		_connected = new HashSet<Edge>();
-		_color = Color.BLACK;
 		_startState = false;
 		_endState = false;
 		_offset = new Point(0,0);
@@ -80,7 +93,6 @@ public class Node implements DiagramObject, Cloneable {
 		_radius = radius;
 		_startState = isStart;
 		_endState = isAccept;
-		_color = Color.BLACK;
 		_offset = new Point(0,0);
 		_connected = new HashSet<Edge>();
 		_selected = false;

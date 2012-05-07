@@ -204,6 +204,7 @@ public class MainFrame extends javax.swing.JFrame {
 	 */                
 	private void initComponents() {
 
+		//initialize all components
 		_edgeTypeGrp = new javax.swing.ButtonGroup();
 		jSplitPane2 = new javax.swing.JSplitPane();
 		jTabbedPane1 = new javax.swing.JTabbedPane();
@@ -246,6 +247,7 @@ public class MainFrame extends javax.swing.JFrame {
 		setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 		setTitle("Arrows & Circles");
 
+		//add listener to change current drawing panel when switching tabs
 		jTabbedPane1.addChangeListener(new ChangeListener(){
 			public void stateChanged(ChangeEvent evt){
 				if (((JTabbedPane)evt.getSource()).getSelectedComponent() != null) {
@@ -255,6 +257,7 @@ public class MainFrame extends javax.swing.JFrame {
 			}
 		});
 
+		//add requisite listeners to current drawing panel, then create drawing panel's layout group and add drawing panel to scrollpane
 		drawingPanel1.addMouseListener(new DrawingPanelMouseListener(this));
 		drawingPanel1.addMouseMotionListener(new DrawingPanelMouseMotionListener(this));
 		drawingPanel1.addKeyListener(new DrawingPanelKeyListener(this));
@@ -268,6 +271,7 @@ public class MainFrame extends javax.swing.JFrame {
 		
 		jTabbedPane1.addTab("Untitled", jScrollPane1);
 
+		//set up split pane to display simulation and edge type menus
 		jSplitPane2.setRightComponent(jTabbedPane1);
 
 		jSplitPane3.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
@@ -275,6 +279,7 @@ public class MainFrame extends javax.swing.JFrame {
 
 		jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
+		//adds edge type buttons to group so that they are mutually exclusive and adds listeners to buttons
 		_edgeTypeGrp.add(_singlyBtn);
 		_singlyBtn.setSelected(true);
 		_singlyBtn.setText("Singly");
@@ -300,11 +305,14 @@ public class MainFrame extends javax.swing.JFrame {
 			}
 		});
 
+		//add label for edge menu
 		jLabel1.setHorizontalAlignment(SwingConstants.CENTER);
 		jLabel2.setText("Edges");
 		jLabel2.setHorizontalAlignment(SwingConstants.CENTER);
 		jLabel2.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
+		
+		//grouping for simulation panel
 		javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
 		jPanel1.setLayout(jPanel1Layout);
 		jPanel1Layout.setHorizontalGroup(
@@ -335,11 +343,13 @@ public class MainFrame extends javax.swing.JFrame {
 
 		jPanel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
+		//setting size of text area that displays simulation results.
 		jTextArea1.setColumns(27);
 		jTextArea1.setEditable(false);
 		jTextArea1.setRows(5);
 		jScrollPane2.setViewportView(jTextArea1);
 
+		//Setting the input string field to italics and to prompt user for input string. This string disappears when clicked.
 		Font newTextFieldFont = new Font(jTextField1.getFont().getName(),Font.ITALIC,jTextField1.getFont().getSize());
 		jTextField1.setText("Input string here");
 		jTextField1.setFont(newTextFieldFont);
@@ -354,6 +364,7 @@ public class MainFrame extends javax.swing.JFrame {
 			}
 		});
 
+		//initialization and listener setup for our two sliders.
 		_speedSlider.setMaximum(3000);
 		_speedSlider.setValue(1500);
 		_speedSlider.addChangeListener(new javax.swing.event.ChangeListener() {
@@ -370,6 +381,7 @@ public class MainFrame extends javax.swing.JFrame {
 			}
 		});
 
+		//Creation of the buttons we use for simulation.
 		_rewindBtn.setIcon(new javax.swing.ImageIcon(BWD_FILEPATH));
 		_rewindBtn.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -398,6 +410,7 @@ public class MainFrame extends javax.swing.JFrame {
 			}
 		});
 
+		//creates label for simulation panel, console, slider.
 		jLabel1.setHorizontalAlignment(SwingConstants.CENTER);
 		jLabel1.setText("Simulation");
 		jLabel1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -427,6 +440,7 @@ public class MainFrame extends javax.swing.JFrame {
 		simulationStepSlider.setHorizontalAlignment(JLabel.CENTER);
 		simulationStepSlider.setText("Simulation Slider: Scroll Through Simulation");
 
+		//set up the layout group for the simulation panel.
 		javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
 		jPanel2.setLayout(jPanel2Layout);
 		jPanel2Layout.setHorizontalGroup(
@@ -485,6 +499,7 @@ public class MainFrame extends javax.swing.JFrame {
 		final BasicSplitPaneUI splitPaneUI = (BasicSplitPaneUI) jSplitPane3.getUI();
 		final BasicSplitPaneUI mainSplitPaneUI = (BasicSplitPaneUI) jSplitPane2.getUI();
 		
+		//Adding these two empty listeners so that simulation and edge type panels are non-resizable.
 		jPanel2.addMouseListener(new MouseListener() {
 			@Override
 			public void mouseReleased(MouseEvent e) {}
@@ -518,6 +533,7 @@ public class MainFrame extends javax.swing.JFrame {
 			public void mouseClicked(MouseEvent e) {}
 		});
 		
+		//These listeners prevent the cursor from changing when mousing over the split pane's dividers.
 		splitPaneUI.getDivider().addMouseMotionListener(new MouseMotionListener() {
 			public void mouseMoved(MouseEvent evt) {
 				splitPaneUI.getDivider().setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
@@ -542,6 +558,7 @@ public class MainFrame extends javax.swing.JFrame {
 		jSplitPane2.setLeftComponent(jSplitPane3);
 		jSplitPane2.setOneTouchExpandable(true);
 
+		//The code below deals with initializing the menus and the buttons they contain. Most listeners are overriden in-line.
 		jMenu3.setText("File");
 
 		jMenuItem3.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_T, java.awt.event.InputEvent.CTRL_MASK));
@@ -628,8 +645,6 @@ public class MainFrame extends javax.swing.JFrame {
 		jMenu4.add(jMenuItemSelectAll);
 		
 		
-		
-//		jMenuItemShowTrans.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.CTRL_MASK));
 		jMenuItemShowTrans.setText("Show Transitions");
 		jMenuTools.add(jMenuItemShowTrans);
 		jMenuItemShowTrans.addActionListener(new ActionListener(){
@@ -668,7 +683,8 @@ public class MainFrame extends javax.swing.JFrame {
 		jMenuBar2.add(jMenuHelp);
 
 		setJMenuBar(jMenuBar2);
-
+		
+		//the "help text" is the message displayed below the canvas while editing an fsm.
 		_helpText.setText(help_message_text);
 
 		javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
