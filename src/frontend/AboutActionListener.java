@@ -31,6 +31,7 @@ public class AboutActionListener implements ActionListener {
 				"<td>Quit program</td>" +
 				"<tr> <td>Ctrl-Z</td> <td>Undo</td>" +
 				"<tr> <td>Ctrl-Y</td> <td>Redo</td> "  +
+				"<tr> <td>Backspace&#x2F;Delete</td> <td>Delete all highlighted nodes and connected edges</td>" +
 				"</tr></tbody></table></p>" + 
 
 				"<p><b>Basic Mouse Controls (outside node/edge, no key modifiers)</b><table> <tbody><tr>" +
