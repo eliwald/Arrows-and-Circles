@@ -126,6 +126,10 @@ public class MainFrame extends javax.swing.JFrame {
 	 * _shiftClicked is false if shift is not currently being held, and true otherwise.  We
 	 * 		need this variable because Mac OS doesn't recognize shift in Mouse Modifiers for
 	 * 		some reason.  TAKING THIS OUT FOR NOW.
+	 * 
+	 * _selectRectangle is the rectangle used to illustrate click-and-drag selction.
+	 * 
+	 * _selectPoint is the starting point of _selectRectangle.
 	 */
 	private Node _edgeStart;
 	private Node _resizing;
@@ -145,6 +149,7 @@ public class MainFrame extends javax.swing.JFrame {
 	private boolean _backwardClicked;
 	private String _currentInputString;
 	private JLabel _helpText;
+	private Point _selectPoint;
 
 	//The file paths of image resources, and other global static variables we want to define.
 	private static final String PLAY_FILEPATH = "./src/img/play.png";
@@ -162,8 +167,8 @@ public class MainFrame extends javax.swing.JFrame {
 	private static final int SNAP_DIFFERENCE = 7;
 	
 	//Zooming scale
-	private static final int CANVAS_WIDTH = 640;
-	private static final int CANVAS_HEIGHT = 480;
+	private static final int CANVAS_WIDTH = 1024;
+	private static final int CANVAS_HEIGHT = 1024;
 	
 	/*
 	 * These are the GUI components.
@@ -1043,7 +1048,27 @@ public class MainFrame extends javax.swing.JFrame {
 				drawingPanel1._progressLine = new Line2D.Double(point_start, _mouseLoc);
 
 		}
+		else if (_selectPoint != null){
+			Point p = evt.getPoint();
+			drawingPanel1.setSelectRectangle( new Rectangle(Math.min(_selectPoint.x, p.x), Math.min(_selectPoint.y, p.y), 
+					Math.abs(_selectPoint.x - p.x), Math.abs(_selectPoint.y - p.y)));
+			resetSelected();
+			for (Node n : drawingPanel1.getDiagram().getNodes()){
+				if (drawingPanel1.getSelectRectangle().contains(n.getCenter())){
+					n.setSelected(true);
+					_nodesSelected.add(n);
+				}
+			}
+			for (Edge e : drawingPanel1.getDiagram().getEdges()){
+				if (e.getStartNode().isSelected() && e.getEndNode().isSelected()){
+					e.setSelected(true);
+					_edgesSelected.add(e);
+				}
 
+			}
+			
+		}
+		
 		//Else if _nodeDragged, which is set when someone presses down on a node (in MousePressed), is not null, then drag the appropriate nodes:
 		else if (_nodeDragged != null && drawingPanel1.contains(_mouseLoc)){
 
@@ -1149,7 +1174,6 @@ public class MainFrame extends javax.swing.JFrame {
 				_edgeDragged.setAngle(vectorAAngle + _edgeDragged.getOffset());
 			}
 		}
-
 		//Repaint at the end
 		drawingPanel1.repaint();
 	}
@@ -1171,6 +1195,7 @@ public class MainFrame extends javax.swing.JFrame {
 		_edgeDragged = null;
 		_nodeDragged = null;
 		_resizing = null;
+		_selectPoint = null;
 		
 		//Check if we are trying to draw another edge
 		if (MouseEvent.getMouseModifiersText(evt.getModifiers()).contains("Shift")) {
@@ -1207,6 +1232,7 @@ public class MainFrame extends javax.swing.JFrame {
 				}
 			}
 		}
+		_selectPoint = evt.getPoint();
 	}
 
 	/**
@@ -1269,11 +1295,15 @@ public class MainFrame extends javax.swing.JFrame {
 			drawingPanel1._progressLine = null;
 			_edgeStart = null;
 		}
+		
+		
+		
 		//If no edge is being drawn, reset all the nodes/resizing boxes/edges being dragged, upon mouse release
 		_resizing = null;
 		_nodeDragged = null;
 		_edgeDragged = null;
-
+		_selectPoint = null;
+		drawingPanel1.setSelectRectangle(null);
 		drawingPanel1.repaint();
 	}
 
