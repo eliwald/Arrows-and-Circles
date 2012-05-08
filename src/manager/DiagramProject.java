@@ -1,10 +1,14 @@
 package manager;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -17,9 +21,13 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import backend.Diagram;
+import backend.Edge;
+import backend.EdgeDirection;
 import backend.Node;
 
 import com.google.gson.stream.*;
+
+import frontend.DrawingPanel;
 
 /**
  * Represents a single project (single tab) of the FSM/Graph Diagram.
@@ -67,111 +75,190 @@ public class DiagramProject {
 		return project;
 	}
 	
+	/**
+	 * Returns the History stack of the diagram.
+	 * @return History stack
+	 */
+	public HistoryStack getCurrentDiagram() {
+		return _history;
+	}
+	
 	/** 
 	 * Factory method that loads the saved project from a file. 
 	 * @throws IOException 
 	 */
-	public static DiagramProject openProject(Reader reader) throws IOException {
+	public static DiagramProject readDiagram(File file, DrawingPanel panel) throws IOException {
 		
 		// Creates a JSON Reader based on the given reader.
-		JsonReader jsonReader = new JsonReader(reader);
+		JsonReader reader = new JsonReader(new InputStreamReader(new FileInputStream(file)));
 		
 		// Start reading data.
-		jsonReader.beginObject();
+		reader.beginObject();
 		
 		// === READING DIAGRAM NAME ===
 		Diagram diagram = new Diagram();
-		if(!jsonReader.nextName().equals("name")) {
+		if(!reader.nextName().equals("name")) {
 			throw new IOException();
 		}
-		diagram.setName(jsonReader.nextString());
+		diagram.setName(reader.nextString());
 		
 		// === READING DIAGRAM NODES ===
 		ArrayList<Node> nodes = new ArrayList<Node>();
-		if(!jsonReader.nextName().equals("nodes")) {
+		if(!reader.nextName().equals("nodes")) {
 			throw new IOException();
 		}
-		jsonReader.beginArray();
-		while(jsonReader.hasNext()) {
+		reader.beginArray();
+		while(reader.hasNext()) {
 			
 			// === READING EACH NODE ===
-			jsonReader.beginObject();
+			reader.beginObject();
 			
-			if(!jsonReader.nextName().equals("x")) {
-				throw new IOException();
+			if(!reader.nextName().equals("x")) {
+				throw new IOException("Expecting x-coordinate when reading diagram file.");
 			}
-			double x = jsonReader.nextDouble();
+			double x = reader.nextDouble();
 			
-			if(!jsonReader.nextName().equals("y")) {
-				throw new IOException();
+			if(!reader.nextName().equals("y")) {
+				throw new IOException("Expecting y-coordinate when reading diagram file.");
 			}
-			double y = jsonReader.nextDouble();
+			double y = reader.nextDouble();
+
+			if(!reader.nextName().equals("radius")) {
+				throw new IOException("Expecting radius when reading diagram file.");
+			}
+			JsonReader reader = new JsonReader(new InputStreamReader (new FileInputStream(file)));
+			double radius = reader.nextDouble();
+
+			if(!reader.nextName().equals("is_start")) {
+				throw new IOException("Expecting is_start boolean when reading diagram file.");
+			}
+			boolean isStart = reader.nextBoolean();
+
+			if(!reader.nextName().equals("is_accept")) {
+				throw new IOException("Expecting is_accept boolean when reading diagram file.");
+			}
+			boolean isAccept = reader.nextBoolean();
+
+			if(!reader.nextName().equals("label")) {
+				throw new IOException("Expecting label when reading diagram file.");
+			}
+			String label = reader.nextString();
 			
+			// Create node from given data
+			Node node = new Node(x, y, radius, isStart, isAccept, label);
+			node.setContainerAndLabel(panel);
 			
+			// Add the node to the diagram.
+			diagram.addNode(node);
+			nodes.add(node);
 			
-			
-			
-			
-			jsonReader.endObject();
+			reader.endObject();
 		}
-		jsonReader.endArray();
+		reader.endArray();
 
-		
-		
-		return null;
-	}
+		// === READING DIAGRAM EDGES ===
+		if(!reader.nextName().equals("edges")) {
+			throw new IOException();
+		}
+		reader.beginArray();
+		while(reader.hasNext()) {
+			
+			// === READING EACH NODE ===
+			reader.beginObject();
+			
+			if(!reader.nextName().equals("node_start")) {
+				throw new IOException("Expecting node_start index when reading diagram file.");
+			}
+			int tmpNodeStart = reader.nextInt();
+			if(tmpNodeStart < 0 || tmpNodeStart >= nodes.size()) {
+				throw new IOException("node_start index is out of bounds.");
+			}
+			Node nodeStart = nodes.get(tmpNodeStart);
+			
+			if(!reader.nextName().equals("node_end")) {
+				throw new IOException("Expecting node_end index when reading diagram file.");
+			}
+			int tmpNodeEnd = reader.nextInt();
+			if(tmpNodeEnd < 0 || tmpNodeEnd >= nodes.size()) {
+				throw new IOException("node_end index is out of bounds.");
+			}
+			Node nodeEnd = nodes.get(tmpNodeEnd);
 
-	private static Diagram getDiagramFromReader(Reader reader) {
-		JsonReader jsonReader = new JsonReader(reader);
-		try {
-			while(jsonReader.hasNext()) {
+			if(!reader.nextName().equals("edge_direction")) {
+				throw new IOException("Expecting edge_direction when reading diagram file.");
+			}
+			String tmpEdgeDirection = reader.nextString();
+			EdgeDirection edgeDirection;
+			if(tmpEdgeDirection.equals("NONE")) {
+				edgeDirection = EdgeDirection.NONE;
+			} else if(tmpEdgeDirection.equals("SINGLE")) {
+				edgeDirection = EdgeDirection.SINGLE;
+			} else if(tmpEdgeDirection.equals("DOUBLE")) {
+				edgeDirection = EdgeDirection.DOUBLE;
+			} else {
+				throw new IOException("Edge direction is not correct.");
+			}
+
+			if(!reader.nextName().equals("label")) {
+				throw new IOException("Expecting label when reading diagram file.");
+			}
+			String label = reader.nextString();
+			
+			Edge edge;
+			if(nodeStart == nodeEnd) {
 				
+				if(!reader.nextName().equals("angle")) {
+					throw new IOException("Expecting angle when reading diagram file.");
+				}
+				double angle = reader.nextDouble();
+				
+				edge = new Edge(nodeStart, nodeEnd, edgeDirection, label, angle);
+				
+			} else {
+				
+				if(!reader.nextName().equals("arc_chord_height")) {
+					throw new IOException("Expecting arc chord height when reading diagram file.");
+				}
+				double arcChordHeight = reader.nextDouble();
+				
+				if(!reader.nextName().equals("arc_side")) {
+					throw new IOException("Expecting arc side when reading diagram file.");
+				}
+				int arcSide = reader.nextInt();
+				
+				edge = new Edge(nodeStart, nodeEnd, edgeDirection, label, arcChordHeight, arcSide);
 			}
-		} catch (IOException e) {
-			return null;
+			
+			// Add the edge to the diagram.
+			edge.setContainerAndArea(panel);
+			diagram.addEdge(edge);
+			
+			reader.endObject();
 		}
-		return null;
-	}
-	
-	/**
-	 * This procedure pops up a file chooser so that the user can select (multiple) files to load,
-	 * then it returns a list of File objects from the selected files.
-	 * @return List of File objects to open.
-	 */
-	private static List<File> openFileChooser() {
-		JFileChooser chooser = new JFileChooser();
-		FileFilter filter = new FileNameExtensionFilter("Diagram JSON File", "json");
-		chooser.addChoosableFileFilter(filter);
-		chooser.setAcceptAllFileFilterUsed(false);
-		chooser.setMultiSelectionEnabled(true);
+		reader.endArray();
 		
-		int returnVal = chooser.showOpenDialog(null);
-		if(returnVal == JFileChooser.APPROVE_OPTION) {
-			return Arrays.asList(chooser.getSelectedFiles());
-		} else {
-			return null;
-		}
+		// Create the diagram project
+		DiagramProject project = new DiagramProject();
+		project._filename = file.getName();
+		project._history = new HistoryStack(MAX_HISTORY, diagram);
+		project._loaded = true;
+		project._savedRevision = 0;
+		
+		return project;
 	}
 
-	/**
-	 * This procedure pops up a file chooser so that the user can select one file to save to,
-	 * then it returns a File object to write data to.
-	 * @return File object to save to.
+	/** 
+	 * Factory method that writes the project to the file. 
+	 * @throws IOException 
 	 */
-	private static File saveFileChooser() {
-		JFileChooser chooser = new JFileChooser();
-		FileFilter filter = new FileNameExtensionFilter("Diagram JSON File", "json");
-		chooser.addChoosableFileFilter(filter);
-		chooser.setAcceptAllFileFilterUsed(false);
+	public static void writeDiagram(File file) throws IOException {
 		
-		int returnVal = chooser.showSaveDialog(null);
-		if(returnVal == JFileChooser.APPROVE_OPTION) {
-			return chooser.getSelectedFile();
-		} else {
-			return null;
-		}
+		// Create a JSON writer
+		JsonWriter writer = new JsonWriter(new OutputStreamWriter(new FileOutputStream(file)));
+		
+		
+		// Start writing data.
+		
+		
 	}
-
-	
-	
 }
