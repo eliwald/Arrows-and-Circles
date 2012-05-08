@@ -6,7 +6,6 @@ package frontend;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -31,6 +30,7 @@ import backend.*;
  *
  * @author Eddie, Sandy, Eli, and Plane
  */
+@SuppressWarnings("serial")
 public class MainFrame extends javax.swing.JFrame {
 
 	/*
@@ -824,7 +824,7 @@ public class MainFrame extends javax.swing.JFrame {
 			DiagramProject.writeDiagram(file, diagram);
 			project.saved();
 		} catch (IOException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
 
@@ -881,7 +881,7 @@ public class MainFrame extends javax.swing.JFrame {
 			DiagramProject.writeDiagram(file, diagram);
 			project.saved();
 		} catch (IOException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
 	

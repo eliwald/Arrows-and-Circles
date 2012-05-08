@@ -18,6 +18,7 @@ import backend.*;
  * @author Eddie
  */
 
+@SuppressWarnings("serial")
 public class DrawingPanel extends JPanel {
 
 	private static final double SMALLER_RADIUS = 4;

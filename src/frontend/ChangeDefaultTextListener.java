@@ -19,7 +19,6 @@ public class ChangeDefaultTextListener implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
 		String title = "";
 		String message = "Press 'OK' to set or enter '<default>' to set to default.";
 		if (_node){
@@ -29,7 +28,6 @@ public class ChangeDefaultTextListener implements ActionListener {
 			title = "Change Default Edge Text";
 
 		}
-		String[] op = {"Cancel", "Reset", "OK"};
 		/**
 		 * Component parentComponent,
                                      Object message,

@@ -3,7 +3,6 @@ package manager;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
 import backend.Diagram;
-import backend.Node;
 
 /**
  * Keeps track of some recent changes to the diagram.
