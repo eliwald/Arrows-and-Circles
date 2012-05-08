@@ -67,7 +67,6 @@ public class MainFrame extends javax.swing.JFrame {
 	 * _simSlide is the Slider used to iterate through the simulation.  It is the bottom
 	 * 		slider, and can be dragged forward or backward to step through the simulation.
 	 * 
-	 * _curr keeps track of the previous/current value of the simulation slider to get a difference
 	 * 
 	 * _autoChange is used when we want to change the slider's value without having
 	 * 		to go through the slider changed method; used for the second slider.  If you want
@@ -194,7 +193,7 @@ public class MainFrame extends javax.swing.JFrame {
 	 */
 	public MainFrame() {
 		_edgeType = EdgeDirection.SINGLE;
-		_simTimer = new Timer(1000, new SimListener());
+		_simTimer = new Timer(100, new SimListener());
 		_autoChange = false;
 		_backwardClicked = false;
 		_helpText = new JLabel();
@@ -1182,14 +1181,17 @@ public class MainFrame extends javax.swing.JFrame {
 		if (!_simTimer.isRunning()) {
 			_playPauseBtn.setIcon(new ImageIcon(PAUSE_FILEPATH));
 			simulation_move_forward();
-			if (_sim != null)
+			if (_sim != null){
+				_simTimer = new Timer(_simSlide.getValue(), new SimListener());
 				_simTimer.start();
+			}
 			return;
 		}
 		else {
 			_playPauseBtn.setIcon(new ImageIcon(PLAY_FILEPATH));
 			_simTimer.stop();
 		}
+		
 	}
 	
 	/**

@@ -694,7 +694,7 @@ public class Edge implements DiagramObject, Cloneable {
      * @return		Helper to get name; returns the string of which nodes the edge goes to and from.
      */
 	public String getNodeString() {
-		return "(" + getStartNode().getLabel().getText() + ", " + getEndNode().getLabel().getText() + ")";
+		return "(" + getStartNode().getTextField().getText() + ", " + getEndNode().getTextField().getText() + ")";
 	}
 	
 	/**
