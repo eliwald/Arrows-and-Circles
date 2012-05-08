@@ -58,7 +58,7 @@ public class Edge implements DiagramObject {
     private static final int TEXTBOX_HEIGHT = 25;
     private static final int TEXTBOX_WIDTH = 40;
     private static final int TEXTBOX_OFFSET = 25;
-    private static final String DEFAULT_STRING = "0";
+    public static String DEFAULT_STRING = "0";
 	private static final int RADIUS_TOLERANCE = 6;
     
 	/**
@@ -197,6 +197,17 @@ public class Edge implements DiagramObject {
 
         return c;
     }
+    
+	public Object clone() throws CloneNotSupportedException {
+		Edge cloned = (Edge) super.clone();
+		cloned.setStartNode(getStartNode());
+		cloned.setEndNode(getEndNode());
+		cloned.setDirection(getDirection());
+		cloned.setAngle(getAngle());
+		cloned.setHeight(getHeight());
+		cloned.setTurn(_turn);
+		return cloned;
+	}
     
     /**
      * This method returns the shape that we should draw on the screen to
@@ -714,5 +725,12 @@ public class Edge implements DiagramObject {
 		return _height;
 	}
 	
+	public void setStartNode(Node st) {
+		_start = st;
+	}
+	
+	public void setEndNode(Node end) {
+		_end = end;
+	}
 	
 }

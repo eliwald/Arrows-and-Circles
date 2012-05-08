@@ -59,10 +59,11 @@ public class Node implements DiagramObject {
 	private JLabel _label;
 	private Polygon _startSymbol;
 	private java.awt.geom.Ellipse2D.Double _circle;
-	
+
 	//Static variables used to draw the node.
 	public static final double MIN_RADIUS = 20;
 	public static final double DEFAULT_RADIUS = 30;
+	public static String DEFAULT_LABEL = null;
 
 	/**
 	 * The constructor for the node takes the x,y to add the node to, and
@@ -79,7 +80,6 @@ public class Node implements DiagramObject {
 		_connected = new HashSet<Edge>();
 		_startState = false;
 		_endState = false;
-		_offset = new Point(0,0);
 		_selected = true;
 
 		setAreaAndLabel();
@@ -99,7 +99,6 @@ public class Node implements DiagramObject {
 		_radius = radius;
 		_startState = isStart;
 		_endState = isAccept;
-		_offset = new Point(0,0);
 		_connected = new HashSet<Edge>();
 		_selected = false;
 		_label = new JLabel(label);
@@ -115,19 +114,28 @@ public class Node implements DiagramObject {
 	}
 
 	/**
-	 * Helper for both of the constructors. Sets up the JTextField used to edit the node's name, and the jlabel used to 
+	 * Helper for both of the constructors. Sets up the JTextField used to edit the node's name, and the JLabel used to 
 	 * display the name in HTML when the node is not selected.
 	 */
 	private void setAreaAndLabel() {
+		_offset = new Point(0,0);
+		
 		double hypo = 2*_radius;
 		double temp = hypo*hypo;
 		double dimension = Math.sqrt(temp/2);
 		_area = new JTextField();
 		_area.setBorder(null);
-
-		int size = _container.getDiagram().getNodes().size();
-		String s = "q_"+ size;
-		_area.setText(s);
+		if (DEFAULT_LABEL == null){
+			int size = _container.getDiagram().getNodes().size();
+			String s = "q_"+ size;
+			if (_label == null || _label.equals(""))
+				_label = new JLabel("<html>q<sub>"+size+"</sub>");
+			_area.setText(s);
+		}
+		else{
+			_label = new JLabel(DEFAULT_LABEL);
+			_area.setText(DEFAULT_LABEL);
+		}
 		_area.setVisible(true);
 		_area.setOpaque(false);
 		_area.setSize((int)(dimension), 15);
@@ -136,8 +144,6 @@ public class Node implements DiagramObject {
 		_area.setEditable(true);
 		_area.setEnabled(true);
 		_area.setBackground(new Color(0,0,0,0));
-		if (_label == null || _label.equals(""))
-			_label = new JLabel("<html>q<sub>"+size+"</sub>");
 		_area.getDocument().addDocumentListener(new HTMLParser(_label));
 		_area.addKeyListener(new EnterListener(_container, _area));
 		_label.setVisible(true);
@@ -153,12 +159,39 @@ public class Node implements DiagramObject {
 		_startSymbol.addPoint((int)(this.getCenter().x - this.getRadius() - 20),(int) (this.getCenter().y + 10));
 		_startSymbol.addPoint((int)(this.getCenter().x - this.getRadius() - 20),(int) (this.getCenter().y - 10));
 	}
+	
+	/**
+	 * Returns a full clone of this node (as opposed to a shallow clone).
+	 */
+	public Object clone() throws CloneNotSupportedException {
+		Node clonedObject = (Node) super.clone();
+		Point2D.Double clonedCenter = (Point2D.Double) _center.clone();
+		clonedObject.setCenter(clonedCenter.getX(), clonedCenter.getY());
+		clonedObject.setRadius(_radius);
+		Collection<Edge> connected = new HashSet<Edge>();
+		for(Edge e : _connected) {
+			connected.add((Edge) e.clone());
+		}
+		clonedObject.setConnected(connected);
+		clonedObject.setStart(_startState);
+		clonedObject.setEnd(_endState);
+		clonedObject.setSelected(_selected);
+		clonedObject.setContainerAndLabel(_container);
+		return clonedObject;
+	}
 
 	/**
 	 * Returns the "start symbol" (a triangle) associated with this node for toggling start state.
 	 */
 	public Polygon getStartSymbol(){
 		return _startSymbol;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setConnected(Collection<Edge> connected) {
+		_connected = connected;
 	}
 
 	/**
@@ -312,7 +345,7 @@ public class Node implements DiagramObject {
 	public boolean resizing() {
 		return _resizing;
 	}
-	
+
 	/**
 	 * Sets whether node is currently being resized.
 	 * @param r
