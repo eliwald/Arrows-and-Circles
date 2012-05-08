@@ -102,7 +102,7 @@ public class DrawingPanelMouseMotionListener extends MouseMotionAdapter {
 		
 		//Else if _nodeDragged, which is set when someone presses down on a node (in MousePressed), is not null, then drag the appropriate nodes:
 		else if (_frame.getNodeDragged() != null && _frame.getDrawing().contains(_frame.getMouseLoc())){
-
+			
 			//If the node is not selected, then just move that one node.
 			if (!_frame.getNodeDragged().isSelected() || _frame.getNodesSelected().size() == 1){
 				double snappedX = _frame.getMouseLoc().getX() - _frame.getNodeDragged().getOffset().getX();

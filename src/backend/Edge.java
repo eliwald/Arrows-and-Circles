@@ -6,6 +6,7 @@ import java.awt.geom.Arc2D;
 
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import javax.swing.text.BadLocationException;
 
 import frontend.*;
 
@@ -78,7 +79,9 @@ public class Edge implements DiagramObject, Cloneable {
         _offset = 0;
 		_direction = d;
 		_curve = new Arc2D.Double(Arc2D.OPEN);
-		_turn = true;       
+		_turn = true;
+		_area = new JTextField(DEFAULT_STRING);
+		_label = new JLabel(DEFAULT_STRING);
 		
 		//added support for self loop
         _height = -100000.0;
@@ -99,6 +102,7 @@ public class Edge implements DiagramObject, Cloneable {
 		_end = end;
 		_direction = dir;
 		_label = new JLabel(label);
+		_area = new JTextField(label);
 		_angle = angle;
 		_selected = false;
 		_offset = 0;
@@ -120,6 +124,7 @@ public class Edge implements DiagramObject, Cloneable {
 		_end = end;
 		_direction = dir;
 		_label = new JLabel(label);
+		_area = new JTextField(label);
 		_angle = Math.PI / 4;
 		_selected = false;
 		_offset = 0;
@@ -141,13 +146,11 @@ public class Edge implements DiagramObject, Cloneable {
 	 * label.
 	 */
 	private void setAreaAndLabel() {
-        _area = new JTextField();
 		_area.setBorder(null);
 		
 		_curve = new Arc2D.Double(Arc2D.OPEN);
         
         this.resetArc();
-		_area.setText(DEFAULT_STRING);
 		_area.setVisible(true);
   		_area.setOpaque(false);
  		_area.setSize(100, 20);
@@ -158,7 +161,6 @@ public class Edge implements DiagramObject, Cloneable {
 		_area.setEditable(true);
 		_area.setEnabled(true);
         _area.addKeyListener(new EnterListener(_container, _area));
-		_label = new JLabel(DEFAULT_STRING);
 		_area.getDocument().addDocumentListener(new HTMLParser(_label));
 		_label.setVisible(false);
 		_label.setOpaque(false);
@@ -166,6 +168,7 @@ public class Edge implements DiagramObject, Cloneable {
 		_label.setBackground(new Color(0,0,0,0));
 		_label.setSize(TEXTBOX_WIDTH, TEXTBOX_HEIGHT);
 		_label.setHorizontalAlignment(JTextField.CENTER);
+
 		_container.add(_label);
 		_container.add(_area);
 	}
@@ -198,12 +201,35 @@ public class Edge implements DiagramObject, Cloneable {
     
 	public Edge clone() throws CloneNotSupportedException {
 		Edge cloned = (Edge) super.clone();
-		cloned.setStartNode(getStartNode());
-		cloned.setEndNode(getEndNode());
 		cloned.setDirection(getDirection());
 		cloned.setAngle(getAngle());
 		cloned.setHeight(getHeight());
 		cloned.setTurn(_turn);
+		cloned._area = new JTextField(_area.getText());
+		cloned._label = new JLabel(_label.getText());
+		
+		cloned._area.setBorder(null);
+		
+		cloned._curve = new Arc2D.Double(Arc2D.OPEN);
+        
+		cloned.resetArc();
+		cloned._area.setVisible(false);
+		cloned._area.setOpaque(false);
+		cloned._area.setSize(100, 20);
+		cloned._area.setBackground(new Color(0,0,0,0));
+		cloned._area.setSize(TEXTBOX_WIDTH, TEXTBOX_HEIGHT);
+		cloned._area.setHorizontalAlignment(JTextField.CENTER);
+		cloned._area.selectAll();
+		cloned._area.setEditable(true);
+		cloned._area.setEnabled(true);
+		cloned._area.addKeyListener(new EnterListener(_container, cloned._area));
+        cloned._area.getDocument().addDocumentListener(new HTMLParser(cloned._label));
+        cloned._label.setVisible(true);
+        cloned._label.setOpaque(false);
+        cloned._label.setSize(100, 20);
+        cloned._label.setBackground(new Color(0,0,0,0));
+        cloned._label.setSize(TEXTBOX_WIDTH, TEXTBOX_HEIGHT);
+        cloned._label.setHorizontalAlignment(JTextField.CENTER);
 		return cloned;
 	}
     

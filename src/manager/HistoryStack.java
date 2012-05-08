@@ -3,6 +3,7 @@ package manager;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
 import backend.Diagram;
+import backend.Node;
 
 /**
  * Keeps track of some recent changes to the diagram.
@@ -10,11 +11,11 @@ import backend.Diagram;
  */
 public class HistoryStack {
 	
+	/** The number of maximum history. */
+	private static final int MAX_HISTORY = 42; 
+	
 	/** The number of maximum history allowed. */
 	private int _capacity;
-	
-	/** The current diagram. */
-	private Diagram _current;
 	
 	/** The previous diagrams before the current. */
 	private LinkedList<HistoryStackElement> _undoStack = new LinkedList<HistoryStackElement>();
@@ -27,28 +28,17 @@ public class HistoryStack {
 	 * of history allowed. Use this method if opening a new blank diagram.
 	 * @param capacity The maximum number of history allowed.
 	 */
-	public HistoryStack(int capacity) {
-		_capacity = capacity;
-		_current = new Diagram();
+	public HistoryStack() {
+		_capacity = MAX_HISTORY;
 	}
 
 	/**
-	 * Constructs a diagram history manager from the given diagram with the given
-	 * maximum number of history allowed. Use this method if opening an existing file.
+	 * Constructs a new diagram history manager with the given maximum number
+	 * of history allowed. Use this method if opening a new blank diagram.
 	 * @param capacity The maximum number of history allowed.
 	 */
-	public HistoryStack(int capacity, Diagram initialDiagram) {
+	public HistoryStack(int capacity) {
 		_capacity = capacity;
-		_current = initialDiagram;
-	}
-	
-	/**
-	 * Returns the current diagram.
-	 * @return the current diagram in the history.
-	 * @throws CloneNotSupportedException 
-	 */
-	public Diagram getCurrentDiagram() throws CloneNotSupportedException {
-		return _current;
 	}
 	
 	/** 
@@ -60,10 +50,9 @@ public class HistoryStack {
 		
 		// Put the current diagram into the undo history stack, and replace
 		// with the given new diagram.
-		HistoryStackElement newElement = new HistoryStackElement(_current, message);
+		HistoryStackElement newElement = new HistoryStackElement(newDiagram, message);
 		_undoStack.addLast(newElement);
-		_current = newDiagram;
-		
+
 		// Get rid of very old history if the undo stack exceeds the limit.
 		while(_undoStack.size() > _capacity) {
 			_undoStack.removeFirst();
@@ -111,29 +100,31 @@ public class HistoryStack {
 	
 	/**
 	 * Undo the diagram and return it.
+	 * @param diagram 
 	 * @return The Diagram undone.
 	 */
-	public Diagram nextUndo() {
+	public Diagram nextUndo(Diagram diagram) {
 		if(hasNextUndo()) {
 			// Obtain the previous diagram and the log message.
 			HistoryStackElement element = _undoStack.removeLast();
 			Diagram oldDiagram = element.getDiagram();
 			String message = element.getMessage();
-			
+
 			// Put the current diagram into the redo stack.
-			_redoStack.addLast(new HistoryStackElement(_current, message));
+			_redoStack.addLast(new HistoryStackElement(diagram, message));
 			
 			// Set the current diagram to the old diagram.
-			_current = oldDiagram;
+			return oldDiagram;
 		}
 		throw new NoSuchElementException("Undo history stack is already empty.");
 	}
 	
 	/**
 	 * Redo the diagram and return it.
+	 * @param diagram 
 	 * @return The Diagram undone.
 	 */
-	public Diagram nextRedo() {
+	public Diagram nextRedo(Diagram diagram) {
 		if(hasNextRedo()) {
 			// Obtain the previous diagram and the log message.
 			HistoryStackElement element = _redoStack.removeLast();
@@ -141,10 +132,10 @@ public class HistoryStack {
 			String message = element.getMessage();
 			
 			// Put the current diagram into the redo stack.
-			_undoStack.addLast(new HistoryStackElement(_current, message));
+			_undoStack.addLast(new HistoryStackElement(diagram, message));
 			
 			// Set the current diagram to the old diagram.
-			_current = newDiagram;
+			return newDiagram;
 		}
 		throw new NoSuchElementException("Redo history stack is already empty.");
 	}

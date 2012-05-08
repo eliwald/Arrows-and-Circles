@@ -2,10 +2,12 @@ package backend;
 
 import java.awt.*;
 import java.awt.geom.*;
+import java.awt.geom.Point2D.Double;
 import java.util.Collection;
 import java.util.HashSet;
 
 import javax.swing.JLabel;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.text.BadLocationException;
 
@@ -114,15 +116,8 @@ public class Node implements DiagramObject, Cloneable {
 		_endState = isAccept;
 		_connected = new HashSet<Edge>();
 		_selected = false;
-		String jlabel_text = "";
-		try {
-			jlabel_text = HTMLParser.setLabelText(label);
-		}
-		catch (BadLocationException e) {
-			e.printStackTrace();
-		}
-		_label = new JLabel(jlabel_text);
-		_area = new JTextField();
+		_label = new JLabel(label);
+		_area = new JTextField(label);
 		_area.setText(label);
 	}
 
@@ -140,7 +135,7 @@ public class Node implements DiagramObject, Cloneable {
 	 */
 	private void setAreaAndLabel() {
 		_offset = new Point(0,0);
-		
+
 		double hypo = 2*_radius;
 		double temp = hypo*hypo;
 		double dimension = Math.sqrt(temp/2);
@@ -149,7 +144,6 @@ public class Node implements DiagramObject, Cloneable {
 		_area.setOpaque(false);
 		_area.setSize((int)(dimension), 15);
 		_area.setHorizontalAlignment(JTextField.CENTER);
-		_area.selectAll();
 		_area.setEditable(true);
 		_area.setEnabled(true);
 		_area.setBackground(new Color(0,0,0,0));
@@ -159,6 +153,7 @@ public class Node implements DiagramObject, Cloneable {
 		_label.setOpaque(false);
 		_label.setSize((int)(dimension), 15);
 		_label.setHorizontalAlignment(JTextField.CENTER);
+		_label.setText(_label.getText());
 
 		_container.add(_label);
 		_container.add(_area);
@@ -168,23 +163,45 @@ public class Node implements DiagramObject, Cloneable {
 		_startSymbol.addPoint((int)(this.getCenter().x - this.getRadius() - 20),(int) (this.getCenter().y + 10));
 		_startSymbol.addPoint((int)(this.getCenter().x - this.getRadius() - 20),(int) (this.getCenter().y - 10));
 	}
-	
+
 	/**
 	 * Returns a full clone of this node (as opposed to a shallow clone).
 	 */
 	public Node clone() throws CloneNotSupportedException {
 		Node clonedObject = (Node) super.clone();
-		Point2D.Double clonedCenter = (Point2D.Double) _center.clone();
-		clonedObject.setCenter(clonedCenter.getX(), clonedCenter.getY());
+		clonedObject._center = new Point2D.Double(getCenter().getX(), getCenter().getY());
 		clonedObject.setRadius(_radius);
-		Collection<Edge> connected = new HashSet<Edge>();
-		for(Edge e : _connected) {
-			connected.add(e);
-		}
-		clonedObject.setConnected(connected);
 		clonedObject.setStart(_startState);
 		clonedObject.setEnd(_endState);
 		clonedObject.setSelected(_selected);
+		clonedObject._container = _container;
+		clonedObject._area = new JTextField(_area.getText());
+		clonedObject._label = new JLabel(_label.getText());
+
+		double hypo = 2*_radius;
+		double temp = hypo*hypo;
+		double dimension = Math.sqrt(temp/2);
+		clonedObject._area.setBorder(null);
+		clonedObject._area.setVisible(false);
+		clonedObject._area.setOpaque(false);
+		clonedObject._area.setSize((int)(dimension), 15);
+		clonedObject._area.setHorizontalAlignment(JTextField.CENTER);
+		clonedObject._area.setEditable(true);
+		clonedObject._area.setEnabled(true);
+		clonedObject._area.setBackground(new Color(0,0,0,0));
+		clonedObject._area.getDocument().addDocumentListener(new HTMLParser(clonedObject._label));
+		clonedObject._area.addKeyListener(new EnterListener(_container, clonedObject._area));
+		clonedObject._label.setVisible(true);
+		clonedObject._label.setOpaque(false);
+		clonedObject._label.setSize((int)(dimension), 15);
+		clonedObject._label.setHorizontalAlignment(JTextField.CENTER);
+		clonedObject._label.setText(clonedObject._label.getText());
+		
+		
+		clonedObject._startSymbol = new Polygon();
+		clonedObject._startSymbol.addPoint((int)(this.getCenter().x - this.getRadius()),(int) (this.getCenter().y));
+		clonedObject._startSymbol.addPoint((int)(this.getCenter().x - this.getRadius() - 20),(int) (this.getCenter().y + 10));
+		clonedObject._startSymbol.addPoint((int)(this.getCenter().x - this.getRadius() - 20),(int) (this.getCenter().y - 10));
 		return clonedObject;
 	}
 

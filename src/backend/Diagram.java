@@ -3,6 +3,7 @@ package backend;
 import java.util.*;
 
 import frontend.DrawingPanel;
+import frontend.MainFrame;
 
 /**
  * 
@@ -13,7 +14,9 @@ public class Diagram implements Cloneable {
 	private Collection<Node> _nodes;
 	private Collection<Edge> _edges;
 	private int _revision;
-	private DrawingPanel _container;
+	private MainFrame _frame;
+	private HashMap<Node, Node> _oldNodeToNew;
+	private HashMap<Edge, Edge> _newEdgeToOld;
 
 	public Diagram() {
 		_nodes = new HashSet<Node>();
@@ -21,8 +24,8 @@ public class Diagram implements Cloneable {
 		_revision = 0;
 	}
 
-	public void setDrawingPanel(DrawingPanel container) { 
-		_container = container;
+	public void setDrawingPanel(DrawingPanel container, MainFrame frame) { 
+		_frame = frame;
 	}
 
 	public boolean addNode(Node n) {
@@ -31,6 +34,10 @@ public class Diagram implements Cloneable {
 
 	public boolean addEdge(Edge e) {
 		return _edges.add(e);
+	}
+	
+	public MainFrame getFrame() {
+		return _frame;
 	}
 
 	public boolean removeNode(Node n) {
@@ -49,6 +56,14 @@ public class Diagram implements Cloneable {
 		return _edges;
 	}
 	
+	public HashMap<Node, Node> getNodeMap() {
+		return _oldNodeToNew;
+	}
+	
+	public HashMap<Edge, Edge> getEdgeMap() {
+		return _newEdgeToOld;
+	}
+	
 	public Diagram clone() throws CloneNotSupportedException {
 		Diagram cloned = (Diagram) super.clone();
 		cloned.setRevision(getRevision());
@@ -62,28 +77,35 @@ public class Diagram implements Cloneable {
 		
 		for (Node oldNode : old_nodes) {
 			Node newNode = oldNode.clone();
-			newNode.setContainerAndLabel(_container);
 			nodeMap.put(oldNode, newNode);
+			
 			cloned_nodes.add(newNode);
 		}
 		for (Edge oldEdge : old_edges) {
 			Edge newEdge = oldEdge.clone();
-			newEdge.setContainerAndArea(_container);
-			edgeMap.put(oldEdge, newEdge);
+			edgeMap.put(newEdge, oldEdge);
+			
 			cloned_edges.add(newEdge);
 		}
 		
-		for (Node newNode : cloned_nodes) {
+		_newEdgeToOld = edgeMap;
+		_oldNodeToNew = nodeMap;
+		
+		for (Node oldNode : old_nodes) {
 			Collection<Edge> connected = new HashSet<Edge>();
-			for(Edge e : newNode.getConnected()) {
+			Node newNode = nodeMap.get(oldNode);
+			for(Edge e : oldNode.getConnected()) {
 				connected.add(edgeMap.get(e));
 			}
 			newNode.setConnected(connected);
 		}
-		for (Edge newEdge : old_edges) {
-			newEdge.setStartNode(nodeMap.get(newEdge.getStartNode()));
-			newEdge.setEndNode(nodeMap.get(newEdge.getEndNode()));
+		for (Edge newEdge : cloned_edges) {
+			newEdge.setStartNode(nodeMap.get(edgeMap.get(newEdge).getStartNode()));
+			newEdge.setEndNode(nodeMap.get(edgeMap.get(newEdge).getEndNode()));
 		}
+		
+		cloned._edges = cloned_edges;
+		cloned._nodes = cloned_nodes;
 		return cloned;
 	}
 	

@@ -224,6 +224,7 @@ public class MainFrame extends javax.swing.JFrame {
 		jTabbedPane1 = new javax.swing.JTabbedPane();
 		jScrollPane1 = new javax.swing.JScrollPane();
 		drawingPanel1 = new frontend.DrawingPanel(DiagramProject.newProject());
+		drawingPanel1.getDiagram().setDrawingPanel(drawingPanel1, this);
 		jSplitPane3 = new javax.swing.JSplitPane();
 		jPanel1 = new javax.swing.JPanel();
 		_singlyBtn = new javax.swing.JRadioButton();
@@ -643,7 +644,7 @@ public class MainFrame extends javax.swing.JFrame {
 
 		jMenuItemRedo.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Y, java.awt.event.InputEvent.CTRL_MASK));
 		jMenuItemRedo.setText("Redo");
-		jMenuItemUndo.addActionListener(new java.awt.event.ActionListener() {
+		jMenuItemRedo.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				redoActionPerformed(evt);
 			}
@@ -756,6 +757,7 @@ public class MainFrame extends javax.swing.JFrame {
 		newPane.setViewportView(newPanel);
 		jScrollPane1 = newPane;
 		drawingPanel1 = newPanel;
+		this.resetSelected();
 		drawingPanel1.addMouseListener(new DrawingPanelMouseListener(this));
 		drawingPanel1.addMouseMotionListener(new DrawingPanelMouseMotionListener(this));
 		drawingPanel1.addKeyListener(new DrawingPanelKeyListener(this));
@@ -766,6 +768,8 @@ public class MainFrame extends javax.swing.JFrame {
 
 		jTabbedPane1.addTab("Untitled", jScrollPane1);
 		jTabbedPane1.setSelectedIndex(jTabbedPane1.getTabCount() - 1);
+		if (project != null && drawingPanel1.getDiagram() != null)
+			drawingPanel1.getDiagram().setDrawingPanel(drawingPanel1, this);
 	}
 
 	/**
@@ -869,6 +873,7 @@ public class MainFrame extends javax.swing.JFrame {
 				Diagram diagram = DiagramProject.readDiagram(file, drawingPanel1);
 				DiagramProject project = DiagramProject.openProject(file.getPath(), diagram);
 				drawingPanel1.setDiagramProject(project);
+				drawingPanel1.getDiagram().setDrawingPanel(drawingPanel1, this);
 				jTabbedPane1.setTitleAt(jTabbedPane1.getSelectedIndex(), file.getName().substring(0, file.getName().length() - 5));
 			} catch (IOException e) {
 				closeTabActionPerformed(evt);
@@ -892,14 +897,16 @@ public class MainFrame extends javax.swing.JFrame {
 	 * This is what happens when you click redo.
 	 */
 	private void redoActionPerformed(java.awt.event.ActionEvent evt) {
-		//TODO: Add code to handle redo.
+		drawingPanel1.getDiagramProject().redo();
+		drawingPanel1.repaint();
 	}
 	
 	/**
 	 * This is what happens when you click undo.
 	 */
 	private void undoActionPerformed(java.awt.event.ActionEvent evt) {
-		//TODO: Add code to handle undo.
+		drawingPanel1.getDiagramProject().undo();
+		drawingPanel1.repaint();
 	}
 	
 	/**
@@ -1437,7 +1444,8 @@ public class MainFrame extends javax.swing.JFrame {
 	 * This resets all the selected nodes/edges.
 	 */
 	public void resetSelected() {
-		drawingPanel1.clearSelected();
+		if (drawingPanel1.getDiagramProject() != null)
+			drawingPanel1.clearSelected();
 		_nodesSelected = Collections.synchronizedSet(new HashSet<Node>());
 		_edgesSelected = Collections.synchronizedSet(new HashSet<Edge>());
 	}

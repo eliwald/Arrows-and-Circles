@@ -30,13 +30,7 @@ public class DrawingPanel extends JPanel {
 	}
 
 	public Diagram getDiagram() {
-		Diagram diagram = null;
-		try {
-			diagram = _project.getHistoryStack().getCurrentDiagram();
-		} catch(CloneNotSupportedException e) {
-			e.printStackTrace();
-		}
-		return diagram;
+		return _project.getCurrentDiagram();
 	}
 
 	public DiagramProject getDiagramProject() {

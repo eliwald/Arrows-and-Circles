@@ -27,9 +27,6 @@ import frontend.DrawingPanel;
  */
 public class DiagramProject {
 	
-	/** The number of maximum history. */
-	private static final int MAX_HISTORY = 42; 
-	
 	/** The filename of this project. This could be null if it is a newly
 	 * created diagram that has never been saved yet. */
 	private String _filename; 
@@ -44,6 +41,9 @@ public class DiagramProject {
 	/** Last saved revision number */
 	private int _savedRevision; 
 	
+	/** Reference to the current diagram object; starts out as an empty diagram */
+	private Diagram _diagram;
+	
 	/**
 	 * Make sure the the constructor is private.
 	 */
@@ -52,39 +52,88 @@ public class DiagramProject {
 	}
 	
 	/**
-	 * Factory method that creates a new project. 
-	 * @return The new project.
+	 * Returns the current diagram (one that we are to modify/clone)
+	 * @return	The current diagram.
 	 */
-	public static DiagramProject newProject() {
-		DiagramProject project = new DiagramProject();
-		project._filename = null;
-		project._history = new HistoryStack(MAX_HISTORY);
-		project._loaded = false;
-		project._savedRevision = -1;
-		return project;
+	public Diagram getCurrentDiagram() {
+		return _diagram;
 	}
 	
 	/**
-	 * Factory method that create a project from the given diagram and the filename.
-	 * @param filename The filename associated
-	 * @param openedDiagram The diagram opened.
-	 * @return
+	 * Pushes the current diagram onto the history stack.
+	 * @param message		The message associated with the change.
 	 */
-	public static DiagramProject openProject(String filename, Diagram openedDiagram) {
-		DiagramProject project = new DiagramProject();
-		project._filename = filename;
-		project._history = new HistoryStack(MAX_HISTORY, openedDiagram);
-		project._loaded = true;
-		project._savedRevision = 0;
-		return project;
+	public void pushCurrentOntoHistory(String message) {
+		try {
+			_history.add(_diagram.clone(), message);
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+		}
 	}
-	
 	/**
 	 * Returns the History stack of the diagram.
 	 * @return History stack
 	 */
 	public HistoryStack getHistoryStack() {
 		return _history;
+	}
+	
+	/**
+	 * Tries to undo the history.
+	 * @return true if success
+	 */
+	public boolean undo() {
+		if(_history.hasNextUndo()) {
+			Diagram oldDiagram = _history.nextUndo(_diagram);
+			for (Node n : _diagram.getNodes()) {
+				_diagram.getFrame().getDrawing().remove(n.getTextField());
+				_diagram.getFrame().getDrawing().remove(n.getLabel());
+			}
+			for (Edge e : _diagram.getEdges()) {
+				_diagram.getFrame().getDrawing().remove(e.getTextField());
+				_diagram.getFrame().getDrawing().remove(e.getLabel());
+			}
+			_diagram = oldDiagram;
+			for (Node n : _diagram.getNodes()) {
+				_diagram.getFrame().getDrawing().add(n.getTextField());
+				_diagram.getFrame().getDrawing().add(n.getLabel());
+			}
+			for (Edge e : _diagram.getEdges()) {
+				_diagram.getFrame().getDrawing().add(e.getTextField());
+				_diagram.getFrame().getDrawing().add(e.getLabel());
+			}
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Tries to redo the history.
+	 * @return true if success
+	 */
+	public boolean redo() {
+		if(_history.hasNextRedo()) {
+			Diagram newDiagram = _history.nextRedo(_diagram);
+			for (Node n : _diagram.getNodes()) {
+				_diagram.getFrame().getDrawing().remove(n.getTextField());
+				_diagram.getFrame().getDrawing().remove(n.getLabel());
+			}
+			for (Edge e : _diagram.getEdges()) {
+				_diagram.getFrame().getDrawing().remove(e.getTextField());
+				_diagram.getFrame().getDrawing().remove(e.getLabel());
+			}
+			_diagram = newDiagram;
+			for (Node n : _diagram.getNodes()) {
+				_diagram.getFrame().getDrawing().add(n.getTextField());
+				_diagram.getFrame().getDrawing().add(n.getLabel());
+			}
+			for (Edge e : _diagram.getEdges()) {
+				_diagram.getFrame().getDrawing().add(e.getTextField());
+				_diagram.getFrame().getDrawing().add(e.getLabel());
+			}
+			return true;
+		}
+		return false;
 	}
 	
 	/**
@@ -101,6 +150,37 @@ public class DiagramProject {
 	 */
 	public void setFilename(String filename) {
 		_filename = filename;
+	}
+	
+	
+	/**
+	 * Factory method that creates a new project. 
+	 * @return The new project.
+	 */
+	public static DiagramProject newProject() {
+		DiagramProject project = new DiagramProject();
+		project._filename = null;
+		project._history = new HistoryStack();
+		project._loaded = false;
+		project._savedRevision = -1;
+		project._diagram = new Diagram();
+		return project;
+	}
+	
+	/**
+	 * Factory method that create a project from the given diagram and the filename.
+	 * @param filename The filename associated
+	 * @param openedDiagram The diagram opened.
+	 * @return
+	 */
+	public static DiagramProject openProject(String filename, Diagram openedDiagram) {
+		DiagramProject project = new DiagramProject();
+		project._filename = filename;
+		project._history = new HistoryStack();
+		project._loaded = true;
+		project._savedRevision = 0;
+		project._diagram = openedDiagram;
+		return project;
 	}
 	
 	/** 
