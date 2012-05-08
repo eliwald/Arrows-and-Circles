@@ -108,19 +108,30 @@ public class DrawingPanelMouseListener extends MouseAdapter {
 					if (n.getCircle().contains(evt.getPoint()) || (n.isStart() && n.getStartSymbol().contains(evt.getPoint()))){
 						_frame.addSelectedNode(n);
 						n.getTextField().setVisible(true);
+						n.getTextField().select(0,0);
 						n.getLabel().setVisible(false);
 						_frame.getDrawing().repaint();
 						_frame.setHelpText(2);
+						if (n.getTextField().getText().equals("")){
+							n.getTextField().setVisible(true);
+							n.getLabel().setVisible(false);
+							n.getTextField().grabFocus();
+						}
 						return;
 					}
 				}
 				for (Edge e : _frame.getDrawing().getDiagram().getEdges()){
 					Rectangle boundingBox = e.getLabel().getBounds();
 					if (e.intersects(evt.getPoint().x,evt.getPoint().y)){
-						_frame.addSelectedEdge(e);
+						_frame.addSelectedEdge(e);					
 						EdgeDirection dir = e.getDirection();
 						_frame.setSelectedEdgeType(dir);
 						_frame.getDrawing().repaint();
+						if (e.getTextField().getText().equals("")){
+							e.getTextField().setVisible(true);
+							e.getLabel().setVisible(false);
+							e.getTextField().grabFocus();
+						}
 						return;
 					}
 					else if (boundingBox.contains(evt.getPoint().x, evt.getPoint().y)){
