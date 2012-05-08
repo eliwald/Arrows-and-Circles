@@ -65,6 +65,7 @@ public class DiagramProject {
 	 */
 	public void pushCurrentOntoHistory(String message) {
 		try {
+			_savedRevision = 0;
 			_history.add(_diagram.clone(), message);
 		} catch (CloneNotSupportedException e) {
 			e.printStackTrace();
@@ -79,11 +80,26 @@ public class DiagramProject {
 	}
 	
 	/**
+	 * Sets _savedRevision to a positive number (meaning it is up to date).
+	 */
+	public void saved() {
+		_savedRevision = 1;
+	}
+	
+	/**
+	 * Returns true if up to date.
+	 */
+	public boolean upToDate() {
+		return _savedRevision > 0;
+	}
+	
+	/**
 	 * Tries to undo the history.
 	 * @return true if success
 	 */
 	public boolean undo() {
 		if(_history.hasNextUndo()) {
+			_savedRevision = 0;
 			Diagram oldDiagram = _history.nextUndo(_diagram);
 			for (Node n : _diagram.getNodes()) {
 				_diagram.getFrame().getDrawing().remove(n.getTextField());
@@ -131,6 +147,8 @@ public class DiagramProject {
 				_diagram.getFrame().getDrawing().add(e.getTextField());
 				_diagram.getFrame().getDrawing().add(e.getLabel());
 			}
+			if (!_history.hasNextRedo())
+				_savedRevision = 1;
 			return true;
 		}
 		return false;
@@ -178,7 +196,7 @@ public class DiagramProject {
 		project._filename = filename;
 		project._history = new HistoryStack();
 		project._loaded = true;
-		project._savedRevision = 0;
+		project._savedRevision = 1;
 		project._diagram = openedDiagram;
 		return project;
 	}
@@ -403,5 +421,6 @@ public class DiagramProject {
 		// Stop writing data.
 		writer.endObject();
 		writer.close();
+		
 	}
 }

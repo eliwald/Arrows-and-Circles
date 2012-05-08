@@ -815,7 +815,7 @@ public class MainFrame extends javax.swing.JFrame {
 			
 			File file = new File(filename);
 			DiagramProject.writeDiagram(file, diagram);
-			
+			project.saved();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -870,6 +870,7 @@ public class MainFrame extends javax.swing.JFrame {
 			jTabbedPane1.setTitleAt(jTabbedPane1.getSelectedIndex(), file.getName().substring(0, file.getName().length() - 5));
 			project.setFilename(file.getPath());
 			DiagramProject.writeDiagram(file, diagram);
+			project.saved();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -1036,9 +1037,11 @@ public class MainFrame extends javax.swing.JFrame {
 		//TODO: Add to this if-statement the condition that checks whether or
 		//not the currently selected index has already been saved
 		if (jTabbedPane1.getSelectedIndex() != -1) {
-			int answer = exitPrompt();
+			int answer = 0;
+			if (!drawingPanel1.getDiagramProject().upToDate())
+				answer = exitPrompt();
 			if (answer == 1) {
-				//TODO: Save the tab before closing it!
+				saveActionPerformed(evt);
 			}
 			if (answer != 2) {
 				int currIndex = jTabbedPane1.getSelectedIndex();
