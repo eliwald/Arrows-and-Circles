@@ -166,6 +166,8 @@ public class MainFrame extends javax.swing.JFrame {
 	private javax.swing.JMenuItem jMenuItemSelectAll;
 	private javax.swing.JMenuItem jMenuItemShowTrans;
 	private javax.swing.JMenuItem jMenuItemAbout;
+	private javax.swing.JMenuItem jMenuItemSetDefaultEdge;
+	private javax.swing.JMenuItem jMenuItemSetDefaultNode;
 	private javax.swing.JMenu jMenuExport;
 	private javax.swing.JMenuItem jMenuItemExportToLatex;
 	private javax.swing.JMenuItem jMenuItemExportToPNG;
@@ -248,6 +250,8 @@ public class MainFrame extends javax.swing.JFrame {
 		jMenuExport = new javax.swing.JMenu();
 		jMenuItemExportToLatex = new javax.swing.JMenuItem();
 		jMenuItemExportToPNG = new javax.swing.JMenuItem();
+		jMenuItemSetDefaultEdge = new JMenuItem();
+		jMenuItemSetDefaultNode = new JMenuItem();
 
 		setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 		setTitle("Arrows & Circles");
@@ -655,6 +659,15 @@ public class MainFrame extends javax.swing.JFrame {
 				showTransitionActionPerformed(e);
 			}	
 		});
+		
+		jMenuTools.addSeparator();
+		jMenuItemSetDefaultEdge.setText("Set Default Edge Text");
+		jMenuTools.add(jMenuItemSetDefaultEdge);
+		jMenuItemSetDefaultEdge.addActionListener(new ChangeDefaultTextListener(this, false));
+		
+		jMenuItemSetDefaultNode.setText("Set Default Node Text");
+		jMenuTools.add(jMenuItemSetDefaultNode);
+		jMenuItemSetDefaultNode.addActionListener(new ChangeDefaultTextListener(this, true));
 		
 		jMenuBar2.add(jMenu4);
 

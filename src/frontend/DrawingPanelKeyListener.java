@@ -3,6 +3,7 @@ package frontend;
 import java.awt.Point;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.Collection;
 
 import backend.Edge;
 import backend.Node;
@@ -40,7 +41,8 @@ public class DrawingPanelKeyListener extends KeyAdapter {
 		if(evt.getKeyCode() == KeyEvent.VK_DELETE || evt.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
 			for (Node n : _frame.getNodesSelected()){
 				Node connectedNode;
-				for (Edge e : n.getConnected()){
+				Collection<Edge> edges = n.getConnected();
+				for (Edge e : edges){
 					connectedNode = e.getStartNode() == n ? e.getEndNode() : e.getStartNode();
 					_frame.getDrawing().getDiagram().getEdges().remove(e);
 					_frame.removeSelectedEdge(e);

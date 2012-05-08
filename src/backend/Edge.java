@@ -58,7 +58,7 @@ public class Edge implements DiagramObject {
     private static final int TEXTBOX_HEIGHT = 25;
     private static final int TEXTBOX_WIDTH = 40;
     private static final int TEXTBOX_OFFSET = 25;
-    private static final String DEFAULT_STRING = "0";
+    public static String DEFAULT_STRING = "0";
 	private static final int RADIUS_TOLERANCE = 6;
     
 	/**

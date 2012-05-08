@@ -59,10 +59,11 @@ public class Node implements DiagramObject {
 	private JLabel _label;
 	private Polygon _startSymbol;
 	private java.awt.geom.Ellipse2D.Double _circle;
-	
+
 	//Static variables used to draw the node.
 	public static final double MIN_RADIUS = 20;
 	public static final double DEFAULT_RADIUS = 30;
+	public static String DEFAULT_LABEL = null;
 
 	/**
 	 * The constructor for the node takes the x,y to add the node to, and
@@ -124,10 +125,17 @@ public class Node implements DiagramObject {
 		double dimension = Math.sqrt(temp/2);
 		_area = new JTextField();
 		_area.setBorder(null);
-
-		int size = _container.getDiagram().getNodes().size();
-		String s = "q_"+ size;
-		_area.setText(s);
+		if (DEFAULT_LABEL == null){
+			int size = _container.getDiagram().getNodes().size();
+			String s = "q_"+ size;
+			if (_label == null || _label.equals(""))
+				_label = new JLabel("<html>q<sub>"+size+"</sub>");
+			_area.setText(s);
+		}
+		else{
+			_label = new JLabel(DEFAULT_LABEL);
+			_area.setText(DEFAULT_LABEL);
+		}
 		_area.setVisible(true);
 		_area.setOpaque(false);
 		_area.setSize((int)(dimension), 15);
@@ -136,8 +144,6 @@ public class Node implements DiagramObject {
 		_area.setEditable(true);
 		_area.setEnabled(true);
 		_area.setBackground(new Color(0,0,0,0));
-		if (_label == null || _label.equals(""))
-			_label = new JLabel("<html>q<sub>"+size+"</sub>");
 		_area.getDocument().addDocumentListener(new HTMLParser(_label));
 		_area.addKeyListener(new EnterListener(_container, _area));
 		_label.setVisible(true);
@@ -312,7 +318,7 @@ public class Node implements DiagramObject {
 	public boolean resizing() {
 		return _resizing;
 	}
-	
+
 	/**
 	 * Sets whether node is currently being resized.
 	 * @param r
