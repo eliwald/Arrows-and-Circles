@@ -78,7 +78,11 @@ public class Edge implements DiagramObject, Cloneable {
         _offset = 0;
 		_direction = d;
 		_curve = new Arc2D.Double(Arc2D.OPEN);
-		_turn = true;
+		_turn = true;       
+		
+		//added support for self loop
+        _height = -100000.0;
+        
         setAreaAndLabel();
 	}
 	/**
@@ -141,12 +145,6 @@ public class Edge implements DiagramObject, Cloneable {
 		_area.setBorder(null);
 		
 		_curve = new Arc2D.Double(Arc2D.OPEN);
-		
-        //added support for self loop
-        if (_start == _end) 
-            _height = 5;
-        else 
-            _height = -100000.0;
         
         this.resetArc();
 		_area.setText(DEFAULT_STRING);
@@ -162,7 +160,7 @@ public class Edge implements DiagramObject, Cloneable {
         _area.addKeyListener(new EnterListener(_container, _area));
 		_label = new JLabel(DEFAULT_STRING);
 		_area.getDocument().addDocumentListener(new HTMLParser(_label));
-		_label.setVisible(true);
+		_label.setVisible(false);
 		_label.setOpaque(false);
 		_label.setSize(100, 20);
 		_label.setBackground(new Color(0,0,0,0));

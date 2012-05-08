@@ -12,25 +12,15 @@ import frontend.DrawingPanel;
 public class Diagram implements Cloneable {
 	private Collection<Node> _nodes;
 	private Collection<Edge> _edges;
-	private String _name;
 	private int _revision;
 	private DrawingPanel _container;
 
 	public Diagram() {
 		_nodes = new HashSet<Node>();
 		_edges = new HashSet<Edge>();
-		_name = "";
 		_revision = 0;
 	}
 
-	public String getName(){
-		return _name;
-	}
-
-	public void setName(String name) {
-		_name = name;
-	}
-	
 	public void setDrawingPanel(DrawingPanel container) { 
 		_container = container;
 	}
@@ -61,15 +51,14 @@ public class Diagram implements Cloneable {
 	
 	public Diagram clone() throws CloneNotSupportedException {
 		Diagram cloned = (Diagram) super.clone();
-		cloned.setName(getName());
 		cloned.setRevision(getRevision());
 		Collection<Node> cloned_nodes = new HashSet<Node>();
 		Collection<Node> old_nodes = getNodes();
 		Collection<Edge> cloned_edges = new HashSet<Edge>();
 		Collection<Edge> old_edges = getEdges();
 		
-		TreeMap<Node, Node> nodeMap = new TreeMap<Node, Node>();
-		TreeMap<Edge, Edge> edgeMap = new TreeMap<Edge, Edge>();
+		HashMap<Node, Node> nodeMap = new HashMap<Node, Node>();
+		HashMap<Edge, Edge> edgeMap = new HashMap<Edge, Edge>();
 		
 		for (Node oldNode : old_nodes) {
 			Node newNode = oldNode.clone();

@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
-import java.util.TreeMap;
+import java.util.HashMap;
 
 import backend.Diagram;
 import backend.Edge;
@@ -57,7 +57,7 @@ public class DiagramProject {
 	 */
 	public static DiagramProject newProject() {
 		DiagramProject project = new DiagramProject();
-		project._filename = "";
+		project._filename = null;
 		project._history = new HistoryStack(MAX_HISTORY);
 		project._loaded = false;
 		project._savedRevision = -1;
@@ -95,6 +95,14 @@ public class DiagramProject {
 		return _filename;
 	}
 	
+	/**
+	 * Set the filename.
+	 * @param filename
+	 */
+	public void setFilename(String filename) {
+		_filename = filename;
+	}
+	
 	/** 
 	 * Factory method that loads the saved project from a file. 
 	 * @throws IOException 
@@ -110,11 +118,7 @@ public class DiagramProject {
 		
 		// === READING DIAGRAM NAME ===
 		Diagram diagram = new Diagram();
-		if(!reader.nextName().equals("name")) {
-			throw new IOException();
-		}
-		diagram.setName(reader.nextString());
-		
+
 		// === READING DIAGRAM NODES ===
 		ArrayList<Node> nodes = new ArrayList<Node>();
 		if(!reader.nextName().equals("nodes")) {
@@ -266,20 +270,19 @@ public class DiagramProject {
 	public static void writeDiagram(File file, Diagram diagram) throws IOException {
 		
 		// Create a JSON writer
-		JsonWriter writer = new JsonWriter(new OutputStreamWriter(new FileOutputStream(file)));
+		OutputStreamWriter osWriter = new OutputStreamWriter(new FileOutputStream(file));
+		JsonWriter writer = new JsonWriter(osWriter);
 		
 		// Start writing data.
 		writer.beginObject();
 		
-		// Write the diagram name.
-		writer.name("name").value(diagram.getName());
-		
 		// Write the nodes data.
-		TreeMap<Node, Integer> nodeMap = new TreeMap<Node, Integer>();
+		HashMap<Node, Integer> nodeMap = new HashMap<Node, Integer>();
 		writer.name("nodes");
 		writer.beginArray();
 		for(Node node : diagram.getNodes()) {
-			nodeMap.put(node, nodeMap.size());
+			Integer size = nodeMap.size();
+			nodeMap.put(node, size);
 			writer.beginObject();
 			writer.name("x").value(node.getCenter().getX());
 			writer.name("y").value(node.getCenter().getY());
@@ -313,12 +316,12 @@ public class DiagramProject {
 				writer.name("arc_chord_height").value(edge.getHeight());
 				writer.name("arc_side").value(edge.getTurn() ? 1 : -1);
 			}
-			writer.endArray();
+			writer.endObject();
 		}
 		writer.endArray();
 		
-		
 		// Stop writing data.
 		writer.endObject();
+		writer.close();
 	}
 }
