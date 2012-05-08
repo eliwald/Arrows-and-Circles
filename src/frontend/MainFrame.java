@@ -6,6 +6,7 @@ package frontend;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -139,6 +140,10 @@ public class MainFrame extends javax.swing.JFrame {
 
 	//Max Value of the Sim Slider
 	private static final int MAX_SIM_SLIDER_VAL = 1000;
+	
+	//Default filename
+	private static final String DEFAULT_FILENAME = "Untitled";
+	private static final String FILENAME_EXT = ".json";
 	
 	/*
 	 * These are the GUI components.
@@ -768,7 +773,22 @@ public class MainFrame extends javax.swing.JFrame {
 	 * @param evt
 	 */
 	private void saveActionPerformed(java.awt.event.ActionEvent evt) {
-		// TODO add your handling code here:
+		try {
+			// Obtain the current tab.
+			DiagramProject project = drawingPanel1.getDiagramProject();
+			String filename = project.getFilename();
+			Diagram diagram = drawingPanel1.getDiagram();
+			if(filename == null) {
+				saveAsActionPerformed(evt); // needs Save As instead
+				return;
+			}
+			
+			File file = new File(filename);
+			DiagramProject.writeDiagram(file, diagram);
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -776,7 +796,53 @@ public class MainFrame extends javax.swing.JFrame {
 	 * @param evt
 	 */
 	private void saveAsActionPerformed(java.awt.event.ActionEvent evt) {
-		// TODO add your handling code here:
+		try {
+			// Obtain the current tab.
+			DiagramProject project = drawingPanel1.getDiagramProject();
+			Diagram diagram = drawingPanel1.getDiagram();
+			
+			File file = saveFileChooser();
+			File dir = file.getParentFile();
+			if(file.getName().equals(FILENAME_EXT)) {
+				File[] existFiles = dir.listFiles();
+				HashSet<String> filenames = new HashSet<String>();
+				for(int i = 0; i < existFiles.length; i++) {
+					filenames.add(existFiles[i].getName());
+				}
+				
+				String proposedName = DEFAULT_FILENAME + FILENAME_EXT;
+				if(!filenames.contains(proposedName)) {
+					file = new File(dir.getPath() + "/" + proposedName);
+				} else {
+					for(int i = 0; true; i++) {
+						proposedName = DEFAULT_FILENAME + "(" + i + ")" + FILENAME_EXT;
+						if(!filenames.contains(proposedName)) {
+							file = new File(dir.getPath() + "/" + proposedName);
+							break;
+						}
+					}
+				}
+			}
+			else {
+				if(!file.getName().endsWith(FILENAME_EXT)) {
+					file = new File(dir.getPath() + "/" + file.getName() + FILENAME_EXT);
+				}
+				if(file.exists()) {
+			        int result = JOptionPane.showConfirmDialog(this, "The file already exists. Would you like to overwrite anyway?", "File Existed", JOptionPane.YES_NO_OPTION);
+			        switch(result){
+			            case JOptionPane.YES_OPTION:
+			                break;
+			            case JOptionPane.NO_OPTION:
+			                return;
+			        }
+				}
+			}
+			jTabbedPane1.setTitleAt(jTabbedPane1.getSelectedIndex(), file.getName().substring(0, file.getName().length() - 5));
+			project.setFilename(file.getPath());
+			DiagramProject.writeDiagram(file, diagram);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/**
@@ -801,11 +867,11 @@ public class MainFrame extends javax.swing.JFrame {
 			try {
 				newTabActionPerformed(null, null);
 				Diagram diagram = DiagramProject.readDiagram(file, drawingPanel1);
-				DiagramProject project = DiagramProject.openProject(file.getName(), diagram);
+				DiagramProject project = DiagramProject.openProject(file.getPath(), diagram);
 				drawingPanel1.setDiagramProject(project);
-				jTabbedPane1.setTitleAt(jTabbedPane1.getSelectedIndex(), diagram.getName());
+				jTabbedPane1.setTitleAt(jTabbedPane1.getSelectedIndex(), file.getName().substring(0, file.getName().length() - 5));
 			} catch (IOException e) {
-				e.printStackTrace();
+				closeTabActionPerformed(evt);
 			}
 		}
 	}
@@ -1393,7 +1459,7 @@ public class MainFrame extends javax.swing.JFrame {
 	private List<File> openFileChooser() {
 		JFileChooser chooser = new JFileChooser();
 		FileFilter filter = new FileNameExtensionFilter("Diagram JSON File", "json");
-		chooser.addChoosableFileFilter(filter);
+		chooser.setFileFilter(filter);
 		chooser.setAcceptAllFileFilterUsed(false);
 		chooser.setMultiSelectionEnabled(true);
 		
@@ -1413,7 +1479,7 @@ public class MainFrame extends javax.swing.JFrame {
 	private File saveFileChooser() {
 		JFileChooser chooser = new JFileChooser();
 		FileFilter filter = new FileNameExtensionFilter("Diagram JSON File", "json");
-		chooser.addChoosableFileFilter(filter);
+		chooser.setFileFilter(filter);
 		chooser.setAcceptAllFileFilterUsed(false);
 		
 		int returnVal = chooser.showSaveDialog(null);
