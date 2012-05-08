@@ -17,6 +17,7 @@ public class Diagram implements Cloneable {
 	private MainFrame _frame;
 	private HashMap<Node, Node> _oldNodeToNew;
 	private HashMap<Edge, Edge> _newEdgeToOld;
+	private HashMap<Edge, Edge> _oldEdgeToNew;
 
 	public Diagram() {
 		_nodes = new HashSet<Node>();
@@ -74,6 +75,7 @@ public class Diagram implements Cloneable {
 		
 		HashMap<Node, Node> nodeMap = new HashMap<Node, Node>();
 		HashMap<Edge, Edge> edgeMap = new HashMap<Edge, Edge>();
+		HashMap<Edge, Edge> newEdgeMap = new HashMap<Edge, Edge>();
 		
 		for (Node oldNode : old_nodes) {
 			Node newNode = oldNode.clone();
@@ -84,18 +86,19 @@ public class Diagram implements Cloneable {
 		for (Edge oldEdge : old_edges) {
 			Edge newEdge = oldEdge.clone();
 			edgeMap.put(newEdge, oldEdge);
-			
+			newEdgeMap.put(oldEdge, newEdge);
 			cloned_edges.add(newEdge);
 		}
 		
 		_newEdgeToOld = edgeMap;
+		_oldEdgeToNew = newEdgeMap;
 		_oldNodeToNew = nodeMap;
 		
 		for (Node oldNode : old_nodes) {
 			Collection<Edge> connected = new HashSet<Edge>();
 			Node newNode = nodeMap.get(oldNode);
 			for(Edge e : oldNode.getConnected()) {
-				connected.add(edgeMap.get(e));
+				connected.add(newEdgeMap.get(e));
 			}
 			newNode.setConnected(connected);
 		}

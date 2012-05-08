@@ -925,6 +925,16 @@ public class MainFrame extends javax.swing.JFrame {
 	 */
 	private void redoActionPerformed(java.awt.event.ActionEvent evt) {
 		drawingPanel1.getDiagramProject().redo();
+		_nodesSelected = Collections.synchronizedSet(new HashSet<Node>());
+		_edgesSelected = Collections.synchronizedSet(new HashSet<Edge>());
+		for (Node n : drawingPanel1.getDiagram().getNodes()){
+			if (n.isSelected())
+				_nodesSelected.add(n);
+		}
+		for (Edge e : drawingPanel1.getDiagram().getEdges()){
+			if (e.isSelected())
+				_edgesSelected.add(e);
+		}
 		drawingPanel1.repaint();
 	}
 	
@@ -933,6 +943,16 @@ public class MainFrame extends javax.swing.JFrame {
 	 */
 	private void undoActionPerformed(java.awt.event.ActionEvent evt) {
 		drawingPanel1.getDiagramProject().undo();
+		_nodesSelected = Collections.synchronizedSet(new HashSet<Node>());
+		_edgesSelected = Collections.synchronizedSet(new HashSet<Edge>());
+		for (Node n : drawingPanel1.getDiagram().getNodes()){
+			if (n.isSelected())
+				_nodesSelected.add(n);
+		}
+		for (Edge e : drawingPanel1.getDiagram().getEdges()){
+			if (e.isSelected())
+				_edgesSelected.add(e);
+		}
 		drawingPanel1.repaint();
 	}
 	
@@ -992,9 +1012,26 @@ public class MainFrame extends javax.swing.JFrame {
 	 * @param evt
 	 */
 	private void quitActionPerformed(java.awt.event.ActionEvent evt) {
-		int ex = exitPrompt();
-		if (ex == 2) return;
-		System.exit(0);
+		int answer = 0;
+		while (drawingPanel1 != null && drawingPanel1.getDiagramProject() != null) {
+			if (!drawingPanel1.getDiagramProject().upToDate())
+				answer = exitPrompt();
+			if (answer == 1) {
+				saveActionPerformed(evt);
+			}
+			if (answer != 2) {
+				int currIndex = jTabbedPane1.getSelectedIndex();
+				jTabbedPane1.remove(currIndex);
+				if (jTabbedPane1.getSelectedComponent() != null){
+					jScrollPane1 = (JScrollPane)(jTabbedPane1.getSelectedComponent());
+					drawingPanel1 = (DrawingPanel)jScrollPane1.getViewport().getView();
+				}
+				else {
+					jScrollPane1 = null;
+					drawingPanel1 = null;
+				}
+			}
+		}
 	}
 	
 	/**
@@ -1034,8 +1071,7 @@ public class MainFrame extends javax.swing.JFrame {
 			}
 			return;
 		}
-		//TODO: Add to this if-statement the condition that checks whether or
-		//not the currently selected index has already been saved
+
 		if (jTabbedPane1.getSelectedIndex() != -1) {
 			int answer = 0;
 			if (!drawingPanel1.getDiagramProject().upToDate())

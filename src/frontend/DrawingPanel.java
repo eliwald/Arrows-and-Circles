@@ -123,7 +123,8 @@ public class DrawingPanel extends JPanel {
 						BasicStroke.JOIN_MITER,
 						3.0f, dash1, 0.0f));
 				g2.draw(n.getStartSymbol());
-				g2.setColor(java.awt.Color.BLUE);
+				g2.setColor(n.getCurrent() ? 
+						new java.awt.Color(204, 0, 51) : java.awt.Color.BLUE);
 				g2.setStroke(new BasicStroke(3));
 				g2.fill(n.getResize());
 				g2.draw(n.getResize());
@@ -146,11 +147,13 @@ public class DrawingPanel extends JPanel {
 			g2.setStroke(new BasicStroke(1));
 			if (n.isStart()) {
 				if (n.isSelected()){
-					g2.setColor(java.awt.Color.BLUE);
+					g2.setColor(n.getCurrent() ? 
+							new java.awt.Color(204, 0, 51) : java.awt.Color.BLUE);
 					g2.setStroke(new BasicStroke(3));
 				}
 				else{
-					g2.setColor(java.awt.Color.BLACK);
+					g2.setColor(n.getCurrent() ? 
+							new java.awt.Color(204, 0, 51) : java.awt.Color.BLACK);
 					g2.setStroke(new BasicStroke(1));
 				}
 				g2.draw(n.getStartSymbol());
