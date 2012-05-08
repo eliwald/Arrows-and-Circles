@@ -1182,7 +1182,7 @@ public class MainFrame extends javax.swing.JFrame {
 			_playPauseBtn.setIcon(new ImageIcon(PAUSE_FILEPATH));
 			simulation_move_forward();
 			if (_sim != null){
-				_simTimer = new Timer(_simSlide.getValue(), new SimListener());
+				_simTimer = new Timer(_speedSlider.getMaximum() - _speedSlider.getValue(), new SimListener());
 				_simTimer.start();
 			}
 			return;
