@@ -800,9 +800,10 @@ public class MainFrame extends javax.swing.JFrame {
 				continue;
 			}
 			try {
+				newTabActionPerformed(null, null);
 				Diagram diagram = DiagramProject.readDiagram(file, drawingPanel1);
 				DiagramProject project = DiagramProject.openProject(file.getName(), diagram);
-				newTabActionPerformed(null, project);
+				drawingPanel1.setDiagramProject(project);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -815,8 +816,9 @@ public class MainFrame extends javax.swing.JFrame {
 	 */
 	private List<DrawingPanel> getAllDrawingPanels() {
 		List<DrawingPanel> panels = new LinkedList<DrawingPanel>();
-		for (int i = 0; i < jTabbedPane1.getTabCount(); i ++)
-			panels.add((DrawingPanel) jTabbedPane1.getTabComponentAt(i));
+		for (int i = 0; i < jTabbedPane1.getTabCount(); i ++) {
+			panels.add((DrawingPanel) ((JScrollPane)jTabbedPane1.getComponentAt(i)).getViewport().getView());
+		}
 		return panels;
 	}
 	
@@ -1179,7 +1181,8 @@ public class MainFrame extends javax.swing.JFrame {
 		if (!_simTimer.isRunning()) {
 			_playPauseBtn.setIcon(new ImageIcon(PAUSE_FILEPATH));
 			simulation_move_forward();
-			_simTimer.start();
+			if (_sim != null)
+				_simTimer.start();
 			return;
 		}
 		else {

@@ -48,7 +48,7 @@ public class HistoryStack {
 	 * @throws CloneNotSupportedException 
 	 */
 	public Diagram getCurrentDiagram() throws CloneNotSupportedException {
-		return _current.clone();
+		return _current;
 	}
 	
 	/** 

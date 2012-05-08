@@ -27,7 +27,7 @@ public class HTMLParser implements DocumentListener{
 
 		public void insertUpdate(DocumentEvent e) {
 			try {
-				setLabelText(e);
+				_label.setText(setLabelText(e.getDocument().getText(0, e.getDocument().getLength())));
 			} catch (BadLocationException ex) {
 				Logger.getLogger(Node.class.getName()).log(Level.SEVERE, null, ex);
 			}
@@ -35,7 +35,7 @@ public class HTMLParser implements DocumentListener{
 
 		public void removeUpdate(DocumentEvent e) {
 			try {
-				setLabelText(e);
+				_label.setText(setLabelText(e.getDocument().getText(0, e.getDocument().getLength())));
 			} catch (BadLocationException ex) {
 				Logger.getLogger(Node.class.getName()).log(Level.SEVERE, null, ex);
 			}
@@ -43,7 +43,7 @@ public class HTMLParser implements DocumentListener{
 
 		public void changedUpdate(DocumentEvent e) {
 			try {
-				setLabelText(e);
+				_label.setText(setLabelText(e.getDocument().getText(0, e.getDocument().getLength())));
 			} catch (BadLocationException ex) {
 				Logger.getLogger(Node.class.getName()).log(Level.SEVERE, null, ex);
 			}
@@ -54,13 +54,12 @@ public class HTMLParser implements DocumentListener{
 		 * @throws BadLocationException
 		 */
 		
-		public void setLabelText(DocumentEvent e) throws BadLocationException{
-			String s = e.getDocument().getText(0, e.getDocument().getLength());
+		public static String setLabelText(String s) throws BadLocationException{
 			StringBuilder html = new StringBuilder("<html>");
 			int i = 0;
 			String[] _greekChars = {"beta", "alpha", "epsilon", "theta", "Theta"};
 			String[] _greekCodes = {"&#x03B2;", "&#x03B1;","&#x03B5;", "&#x03B8;", "&#x0398;"};
-			while (i < e.getDocument().getLength()){
+			while (i < s.length()){
 				if (s.charAt(i) != '_'){
 					if (s.charAt(i)=='/'){
 						//special case because html.
@@ -83,12 +82,12 @@ public class HTMLParser implements DocumentListener{
 				else{
 					i++;
 					html.append("<sub>");
-					while (i < e.getDocument().getLength() && s.charAt(i) <= '9' && s.charAt(i) >= '0' ){
+					while (i < s.length() && s.charAt(i) <= '9' && s.charAt(i) >= '0' ){
 						html.append(s.charAt(i++));
 					}
 					html.append("</sub>");
 				}
 			}
-			_label.setText(html.toString());
+			return html.toString();
 		}
 	}

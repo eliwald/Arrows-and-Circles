@@ -26,7 +26,7 @@ public class DrawingPanel extends JPanel {
 
 	public DrawingPanel(DiagramProject project) {
 		_project = project;
-		this.setBackground(Color.WHITE);
+		setBackground(Color.WHITE);
 	}
 
 	public Diagram getDiagram() {
@@ -41,6 +41,10 @@ public class DrawingPanel extends JPanel {
 
 	public DiagramProject getDiagramProject() {
 		return _project;
+	}
+	
+	public void setDiagramProject(DiagramProject project) {
+		_project = project;
 	}
 
 	public void clearSelected() {

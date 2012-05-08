@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.TreeMap;
 
 import backend.Diagram;
 import backend.Edge;
@@ -240,6 +241,9 @@ public class DiagramProject {
 				edge = new Edge(nodeStart, nodeEnd, edgeDirection, label, arcChordHeight, arcSide);
 			}
 			
+			nodeStart.addConnected(edge);
+			nodeEnd.addConnected(edge);
+			
 			// Add the edge to the diagram.
 			edge.setContainerAndArea(panel);
 			diagram.addEdge(edge);
@@ -268,6 +272,50 @@ public class DiagramProject {
 		writer.beginObject();
 		
 		// Write the diagram name.
+		writer.name("name").value(diagram.getName());
+		
+		// Write the nodes data.
+		TreeMap<Node, Integer> nodeMap = new TreeMap<Node, Integer>();
+		writer.name("nodes");
+		writer.beginArray();
+		for(Node node : diagram.getNodes()) {
+			nodeMap.put(node, nodeMap.size());
+			writer.beginObject();
+			writer.name("x").value(node.getCenter().getX());
+			writer.name("y").value(node.getCenter().getY());
+			writer.name("radius").value(node.getRadius());
+			writer.name("is_start").value(node.isStart());
+			writer.name("is_accept").value(node.isEnd());
+			writer.name("label").value(node.getTextField().getText());
+			writer.endObject();
+		}
+		writer.endArray();
+		
+		// Write the edges data.
+		writer.name("edges");
+		writer.beginArray();
+		for(Edge edge : diagram.getEdges()) {
+			writer.beginObject();
+			writer.name("node_start").value(nodeMap.get(edge.getStartNode()));
+			writer.name("node_end").value(nodeMap.get(edge.getEndNode()));
+			if(edge.getDirection() == EdgeDirection.SINGLE)
+				writer.name("edge_direction").value("SINGLE");
+			else if(edge.getDirection() == EdgeDirection.DOUBLE) 
+				writer.name("edge_direction").value("DOUBLE");
+			else if(edge.getDirection() == EdgeDirection.NONE) 
+				writer.name("edge_direction").value("NONE");
+			else
+				throw new IOException("Diagram contains invalid direction.");
+			writer.name("label").value(edge.getTextField().getText());
+			if(edge.getStartNode() == edge.getEndNode()) {
+				writer.name("angle").value(edge.getAngle());
+			} else {
+				writer.name("arc_chord_height").value(edge.getHeight());
+				writer.name("arc_side").value(edge.getTurn() ? 1 : -1);
+			}
+			writer.endArray();
+		}
+		writer.endArray();
 		
 		
 		// Stop writing data.

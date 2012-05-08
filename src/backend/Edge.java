@@ -584,12 +584,19 @@ public class Edge implements DiagramObject, Cloneable {
     public void setHeight(double h) {
     	_height = h;
     }
-    
+
     /**
      * @param t		The turn to set for the edge (used in drawing).
      */
     public void setTurn(boolean t) {
     	_turn = t;
+    }
+    
+    /**
+     * @return The turn to set for the edge (used in drawing).
+     */
+    public boolean getTurn() {
+    	return _turn;
     }
     
     /**

@@ -7,6 +7,7 @@ import java.util.HashSet;
 
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import javax.swing.text.BadLocationException;
 
 import frontend.*;
 
@@ -79,6 +80,20 @@ public class Node implements DiagramObject, Cloneable {
 		_startState = false;
 		_endState = false;
 		_selected = true;
+		
+		_area = new JTextField();
+		
+		if (DEFAULT_LABEL == null){
+			int size = _container.getDiagram().getNodes().size();
+			String s = "q_"+ size;
+			if (_label == null || _label.equals(""))
+				_label = new JLabel("<html>q<sub>"+size+"</sub>");
+			_area.setText(s);
+		}
+		else{
+			_label = new JLabel(DEFAULT_LABEL);
+			_area.setText(DEFAULT_LABEL);
+		}
 
 		setAreaAndLabel();
 	}
@@ -99,7 +114,16 @@ public class Node implements DiagramObject, Cloneable {
 		_endState = isAccept;
 		_connected = new HashSet<Edge>();
 		_selected = false;
-		_label = new JLabel(label);
+		String jlabel_text = "";
+		try {
+			jlabel_text = HTMLParser.setLabelText(label);
+		}
+		catch (BadLocationException e) {
+			e.printStackTrace();
+		}
+		_label = new JLabel(jlabel_text);
+		_area = new JTextField();
+		_area.setText(label);
 	}
 
 	/**
@@ -107,7 +131,6 @@ public class Node implements DiagramObject, Cloneable {
 	 */
 	public void setContainerAndLabel(DrawingPanel container) {
 		_container = container;
-
 		setAreaAndLabel();
 	}
 
@@ -121,21 +144,8 @@ public class Node implements DiagramObject, Cloneable {
 		double hypo = 2*_radius;
 		double temp = hypo*hypo;
 		double dimension = Math.sqrt(temp/2);
-		_area = new JTextField();
 		_area.setBorder(null);
-		if (DEFAULT_LABEL == null){
-			System.err.println(_container == null ? "NULL" : "NOT");
-			int size = _container.getDiagram().getNodes().size();
-			String s = "q_"+ size;
-			if (_label == null || _label.equals(""))
-				_label = new JLabel("<html>q<sub>"+size+"</sub>");
-			_area.setText(s);
-		}
-		else{
-			_label = new JLabel(DEFAULT_LABEL);
-			_area.setText(DEFAULT_LABEL);
-		}
-		_area.setVisible(true);
+		_area.setVisible(false);
 		_area.setOpaque(false);
 		_area.setSize((int)(dimension), 15);
 		_area.setHorizontalAlignment(JTextField.CENTER);
