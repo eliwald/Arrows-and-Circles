@@ -55,6 +55,7 @@ public class DrawingPanelMouseListener extends MouseAdapter {
 		//If there is a double click
 		if (evt.getClickCount() >=2 && mod.equals("Button1")){
 			_frame.getDrawing().getDiagramProject().pushCurrentOntoHistory("Added Node");
+			_frame.setStar();
 			
 			//If double click inside a node, toggle end state.
 			for (Node n : _frame.getDrawing().getDiagram().getNodes()){
@@ -252,12 +253,14 @@ public class DrawingPanelMouseListener extends MouseAdapter {
 				}
 				for (Node n : _frame.getNodesSelected()) {
 					Point2D.Double old_center = _tempPoint.get(n);
-					n.setCenter(old_center.getX(), old_center.getY());
+					if (n != null)
+						n.setCenter(old_center.getX(), old_center.getY());
 				}
 				Point2D.Double old_center_on_drag = _tempPoint.get(_frame.getNodeDragged());
 				_frame.getNodeDragged().setCenter(old_center_on_drag.getX(), old_center_on_drag.getY());
 				
 				_frame.getDrawing().getDiagramProject().pushCurrentOntoHistory("Moving Node");
+				_frame.setStar();
 				
 				Point2D.Double new_center_on_drag = tempCenterPoints.get(_frame.getNodeDragged());
 				_frame.getNodeDragged().setCenter(new_center_on_drag.getX(), new_center_on_drag.getY());
@@ -275,6 +278,7 @@ public class DrawingPanelMouseListener extends MouseAdapter {
 				_frame.getEdgeDragged().setAngle(tempAngle);
 				_frame.getEdgeDragged().setTurn(tempTurn);
 				_frame.getDrawing().getDiagramProject().pushCurrentOntoHistory("Moving Edge");
+				_frame.setStar();
 				
 				_frame.getEdgeDragged().setHeight(newHeight);
 				_frame.getEdgeDragged().setAngle(newAngle);
@@ -285,6 +289,7 @@ public class DrawingPanelMouseListener extends MouseAdapter {
 				
 				_frame.getResizing().setRadius(tempRadius);
 				_frame.getDrawing().getDiagramProject().pushCurrentOntoHistory("Resizing Node");
+				_frame.setStar();
 				_frame.getResizing().setRadius(newRadius);
 			}
 		}
@@ -296,6 +301,7 @@ public class DrawingPanelMouseListener extends MouseAdapter {
 				if (n.getCircle().contains(evt.getPoint())) {
 					//Undo/Redo
 					_frame.getDrawing().getDiagramProject().pushCurrentOntoHistory("Added Edge");
+					_frame.setStar();
 					
 					//Reset selected edges/nodes
 					_frame.resetSelected();

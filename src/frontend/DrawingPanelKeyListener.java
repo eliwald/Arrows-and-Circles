@@ -40,8 +40,10 @@ public class DrawingPanelKeyListener extends KeyAdapter {
 	private void drawingPanelKeyPressed(java.awt.event.KeyEvent evt) {
 		//If delete is pressed, delete all edges/nodes selected, and the edges connected to the selected nodes.
 		if(evt.getKeyCode() == KeyEvent.VK_DELETE || evt.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
-			if (_frame.getNodesSelected().size() > 0 || _frame.getEdgesSelected().size() > 0)
+			if (_frame.getNodesSelected().size() > 0 || _frame.getEdgesSelected().size() > 0) {
 				_frame.getDrawing().getDiagramProject().pushCurrentOntoHistory("Added Node");
+				_frame.setStar();
+			}
 			
 			for (Node n : _frame.getNodesSelected()){
 				Node connectedNode;

@@ -657,7 +657,9 @@ public class MainFrame extends javax.swing.JFrame {
 		jMenuItem8.setText("Exit");
 		jMenuItem8.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				quitActionPerformed(evt);
+				int answer = quitActionPerformed(null);
+				if (answer != 2)
+					dispose();
 			}
 		});
 		jMenu3.add(jMenuItem8);
@@ -723,9 +725,7 @@ public class MainFrame extends javax.swing.JFrame {
 		jMenuItemAbout.setText("About");
 		jMenuHelp.add(jMenuItemAbout);
 		jMenuItemAbout.addActionListener(new AboutActionListener());
-		
-		
-		jMenuBar2.add(jMenuHelp);
+
 		
 		jMenuExport.setText("Export");
 		
@@ -750,6 +750,7 @@ public class MainFrame extends javax.swing.JFrame {
 		jMenuExport.add(jMenuItemExportToPNG);
 		
 		jMenuBar2.add(jMenuExport);
+		jMenuBar2.add(jMenuHelp);
 
 		setJMenuBar(jMenuBar2);
 		
@@ -823,6 +824,7 @@ public class MainFrame extends javax.swing.JFrame {
 			File file = new File(filename);
 			DiagramProject.writeDiagram(file, diagram);
 			project.saved();
+			removeStar();
 		} catch (IOException e) {
 			//e.printStackTrace();
 		}
@@ -880,6 +882,7 @@ public class MainFrame extends javax.swing.JFrame {
 			project.setFilename(file.getPath());
 			DiagramProject.writeDiagram(file, diagram);
 			project.saved();
+			removeStar();
 		} catch (IOException e) {
 			//e.printStackTrace();
 		}
@@ -948,6 +951,14 @@ public class MainFrame extends javax.swing.JFrame {
 				_edgesSelected.add(e);
 		}
 		drawingPanel1.repaint();
+		if (drawingPanel1.getDiagramProject().upToDate()) {
+			removeStar();
+			jTabbedPane1.repaint();
+		}
+		else {
+			setStar();
+			jTabbedPane1.repaint();
+		}
 	}
 	
 	/**
@@ -966,6 +977,15 @@ public class MainFrame extends javax.swing.JFrame {
 				_edgesSelected.add(e);
 		}
 		drawingPanel1.repaint();
+		
+		if (drawingPanel1.getDiagramProject().upToDate()) {
+			removeStar();
+			jTabbedPane1.repaint();
+		}
+		else {
+			setStar();
+			jTabbedPane1.repaint();
+		}
 	}
 	
 	/**
@@ -1140,16 +1160,18 @@ public class MainFrame extends javax.swing.JFrame {
 	 * @param evt
 	 */
 	private void closeTabActionPerformed(java.awt.event.ActionEvent evt) {
-		if (drawingPanel1.getDiagramProject() == null) {
+		if (drawingPanel1 != null && drawingPanel1.getDiagramProject() == null) {
 			int currIndex = jTabbedPane1.getSelectedIndex();
-			jTabbedPane1.remove(currIndex);
-			if (jTabbedPane1.getSelectedComponent() != null){
-				jScrollPane1 = (JScrollPane)(jTabbedPane1.getSelectedComponent());
-				drawingPanel1 = (DrawingPanel)jScrollPane1.getViewport().getView();
-			}
-			else {
-				jScrollPane1 = null;
-				drawingPanel1 = null;
+			if (currIndex != -1) {
+				jTabbedPane1.remove(currIndex);
+				if (jTabbedPane1.getSelectedComponent() != null){
+					jScrollPane1 = (JScrollPane)(jTabbedPane1.getSelectedComponent());
+					drawingPanel1 = (DrawingPanel)jScrollPane1.getViewport().getView();
+				}
+				else {
+					jScrollPane1 = null;
+					drawingPanel1 = null;
+				}
 			}
 			return;
 		}
@@ -1779,6 +1801,23 @@ public class MainFrame extends javax.swing.JFrame {
 	public Robot getRobot() {
 		return _robot;
 	}
+	
+	public void setStar() {
+		if (jTabbedPane1.getSelectedIndex() != -1 && drawingPanel1.getDiagramProject() != null) {
+			int currIndex = jTabbedPane1.getSelectedIndex();
+			ImageIcon star = new ImageIcon("./src/img/star.png");
+			jTabbedPane1.setIconAt(currIndex, star);
+			jTabbedPane1.repaint();
+		}
+	}
+	
+	public void removeStar() {
+		if (jTabbedPane1.getSelectedIndex() != -1 && drawingPanel1.getDiagramProject() != null) {
+			int currIndex = jTabbedPane1.getSelectedIndex();
+			jTabbedPane1.setIconAt(currIndex, null);
+			jTabbedPane1.repaint();
+		}
+	}
 
 	/**
 	 * @param args the command line arguments
@@ -1810,5 +1849,5 @@ public class MainFrame extends javax.swing.JFrame {
 			}
 		});
 	}
-		}
+}
 
