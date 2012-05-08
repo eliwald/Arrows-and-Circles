@@ -70,7 +70,7 @@ public class AboutActionListener implements ActionListener {
 				"<tr> <td>_&#60;integer&#62;</td> " +
 				"<td> Make &#60;integer&#62; subscript</td>  </tr>" +
 				"<tr> <td>\\&#60;greek char name&#62;</td> " +
-				"<td> Create greek character (alpha, beta, epsilon, theta only)</td>  </tr>" +
+				"<td> Create greek character (alpha, beta, epsilon, theta, Theta only)</td>  </tr>" +
 		"</tr></tbody></table></p>" );
 		JScrollPane controls = new JScrollPane();
 		controls.setViewportView(edPane1);
