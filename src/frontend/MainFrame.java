@@ -23,6 +23,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
 
 import manager.DiagramProject;
+import manager.Export;
 
 import backend.*;
 
@@ -832,6 +833,8 @@ public class MainFrame extends javax.swing.JFrame {
 			Diagram diagram = drawingPanel1.getDiagram();
 			
 			File file = saveFileChooser();
+			if (file == null)
+				return;
 			File dir = file.getParentFile();
 			if(file.getName().equals(FILENAME_EXT)) {
 				File[] existFiles = dir.listFiles();
@@ -889,6 +892,9 @@ public class MainFrame extends javax.swing.JFrame {
 		
 		// Get the files to be opened.
 		List<File> files = openFileChooser();
+		
+		if (files == null)
+			return;
 		
 		// Iterate through each file and try to open.
 		for(File file : files) {
@@ -967,7 +973,16 @@ public class MainFrame extends javax.swing.JFrame {
 	 * This is what happens when you click undo.
 	 */
 	private void exportToLatexActionPerformed(java.awt.event.ActionEvent evt) {
-		//TODO: Add code to handle undo.
+		JTextArea latexText = new JTextArea();
+		latexText.setEditable(false);
+		if (drawingPanel1.getDiagramProject() != null)
+			latexText.setText(Export.toLatex(drawingPanel1.getDiagram()));
+		JDialog dialog = new JDialog();
+		dialog.setContentPane(latexText);
+		dialog.setPreferredSize(new Dimension(720, 480));
+		dialog.setSize(new Dimension(720, 480));
+		dialog.setLocation((int)this.getLocationOnScreen().getX() + 150, (int)this.getLocationOnScreen().getY() + 150);
+		dialog.setVisible(true);
 	}
 	
 	/**

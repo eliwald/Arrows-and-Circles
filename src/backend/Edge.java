@@ -3,6 +3,8 @@ package backend;
 
 import java.awt.*;
 import java.awt.geom.Arc2D;
+import java.awt.geom.Point2D;
+import java.awt.geom.Point2D.Double;
 
 import javax.swing.JLabel;
 import javax.swing.JTextField;
@@ -79,12 +81,12 @@ public class Edge implements DiagramObject, Cloneable {
         _offset = 0;
 		_direction = d;
 		_curve = new Arc2D.Double(Arc2D.OPEN);
-		_turn = true;
+		_turn = false;
 		_area = new JTextField(DEFAULT_STRING);
 		_label = new JLabel(DEFAULT_STRING);
 		
 		//added support for self loop
-        _height = -100000.0;
+        _height = 100000.0;
         
         setAreaAndLabel();
 	}
@@ -107,7 +109,7 @@ public class Edge implements DiagramObject, Cloneable {
 		_selected = false;
 		_offset = 0;
 		_curve = new Arc2D.Double(Arc2D.OPEN);
-		_turn = true;
+		_turn = false;
 	}
 	
 	/**
@@ -401,7 +403,7 @@ public class Edge implements DiagramObject, Cloneable {
     /**
      * @return		The forward arrow to draw on the screen.
      */
-    public Shape getForward() {
+    public Polygon getForward() {
     	
     	if(_start != _end) {
 	    	// Obtain the half segment vector from the start to the end.
@@ -503,7 +505,7 @@ public class Edge implements DiagramObject, Cloneable {
     /**
      * @return		The backward arrow to draw on the screen.
      */
-    public Shape getBackward() {
+    public Polygon getBackward() {
 
     	if(_start != _end) {
 	    	// Obtain the half segment vector from the start to the end.
@@ -764,4 +766,36 @@ public class Edge implements DiagramObject, Cloneable {
 		_end = end;
 	}
 	
+	public Point2D.Double getArcCenter() {
+		
+		if(_start == _end) {
+			// Obtain the center of the arc.
+        	double[] arcCenter = {
+        		_start.getCenter().getX() + Math.cos(_angle) * _start.getRadius() * Math.sqrt(2),
+        		_start.getCenter().getY() + Math.sin(_angle) * _start.getRadius() * Math.sqrt(2)
+        	};
+        	return new Point2D.Double(arcCenter[0], arcCenter[1]);
+		} 
+		else {
+			// Obtain the half segment vector from the start to the end.
+	    	double[] halfSegment = {
+	    		(_end.getCenter().getX() - _start.getCenter().getX()) / 2,
+	    		(_end.getCenter().getY() - _start.getCenter().getY()) / 2,
+	    	};
+	    	double halfSegmentSize = Math.sqrt(halfSegment[0] * halfSegment[0] + halfSegment[1] * halfSegment[1]);
+	    	
+	    	// Obtain the radius vector (from center of the arc to the end)
+	    	double[] radius = {
+	    		(-halfSegment[1]) / halfSegmentSize * _height + halfSegment[0],
+	    		(halfSegment[0]) / halfSegmentSize * _height + halfSegment[1]
+	    	};
+	        
+	    	// Obtain the center of the arc.
+	    	double[] arcCenter = {
+	    		_start.getCenter().getX() + radius[0],
+	    		_start.getCenter().getY() + radius[1]
+	    	};
+	    	return new Point2D.Double(arcCenter[0], arcCenter[1]);
+		}
+	}
 }

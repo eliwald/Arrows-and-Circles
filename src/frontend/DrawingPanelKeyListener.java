@@ -4,6 +4,7 @@ import java.awt.Point;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.Collection;
+import java.util.Collections;
 
 import backend.Edge;
 import backend.Node;
@@ -44,7 +45,7 @@ public class DrawingPanelKeyListener extends KeyAdapter {
 			
 			for (Node n : _frame.getNodesSelected()){
 				Node connectedNode;
-				Collection<Edge> edges = n.getConnected();
+				Collection<Edge> edges = Collections.synchronizedCollection(n.getConnected());
 				for (Edge e : edges){
 					connectedNode = e.getStartNode() == n ? e.getEndNode() : e.getStartNode();
 					_frame.getDrawing().getDiagram().getEdges().remove(e);
