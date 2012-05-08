@@ -64,7 +64,7 @@ public class MainFrame extends javax.swing.JFrame {
 	 * _simSlide is the Slider used to iterate through the simulation.  It is the bottom
 	 * 		slider, and can be dragged forward or backward to step through the simulation.
 	 * 
-	 * _curr NOT SURE WHAT THIS DOES; EDDIE MADE THIS.
+	 * _curr keeps track of the previous/current value of the simulation slider to get a difference
 	 * 
 	 * _autoChange is used when we want to change the slider's value without having
 	 * 		to go through the slider changed method; used for the second slider.  If you want
