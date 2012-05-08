@@ -984,7 +984,8 @@ public class MainFrame extends javax.swing.JFrame {
 		if (drawingPanel1.getDiagramProject() != null)
 			latexText.setText(Export.toLatex(drawingPanel1.getDiagram()));
 		JDialog dialog = new JDialog();
-		dialog.setContentPane(latexText);
+		JScrollPane scroll = new JScrollPane(latexText);
+		dialog.setContentPane(scroll);
 		dialog.setPreferredSize(new Dimension(720, 480));
 		dialog.setSize(new Dimension(720, 480));
 		dialog.setLocation((int)this.getLocationOnScreen().getX() + 150, (int)this.getLocationOnScreen().getY() + 150);

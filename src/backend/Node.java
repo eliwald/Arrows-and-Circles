@@ -116,7 +116,16 @@ public class Node implements DiagramObject, Cloneable {
 		_endState = isAccept;
 		_connected = new HashSet<Edge>();
 		_selected = false;
-		_label = new JLabel(label);
+		
+		String html = "";
+		try {
+			html = HTMLParser.setLabelText(label);
+		} catch (BadLocationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		_label = new JLabel(html);
 		_area = new JTextField(label);
 		_area.setText(label);
 	}
