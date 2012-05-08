@@ -2,23 +2,11 @@ package manager;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.io.Reader;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.InputMismatchException;
-import java.util.List;
-
-import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileFilter;
-import javax.swing.filechooser.FileNameExtensionFilter;
 
 import backend.Diagram;
 import backend.Edge;
@@ -76,21 +64,45 @@ public class DiagramProject {
 	}
 	
 	/**
+	 * Factory method that create a project from the given diagram and the filename.
+	 * @param filename The filename associated
+	 * @param openedDiagram The diagram opened.
+	 * @return
+	 */
+	public static DiagramProject openProject(String filename, Diagram openedDiagram) {
+		DiagramProject project = new DiagramProject();
+		project._filename = filename;
+		project._history = new HistoryStack(MAX_HISTORY, openedDiagram);
+		project._loaded = true;
+		project._savedRevision = 0;
+		return project;
+	}
+	
+	/**
 	 * Returns the History stack of the diagram.
 	 * @return History stack
 	 */
-	public HistoryStack getCurrentDiagram() {
+	public HistoryStack getHistoryStack() {
 		return _history;
+	}
+	
+	/**
+	 * Returns the History stack of the diagram.
+	 * @return History stack
+	 */
+	public String getFilename() {
+		return _filename;
 	}
 	
 	/** 
 	 * Factory method that loads the saved project from a file. 
 	 * @throws IOException 
 	 */
-	public static DiagramProject readDiagram(File file, DrawingPanel panel) throws IOException {
+	public static Diagram readDiagram(File file, DrawingPanel panel) throws IOException {
 		
 		// Creates a JSON Reader based on the given reader.
 		JsonReader reader = new JsonReader(new InputStreamReader(new FileInputStream(file)));
+		reader.setLenient(true);
 		
 		// Start reading data.
 		reader.beginObject();
@@ -126,7 +138,6 @@ public class DiagramProject {
 			if(!reader.nextName().equals("radius")) {
 				throw new IOException("Expecting radius when reading diagram file.");
 			}
-			JsonReader reader = new JsonReader(new InputStreamReader (new FileInputStream(file)));
 			double radius = reader.nextDouble();
 
 			if(!reader.nextName().equals("is_start")) {
@@ -237,28 +248,29 @@ public class DiagramProject {
 		}
 		reader.endArray();
 		
-		// Create the diagram project
-		DiagramProject project = new DiagramProject();
-		project._filename = file.getName();
-		project._history = new HistoryStack(MAX_HISTORY, diagram);
-		project._loaded = true;
-		project._savedRevision = 0;
+		// Stop reading data.
+		reader.endObject();
+		reader.close();
 		
-		return project;
+		return diagram;
 	}
 
 	/** 
 	 * Factory method that writes the project to the file. 
 	 * @throws IOException 
 	 */
-	public static void writeDiagram(File file) throws IOException {
+	public static void writeDiagram(File file, Diagram diagram) throws IOException {
 		
 		// Create a JSON writer
 		JsonWriter writer = new JsonWriter(new OutputStreamWriter(new FileOutputStream(file)));
 		
-		
 		// Start writing data.
+		writer.beginObject();
+		
+		// Write the diagram name.
 		
 		
+		// Stop writing data.
+		writer.endObject();
 	}
 }

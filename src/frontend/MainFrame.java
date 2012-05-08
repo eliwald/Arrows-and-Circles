@@ -7,6 +7,7 @@ package frontend;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.List;
 import java.util.logging.Level;
@@ -19,6 +20,8 @@ import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
+
+import manager.DiagramProject;
 
 import backend.*;
 
@@ -216,7 +219,7 @@ public class MainFrame extends javax.swing.JFrame {
 		jSplitPane2 = new javax.swing.JSplitPane();
 		jTabbedPane1 = new javax.swing.JTabbedPane();
 		jScrollPane1 = new javax.swing.JScrollPane();
-		drawingPanel1 = new frontend.DrawingPanel();
+		drawingPanel1 = new frontend.DrawingPanel(DiagramProject.newProject());
 		jSplitPane3 = new javax.swing.JSplitPane();
 		jPanel1 = new javax.swing.JPanel();
 		_singlyBtn = new javax.swing.JRadioButton();
@@ -572,7 +575,7 @@ public class MainFrame extends javax.swing.JFrame {
 		jMenuItem3.setText("New");
 		jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				newTabActionPerformed(evt);
+				newTabActionPerformed(evt, DiagramProject.newProject());
 			}
 		});
 		jMenu3.add(jMenuItem3);
@@ -743,9 +746,9 @@ public class MainFrame extends javax.swing.JFrame {
 	 * Sets all appropriate listeners, and adds the new tab.
 	 * @param evt	The ActionEvent associated with the tab menu item being clicked.
 	 */
-	private void newTabActionPerformed(java.awt.event.ActionEvent evt) {
+	private void newTabActionPerformed(java.awt.event.ActionEvent evt, DiagramProject project) {
 		javax.swing.JScrollPane newPane = new javax.swing.JScrollPane();
-		DrawingPanel newPanel = new DrawingPanel();
+		DrawingPanel newPanel = new DrawingPanel(project);
 		newPane.setViewportView(newPanel);
 		jScrollPane1 = newPane;
 		drawingPanel1 = newPanel;
@@ -781,7 +784,40 @@ public class MainFrame extends javax.swing.JFrame {
 	 * This is what happens when you click open.
 	 */
 	private void openActionPerformed(java.awt.event.ActionEvent evt) {
-		//TODO: Add code to handle opening.
+		// Obtain all opened tabs.
+		List<DrawingPanel> panels = getAllDrawingPanels();
+		HashSet<String> filenames = new HashSet<String>();
+		for(DrawingPanel panel : panels) {
+			filenames.add(panel.getDiagramProject().getFilename());
+		}
+		
+		// Get the files to be opened.
+		List<File> files = openFileChooser();
+		
+		// Iterate through each file and try to open.
+		for(File file : files) {
+			if(filenames.contains(file.getName())) {
+				continue;
+			}
+			try {
+				Diagram diagram = DiagramProject.readDiagram(file, drawingPanel1);
+				DiagramProject project = DiagramProject.openProject(file.getName(), diagram);
+				newTabActionPerformed(null, project);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	/**
+	 * Gets all the drawing panels.
+	 * @return Returns all the drawing panels over all the tabs.
+	 */
+	private List<DrawingPanel> getAllDrawingPanels() {
+		List<DrawingPanel> panels = new LinkedList<DrawingPanel>();
+		for (int i = 0; i < jTabbedPane1.getTabCount(); i ++)
+			panels.add((DrawingPanel) jTabbedPane1.getTabComponentAt(i));
+		return panels;
 	}
 	
 	/**
@@ -1348,7 +1384,7 @@ public class MainFrame extends javax.swing.JFrame {
 	 * then it returns a list of File objects from the selected files.
 	 * @return List of File objects to open.
 	 */
-	public List<File> openFileChooser() {
+	private List<File> openFileChooser() {
 		JFileChooser chooser = new JFileChooser();
 		FileFilter filter = new FileNameExtensionFilter("Diagram JSON File", "json");
 		chooser.addChoosableFileFilter(filter);
@@ -1368,7 +1404,7 @@ public class MainFrame extends javax.swing.JFrame {
 	 * then it returns a File object to write data to.
 	 * @return File object to save to.
 	 */
-	public File saveFileChooser() {
+	private File saveFileChooser() {
 		JFileChooser chooser = new JFileChooser();
 		FileFilter filter = new FileNameExtensionFilter("Diagram JSON File", "json");
 		chooser.addChoosableFileFilter(filter);

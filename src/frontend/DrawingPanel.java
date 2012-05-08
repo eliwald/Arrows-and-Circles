@@ -9,6 +9,8 @@ import java.awt.geom.Ellipse2D;
 
 import javax.swing.JPanel;
 
+import manager.DiagramProject;
+
 import backend.*;
 
 /**
@@ -18,26 +20,36 @@ import backend.*;
 
 public class DrawingPanel extends JPanel {
 
-	private Diagram _diagram;
+	private DiagramProject _project;
 	public Shape _progressLine;
 	private Rectangle _selectRectangle;
 
-	public DrawingPanel() {
-		_diagram = new Diagram();
+	public DrawingPanel(DiagramProject project) {
+		_project = project;
 		this.setBackground(Color.WHITE);
 	}
 
 	public Diagram getDiagram() {
-		return _diagram;
+		Diagram diagram = null;
+		try {
+			diagram = _project.getHistoryStack().getCurrentDiagram();
+		} catch(CloneNotSupportedException e) {
+			e.printStackTrace();
+		}
+		return diagram;
 	}
 
-	public void clearSelected(){
-		for (Node n : _diagram.getNodes()){
+	public DiagramProject getDiagramProject() {
+		return _project;
+	}
+
+	public void clearSelected() {
+		for (Node n : getDiagram().getNodes()){
 			n.setSelected(false);
 			n.getTextField().setVisible(false);
 			n.getLabel().setVisible(true);
 		}
-		for (Edge e : _diagram.getEdges()){
+		for (Edge e : getDiagram().getEdges()){
 			e.setSelected(false);
 			e.getTextField().setVisible(false);
 			e.getLabel().setVisible(true);
@@ -45,10 +57,10 @@ public class DrawingPanel extends JPanel {
 	}
 
 	public void clearCurrent() {
-		for (Node n : _diagram.getNodes()){
+		for (Node n : getDiagram().getNodes()){
 			n.setCurrent(false);
 		}
-		for (Edge e : _diagram.getEdges()){
+		for (Edge e : getDiagram().getEdges()){
 			e.setCurrent(false);
 		}
 	}
@@ -56,8 +68,8 @@ public class DrawingPanel extends JPanel {
 	public Node addNode(Point p) {
 		clearSelected();
 		Node n = new Node(p.x,p.y, this);
-		_diagram.addNode(n);
-		if (_diagram.getNodes().size() == 1) {
+		getDiagram().addNode(n);
+		if (getDiagram().getNodes().size() == 1) {
 			n.setStart(true);
 		}
 		repaint();
@@ -65,41 +77,11 @@ public class DrawingPanel extends JPanel {
 
 	}
 
-	/*public void addEdge(Node n1, Node n2) {
-    	if (n1 != null && n2 != null) {
-    		clearAll();
-//    		DiagramProject dp = new DiagramProject();
-//    		dp.modify(new DiagramModifyAction() {
-//
-//				@Override
-//				public boolean modify(Diagram diagram) {
-//					Edge e = new Edge(n1,n2,n1.getCenter(),n2.getCenter());
-//					diagram.addEdge(e);
-//					return false;
-//				}
-//
-//				@Override
-//				public String message() {
-//					// TODO Auto-generated method stub
-//					return null;
-//				}
-//			});
-    		Edge e = new Edge(n1,n2,n1.getCenter(),n2.getCenter(), this,null);
-            n1.addConnected(e);
-            n2.addConnected(e);
-    		_diagram.addEdge(e);
-	        repaint();
-    	}
-    }*/
-
-
-
-	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g); 
 		Graphics2D g2 = (Graphics2D) g;
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		for (Edge e: _diagram.getEdges()) {
+		for (Edge e: getDiagram().getEdges()) {
 			g2.setColor(java.awt.Color.BLACK);
 			g2.setStroke(new BasicStroke(1));
 			if(e.isSelected()){
@@ -126,7 +108,7 @@ public class DrawingPanel extends JPanel {
 			g2.setStroke(new BasicStroke(1));
 			g2.draw(_progressLine);
 		}
-		for (Node n : _diagram.getNodes()){
+		for (Node n : getDiagram().getNodes()){
 			g2.setColor(java.awt.Color.WHITE);
 			g2.setStroke(new BasicStroke(1));
 			Ellipse2D.Double ellipse = n.resetCircle();
