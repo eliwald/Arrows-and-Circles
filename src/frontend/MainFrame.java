@@ -804,6 +804,7 @@ public class MainFrame extends javax.swing.JFrame {
 				Diagram diagram = DiagramProject.readDiagram(file, drawingPanel1);
 				DiagramProject project = DiagramProject.openProject(file.getName(), diagram);
 				drawingPanel1.setDiagramProject(project);
+				jTabbedPane1.setTitleAt(jTabbedPane1.getSelectedIndex(), diagram.getName());
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
