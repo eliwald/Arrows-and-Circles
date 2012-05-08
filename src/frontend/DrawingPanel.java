@@ -20,6 +20,7 @@ import backend.*;
 
 public class DrawingPanel extends JPanel {
 
+	private static final double SMALLER_RADIUS = 4;
 	private DiagramProject _project;
 	public Shape _progressLine;
 	private Rectangle _selectRectangle;
@@ -136,7 +137,7 @@ public class DrawingPanel extends JPanel {
 			}
 
 			if (n.isEnd()) {
-				double newRad = n.getRadius()-4;
+				double newRad = n.getRadius() - SMALLER_RADIUS;
 				double x = n.getCenter().x;
 				double y = n.getCenter().y;
 				g2.draw(new Ellipse2D.Double(x-newRad,y-newRad,newRad*2,newRad*2));
