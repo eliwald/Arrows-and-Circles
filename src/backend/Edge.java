@@ -14,7 +14,7 @@ import frontend.*;
  * @author ewald
  *
  */
-public class Edge implements DiagramObject {
+public class Edge implements DiagramObject, Cloneable {
 	
 	/*
 	 * _start and _end are the Start/End nodes of the edge.
@@ -198,7 +198,7 @@ public class Edge implements DiagramObject {
         return c;
     }
     
-	public Object clone() throws CloneNotSupportedException {
+	public Edge clone() throws CloneNotSupportedException {
 		Edge cloned = (Edge) super.clone();
 		cloned.setStartNode(getStartNode());
 		cloned.setEndNode(getEndNode());

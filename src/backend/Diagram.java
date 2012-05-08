@@ -2,16 +2,19 @@ package backend;
 
 import java.util.*;
 
+import frontend.DrawingPanel;
+
 /**
  * 
  * @author ewald
  *
  */
-public class Diagram {
+public class Diagram implements Cloneable {
 	private Collection<Node> _nodes;
 	private Collection<Edge> _edges;
 	private String _name;
 	private int _revision;
+	private DrawingPanel _container;
 
 	public Diagram() {
 		_nodes = new HashSet<Node>();
@@ -26,6 +29,10 @@ public class Diagram {
 
 	public void setName(String name) {
 		_name = name;
+	}
+	
+	public void setDrawingPanel(DrawingPanel container) { 
+		_container = container;
 	}
 
 	public boolean addNode(Node n) {
@@ -52,7 +59,7 @@ public class Diagram {
 		return _edges;
 	}
 	
-	public Object clone() throws CloneNotSupportedException {
+	public Diagram clone() throws CloneNotSupportedException {
 		Diagram cloned = (Diagram) super.clone();
 		cloned.setName(getName());
 		cloned.setRevision(getRevision());
@@ -60,11 +67,33 @@ public class Diagram {
 		Collection<Node> old_nodes = getNodes();
 		Collection<Edge> cloned_edges = new HashSet<Edge>();
 		Collection<Edge> old_edges = getEdges();
-		for (Node n : old_nodes) {
-			cloned_nodes.add((Node) n.clone());
+		
+		TreeMap<Node, Node> nodeMap = new TreeMap<Node, Node>();
+		TreeMap<Edge, Edge> edgeMap = new TreeMap<Edge, Edge>();
+		
+		for (Node oldNode : old_nodes) {
+			Node newNode = oldNode.clone();
+			newNode.setContainerAndLabel(_container);
+			nodeMap.put(oldNode, newNode);
+			cloned_nodes.add(newNode);
 		}
-		for (Edge e : old_edges) {
-			cloned_edges.add((Edge) e.clone());
+		for (Edge oldEdge : old_edges) {
+			Edge newEdge = oldEdge.clone();
+			newEdge.setContainerAndArea(_container);
+			edgeMap.put(oldEdge, newEdge);
+			cloned_edges.add(newEdge);
+		}
+		
+		for (Node newNode : cloned_nodes) {
+			Collection<Edge> connected = new HashSet<Edge>();
+			for(Edge e : newNode.getConnected()) {
+				connected.add(edgeMap.get(e));
+			}
+			newNode.setConnected(connected);
+		}
+		for (Edge newEdge : old_edges) {
+			newEdge.setStartNode(nodeMap.get(newEdge.getStartNode()));
+			newEdge.setEndNode(nodeMap.get(newEdge.getEndNode()));
 		}
 		return cloned;
 	}

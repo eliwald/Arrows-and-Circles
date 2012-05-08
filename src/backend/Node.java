@@ -2,13 +2,11 @@ package backend;
 
 import java.awt.*;
 import java.awt.geom.*;
-import java.awt.geom.Point2D.Double;
 import java.util.Collection;
 import java.util.HashSet;
 
 import javax.swing.JLabel;
 import javax.swing.JTextField;
-import javax.swing.border.Border;
 
 import frontend.*;
 
@@ -17,7 +15,7 @@ import frontend.*;
  *
  * @author ewald
  */
-public class Node implements DiagramObject {
+public class Node implements DiagramObject, Cloneable {
 	/*
 	 * _center is the center point of this node.
 	 * 
@@ -126,6 +124,7 @@ public class Node implements DiagramObject {
 		_area = new JTextField();
 		_area.setBorder(null);
 		if (DEFAULT_LABEL == null){
+			System.err.println(_container == null ? "NULL" : "NOT");
 			int size = _container.getDiagram().getNodes().size();
 			String s = "q_"+ size;
 			if (_label == null || _label.equals(""))
@@ -163,20 +162,19 @@ public class Node implements DiagramObject {
 	/**
 	 * Returns a full clone of this node (as opposed to a shallow clone).
 	 */
-	public Object clone() throws CloneNotSupportedException {
+	public Node clone() throws CloneNotSupportedException {
 		Node clonedObject = (Node) super.clone();
 		Point2D.Double clonedCenter = (Point2D.Double) _center.clone();
 		clonedObject.setCenter(clonedCenter.getX(), clonedCenter.getY());
 		clonedObject.setRadius(_radius);
 		Collection<Edge> connected = new HashSet<Edge>();
 		for(Edge e : _connected) {
-			connected.add((Edge) e.clone());
+			connected.add(e);
 		}
 		clonedObject.setConnected(connected);
 		clonedObject.setStart(_startState);
 		clonedObject.setEnd(_endState);
 		clonedObject.setSelected(_selected);
-		clonedObject.setContainerAndLabel(_container);
 		return clonedObject;
 	}
 
