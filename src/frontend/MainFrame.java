@@ -209,32 +209,6 @@ public class MainFrame extends javax.swing.JFrame {
 		} catch (AWTException ex) {
 			Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
 		}
-		this.addWindowListener(new WindowListener(){
-
-			@Override
-			public void windowActivated(WindowEvent e) {}
-
-			@Override
-			public void windowClosed(WindowEvent e) {}
-
-			@Override
-			public void windowClosing(WindowEvent e) {
-				quitActionPerformed(null);
-			}
-
-			@Override
-			public void windowDeactivated(WindowEvent e) {}
-
-			@Override
-			public void windowDeiconified(WindowEvent e) {}
-
-			@Override
-			public void windowIconified(WindowEvent e) {}
-
-			@Override
-			public void windowOpened(WindowEvent e) {}
-			
-		});
 		initComponents();
 	}
 
@@ -291,7 +265,39 @@ public class MainFrame extends javax.swing.JFrame {
 		jMenuItemSetDefaultEdge = new JMenuItem();
 		jMenuItemSetDefaultNode = new JMenuItem();
 
-		setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+		addWindowListener(new WindowListener() {
+			@Override
+			public void windowOpened(WindowEvent e) {
+			}
+			
+			@Override
+			public void windowIconified(WindowEvent e) {
+			}
+			
+			@Override
+			public void windowDeiconified(WindowEvent e) {
+			}
+			
+			@Override
+			public void windowDeactivated(WindowEvent e) {
+			}
+			
+			@Override
+			public void windowClosing(WindowEvent e) {
+				int answer = quitActionPerformed(null);
+				if (answer != 2)
+					System.exit(0);
+			}
+			
+			@Override
+			public void windowClosed(WindowEvent e) {
+			}
+			
+			@Override
+			public void windowActivated(WindowEvent e) {
+			}
+		});
+		setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
 		setTitle("Arrows & Circles");
 
 		//add listener to change current drawing panel when switching tabs
@@ -1026,11 +1032,14 @@ public class MainFrame extends javax.swing.JFrame {
 	 * This gets called when the user hits ctrl-Q to quit the program.
 	 * @param evt
 	 */
-	private void quitActionPerformed(java.awt.event.ActionEvent evt) {
+	private int quitActionPerformed(java.awt.event.ActionEvent evt) {
 		int answer = 0;
-		while (drawingPanel1 != null && drawingPanel1.getDiagramProject() != null) {
+		while (drawingPanel1 != null && drawingPanel1.getDiagramProject() != null && answer != 2) {
 			if (!drawingPanel1.getDiagramProject().upToDate())
 				answer = exitPrompt();
+			else
+				answer = 0;
+			
 			if (answer == 1) {
 				saveActionPerformed(evt);
 			}
@@ -1047,6 +1056,7 @@ public class MainFrame extends javax.swing.JFrame {
 				}
 			}
 		}
+		return answer;
 	}
 	
 	/**
