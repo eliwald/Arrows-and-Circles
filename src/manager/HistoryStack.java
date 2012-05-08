@@ -47,7 +47,7 @@ public class HistoryStack {
 	 * @return the current diagram in the history.
 	 */
 	public Diagram getCurrentDiagram() {
-		return _current;
+		return (Diagram) _current.clone();
 	}
 	
 	/** 

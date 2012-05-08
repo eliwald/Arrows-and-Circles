@@ -7,6 +7,7 @@ package frontend;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.*;
+import java.io.File;
 import java.util.*;
 import java.util.List;
 import java.util.logging.Level;
@@ -16,6 +17,8 @@ import javax.swing.*;
 import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
 
 import backend.*;
@@ -1317,6 +1320,45 @@ public class MainFrame extends javax.swing.JFrame {
 			case 2: _helpText.setText(help_message_text_in_node_selected);
 			case 3: _helpText.setText(help_messate_text_in_edge);
 			default: _helpText.setText(help_message_text);
+		}
+	}
+	
+	/**
+	 * This procedure pops up a file chooser so that the user can select (multiple) files to load,
+	 * then it returns a list of File objects from the selected files.
+	 * @return List of File objects to open.
+	 */
+	public List<File> openFileChooser() {
+		JFileChooser chooser = new JFileChooser();
+		FileFilter filter = new FileNameExtensionFilter("Diagram JSON File", "json");
+		chooser.addChoosableFileFilter(filter);
+		chooser.setAcceptAllFileFilterUsed(false);
+		chooser.setMultiSelectionEnabled(true);
+		
+		int returnVal = chooser.showOpenDialog(null);
+		if(returnVal == JFileChooser.APPROVE_OPTION) {
+			return Arrays.asList(chooser.getSelectedFiles());
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * This procedure pops up a file chooser so that the user can select one file to save to,
+	 * then it returns a File object to write data to.
+	 * @return File object to save to.
+	 */
+	public File saveFileChooser() {
+		JFileChooser chooser = new JFileChooser();
+		FileFilter filter = new FileNameExtensionFilter("Diagram JSON File", "json");
+		chooser.addChoosableFileFilter(filter);
+		chooser.setAcceptAllFileFilterUsed(false);
+		
+		int returnVal = chooser.showSaveDialog(null);
+		if(returnVal == JFileChooser.APPROVE_OPTION) {
+			return chooser.getSelectedFile();
+		} else {
+			return null;
 		}
 	}
 	
