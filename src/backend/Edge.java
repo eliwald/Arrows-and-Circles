@@ -198,6 +198,17 @@ public class Edge implements DiagramObject {
         return c;
     }
     
+	public Object clone() throws CloneNotSupportedException {
+		Edge cloned = (Edge) super.clone();
+		cloned.setStartNode(getStartNode());
+		cloned.setEndNode(getEndNode());
+		cloned.setDirection(getDirection());
+		cloned.setAngle(getAngle());
+		cloned.setHeight(getHeight());
+		cloned.setTurn(_turn);
+		return cloned;
+	}
+    
     /**
      * This method returns the shape that we should draw on the screen to
      * represent the edge.
@@ -714,5 +725,12 @@ public class Edge implements DiagramObject {
 		return _height;
 	}
 	
+	public void setStartNode(Node st) {
+		_start = st;
+	}
+	
+	public void setEndNode(Node end) {
+		_end = end;
+	}
 	
 }

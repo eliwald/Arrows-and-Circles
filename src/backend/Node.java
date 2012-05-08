@@ -79,7 +79,6 @@ public class Node implements DiagramObject {
 		_connected = new HashSet<Edge>();
 		_startState = false;
 		_endState = false;
-		_offset = new Point(0,0);
 		_selected = true;
 
 		setAreaAndLabel();
@@ -99,7 +98,6 @@ public class Node implements DiagramObject {
 		_radius = radius;
 		_startState = isStart;
 		_endState = isAccept;
-		_offset = new Point(0,0);
 		_connected = new HashSet<Edge>();
 		_selected = false;
 		_label = new JLabel(label);
@@ -115,10 +113,12 @@ public class Node implements DiagramObject {
 	}
 
 	/**
-	 * Helper for both of the constructors. Sets up the JTextField used to edit the node's name, and the jlabel used to 
+	 * Helper for both of the constructors. Sets up the JTextField used to edit the node's name, and the JLabel used to 
 	 * display the name in HTML when the node is not selected.
 	 */
 	private void setAreaAndLabel() {
+		_offset = new Point(0,0);
+		
 		double hypo = 2*_radius;
 		double temp = hypo*hypo;
 		double dimension = Math.sqrt(temp/2);
@@ -153,12 +153,39 @@ public class Node implements DiagramObject {
 		_startSymbol.addPoint((int)(this.getCenter().x - this.getRadius() - 20),(int) (this.getCenter().y + 10));
 		_startSymbol.addPoint((int)(this.getCenter().x - this.getRadius() - 20),(int) (this.getCenter().y - 10));
 	}
+	
+	/**
+	 * Returns a full clone of this node (as opposed to a shallow clone).
+	 */
+	public Object clone() throws CloneNotSupportedException {
+		Node clonedObject = (Node) super.clone();
+		Point2D.Double clonedCenter = (Point2D.Double) _center.clone();
+		clonedObject.setCenter(clonedCenter.getX(), clonedCenter.getY());
+		clonedObject.setRadius(_radius);
+		Collection<Edge> connected = new HashSet<Edge>();
+		for(Edge e : _connected) {
+			connected.add((Edge) e.clone());
+		}
+		clonedObject.setConnected(connected);
+		clonedObject.setStart(_startState);
+		clonedObject.setEnd(_endState);
+		clonedObject.setSelected(_selected);
+		clonedObject.setContainerAndLabel(_container);
+		return clonedObject;
+	}
 
 	/**
 	 * Returns the "start symbol" (a triangle) associated with this node for toggling start state.
 	 */
 	public Polygon getStartSymbol(){
 		return _startSymbol;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setConnected(Collection<Edge> connected) {
+		_connected = connected;
 	}
 
 	/**

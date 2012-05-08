@@ -1312,10 +1312,18 @@ public class MainFrame extends javax.swing.JFrame {
 	 */
 	public void setHelpText(int text) {
 		switch (text) {
-			case 0: _helpText.setText(help_message_text);
-			case 1: _helpText.setText(help_message_text_in_node_unselected);
-			case 2: _helpText.setText(help_message_text_in_node_selected);
-			case 3: _helpText.setText(help_messate_text_in_edge);
+			case 0: 
+				_helpText.setText(help_message_text);
+				break;
+			case 1: 
+				_helpText.setText(help_message_text_in_node_unselected);
+				break;
+			case 2:
+				_helpText.setText(help_message_text_in_node_selected);
+				break;
+			case 3:
+				_helpText.setText(help_messate_text_in_edge);
+				break;
 			default: _helpText.setText(help_message_text);
 		}
 	}

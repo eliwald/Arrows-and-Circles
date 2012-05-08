@@ -218,19 +218,19 @@ public class DrawingPanelMouseMotionListener extends MouseMotionAdapter {
 		_frame.setMouseLoc(evt.getPoint());
 		_frame.setEdgeStart(null);
 		boolean changed_help_text = false;
+		for (Edge e : _frame.getDrawing().getDiagram().getEdges()) {
+			if (e.intersects(_frame.getMouseLoc().getX(), _frame.getMouseLoc().getY())) {
+				//Set the help text of the bottom bar
+				_frame.setHelpText(3);
+				changed_help_text = true;
+			}
+		}
 		for (Node n : _frame.getDrawing().getDiagram().getNodes()) {
 			if (n.getCircle().contains(_frame.getMouseLoc()) || (n.isStart() && n.getStartSymbol().contains(_frame.getMouseLoc()))) {
 				if (n.isSelected())
 					_frame.setHelpText(2);
 				else
 					_frame.setHelpText(1);
-				changed_help_text = true;
-			}
-		}
-		for (Edge e : _frame.getDrawing().getDiagram().getEdges()) {
-			if (e.intersects(_frame.getMouseLoc().getX(), _frame.getMouseLoc().getY())) {
-				//Set the help text of the bottom bar
-				_frame.setHelpText(3);
 				changed_help_text = true;
 			}
 		}
