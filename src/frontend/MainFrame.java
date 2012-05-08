@@ -987,6 +987,19 @@ public class MainFrame extends javax.swing.JFrame {
 	 * @param evt
 	 */
 	private void closeTabActionPerformed(java.awt.event.ActionEvent evt) {
+		if (drawingPanel1.getDiagramProject() == null) {
+			int currIndex = jTabbedPane1.getSelectedIndex();
+			jTabbedPane1.remove(currIndex);
+			if (jTabbedPane1.getSelectedComponent() != null){
+				jScrollPane1 = (JScrollPane)(jTabbedPane1.getSelectedComponent());
+				drawingPanel1 = (DrawingPanel)jScrollPane1.getViewport().getView();
+			}
+			else {
+				jScrollPane1 = null;
+				drawingPanel1 = null;
+			}
+			return;
+		}
 		//TODO: Add to this if-statement the condition that checks whether or
 		//not the currently selected index has already been saved
 		if (jTabbedPane1.getSelectedIndex() != -1) {
