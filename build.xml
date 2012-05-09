@@ -34,6 +34,7 @@
 	<!--Clean and built files-->
     <target name="clean">
         <delete dir="${bin.dir}"/>
+        <delete dir="${junit.output.dir}"/>
     </target>
 	
 	<!--Compile the project-->
