@@ -989,7 +989,7 @@ public class MainFrame extends javax.swing.JFrame {
 	}
 	
 	/**
-	 * This is what happens when you click undo.
+	 * This is what happens when you click export ot PNG.
 	 */
 	private void exportToPNGActionPerformed(java.awt.event.ActionEvent evt) {
 		if (drawingPanel1 != null) {
@@ -1051,7 +1051,7 @@ public class MainFrame extends javax.swing.JFrame {
 	}
 
 	/**
-	 * This is what happens when you click undo.
+	 * This is what happens when you click export to LaTeX.
 	 */
 	private void exportToLatexActionPerformed(java.awt.event.ActionEvent evt) {
 		JTextArea latexText = new JTextArea();

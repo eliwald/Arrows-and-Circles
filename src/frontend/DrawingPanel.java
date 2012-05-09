@@ -20,29 +20,57 @@ import backend.*;
 
 @SuppressWarnings("serial")
 public class DrawingPanel extends JPanel {
+	
+	/*
+	 * Instance variables:
+	 * SMALLER_RADIUS is the value by which the inner circle of an accept state's radius should decrease from the outer circle's.
+	 * _project is the DiagramProject associated with this drawingPanel; it stores most of the information associated with drawing the nodes and edges on the canvas.
+	 * _progressLine is the line displayed when the user is in the process of forming an edge.
+	 * _selectRectangle is the rectangle displayed when the user is dragging the mouse to select on the canvas.
+	 *  
+	 */
 
 	private static final double SMALLER_RADIUS = 4;
 	private DiagramProject _project;
 	public Shape _progressLine;
 	private Rectangle _selectRectangle;
 
+	/**
+	 * Constructor: sets _project and BGColor
+	 * @param project
+	 */
 	public DrawingPanel(DiagramProject project) {
 		_project = project;
 		setBackground(Color.WHITE);
 	}
 
+	/**
+	 * Returns diagram
+	 * @return
+	 */
 	public Diagram getDiagram() {
 		return _project.getCurrentDiagram();
 	}
 
+	/**
+	 * returns DiagramProject
+	 * @return
+	 */
 	public DiagramProject getDiagramProject() {
 		return _project;
 	}
 	
+	/**
+	 * Sets current DiagramProject
+	 * @param project
+	 */
 	public void setDiagramProject(DiagramProject project) {
 		_project = project;
 	}
 
+	/**
+	 * Sets node and edge selected values to false
+	 */
 	public void clearSelected() {
 		for (Node n : getDiagram().getNodes()){
 			n.setSelected(false);
@@ -56,6 +84,9 @@ public class DrawingPanel extends JPanel {
 		}
 	}
 
+	/**
+	 * clears current node or edge (in simulation)
+	 */
 	public void clearCurrent() {
 		for (Node n : getDiagram().getNodes()){
 			n.setCurrent(false);
@@ -65,6 +96,11 @@ public class DrawingPanel extends JPanel {
 		}
 	}
 
+	/**
+	 * Creates node at point p and adds it to the Diagram's list
+	 * @param p
+	 * @return
+	 */
 	public Node addNode(Point p) {
 		clearSelected();
 		Node n = new Node(p.x,p.y, this);
@@ -77,6 +113,10 @@ public class DrawingPanel extends JPanel {
 
 	}
 
+	/**
+	 * PAINTS EVERYTHING.
+	 * Options for if selected, start, end, etc.
+	 */
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g); 
 		Graphics2D g2 = (Graphics2D) g;
@@ -174,10 +214,18 @@ public class DrawingPanel extends JPanel {
 
 	}
 
+	/**
+	 * Sets selectRectangle
+	 * @param selectRectangle
+	 */
 	public void setSelectRectangle(Rectangle selectRectangle) {
 		_selectRectangle = selectRectangle;
 	}
 
+	/**
+	 * returns select rectangle
+	 * @return
+	 */
 	public Rectangle getSelectRectangle() {
 		return _selectRectangle;
 	}
