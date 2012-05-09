@@ -3,25 +3,42 @@
   / _ \ | '__| '__/ _ \ \ /\ / / __|  / _ \/\ | |   | | '__/ __| |/ _ \/ __|
  / ___ \| |  | | | (_) \ V  V /\__ \ | (_>  < | |___| | | | (__| |  __/\__ \
 /_/   \_\_|  |_|  \___/ \_/\_/ |___/  \___/\/  \____|_|_|  \___|_|\___||___/
-                                                                            
-CS32 Introduction to Software Engineering, Spring 2012 Term project.
+                                                                 
+  Drawing Finite State Machines (FSM) and graphs, as well as simulating 
+  deterministic FSM.
+           
+  CS32 Introduction to Software Engineering, Spring 2012 Term project.
+
 === TEAM MEMBERS ===
                  Edward Grystar  <egrystar@cs.brown.edu>
     Abhabongse "Plane" Janthong  <ajanthon@cs.brown.edu>
                 Sanford Student  <sstudent@cs.brown.edu>
                      Elias Wald  <ewald@cs.brown.edu>
 
+  So... basically we have this program. If you don't know you never will.
 
-So... basically we have this program. If you don't know you never will.
+=== HOW TO RUN THE PROGRAM ===
 
-HOW TO RUN:
-Compile all java files. You then have several options to run the program:
-1. cd into topmost directory.  ./run
-2. cd into aforementioned directory. java MainFrame
-3. run the jar file. java -jar arrows-and-circles.jar
+  There are two ways to run the program.
+  1. Using ant:                  $ ant MainFrame
+  2. Run the compiled JAR file:  $ java -jar arrows-and-circles.jar
 
-All controls for the program are found in the Help->About menu. Select controls are also displayed at the bottom of the window below the canvas based on context.
+  All controls for the program can be found in the "Help > About" menu.
+  Select controls are also displayed at the bottom of the window below the
+  canvas based on the context of the user's action.
 
-All important information about design, functionality, etc. can be found in our design/specifications documents.
+=== OTHER INFORMATION ===
 
-We made use of the open sourced JSON library called GSON (http://code.google.com/p/google-gson/) to read/write saved file of the diagram.
+  All important information about design, functionality, etc. can be found
+  in our design/specification documents or the the doc/ directory.
+
+=== CREDITS ===
+
+  This software uses the JSON parser implematation called "google-gson"
+  (http://code.google.com/p/google-gson/).  The "google-gson" is released
+  under the Apache License 2.0, and the copy of the license is provided at
+  "lib/APACHE-LICENSE-2.0.txt".  Please note that this does *not* mean we
+  are releasing our software under the Apache License.
+
+
+  
