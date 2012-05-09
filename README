@@ -20,8 +20,19 @@
 === HOW TO RUN THE PROGRAM ===
 
   There are two ways to run the program.
-  1. Using ant:                  $ ant MainFrame
-  2. Run the compiled JAR file:  $ java -jar arrows-and-circles.jar
+
+  (1) Using ant with build.xml file. 
+      The easiest way is just to run the command "ant" without arguments.
+      Here are some other commands supported
+      - cleaning up all build/compiled files:  $ ant clean
+      - compile project:                       $ ant compile
+      - run program:                           $ ant run
+      - build JAR file:			       $ ant build
+      - run diagram tests:                     $ ant testing-diagram
+
+  (2) Run the compiled JAR file:  
+      Assuming that the project has already been compiled, run
+        $ java -jar arrows-and-circles.jar
 
   All controls for the program can be found in the "Help > About" menu.
   Select controls are also displayed at the bottom of the window below the
