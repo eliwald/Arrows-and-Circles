@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite errors="0" failures="0" hostname="kite-laptop" name="testing.DiagramTest" tests="9" time="1.775" timestamp="2012-05-09T02:43:20">
+  <properties>
+    <property name="java.vendor" value="Sun Microsystems Inc." />
+    <property name="env.SESSION_MANAGER" value="local/kite-laptop:@/tmp/.ICE-unix/2108,unix/kite-laptop:/tmp/.ICE-unix/2108" />
+    <property name="env.LESSOPEN" value="| /usr/bin/lesspipe %s" />
+    <property name="lib.dir" value="/home/data/documents/brown/course/cs032/final/lib" />
+    <property name="sun.java.launcher" value="SUN_STANDARD" />
+    <property name="sun.management.compiler" value="HotSpot Tiered Compilers" />
+    <property name="docs.dir" value="/home/data/documents/brown/course/cs032/final/docs" />
+    <property name="os.name" value="Linux" />
+    <property name="sun.boot.class.path" value="/usr/lib/jvm/java-6-openjdk-i386/jre/lib/resources.jar:/usr/lib/jvm/java-6-openjdk-i386/jre/lib/rt.jar:/usr/lib/jvm/java-6-openjdk-i386/jre/lib/sunrsasign.jar:/usr/lib/jvm/java-6-openjdk-i386/jre/lib/jsse.jar:/usr/lib/jvm/java-6-openjdk-i386/jre/lib/jce.jar:/usr/lib/jvm/java-6-openjdk-i386/jre/lib/charsets.jar:/usr/lib/jvm/java-6-openjdk-i386/jre/lib/netx.jar:/usr/lib/jvm/java-6-openjdk-i386/jre/lib/plugin.jar:/usr/lib/jvm/java-6-openjdk-i386/jre/lib/rhino.jar:/usr/lib/jvm/java-6-openjdk-i386/jre/lib/modules/jdk.boot.jar:/usr/lib/jvm/java-6-openjdk-i386/jre/classes" />
+    <property name="env.PWD" value="/home/kite/course/cs032/final" />
+    <property name="env.XDG_SESSION_COOKIE" value="b1cefde59059d702f9d889d000000010-1336511481.746391-2002590297" />
+    <property name="sun.desktop" value="gnome" />
+    <property name="env.LANG" value="en_US.UTF-8" />
+    <property name="java.vm.specification.vendor" value="Sun Microsystems Inc." />
+    <property name="ant.home" value="/usr/share/ant" />
+    <property name="java.runtime.version" value="1.6.0_24-b24" />
+    <property name="env.DEFAULTS_PATH" value="/usr/share/gconf/ubuntu.default.path" />
+    <property name="env.DISPLAY" value=":0.0" />
+    <property name="user.name" value="kite" />
+    <property name="env._" value="/usr/bin/ant" />
+    <property name="env.USER" value="kite" />
+    <property name="env.SHELL" value="/bin/bash" />
+    <property name="env.DESKTOP_SESSION" value="ubuntu" />
+    <property name="env.XDG_DATA_DIRS" value="/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/" />
+    <property name="env.PATH" value="/home/kite/bin:/usr/lib/lightdm/lightdm:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games" />
+    <property name="env.XDG_CURRENT_DESKTOP" value="Unity" />
+    <property name="user.language" value="en" />
+    <property name="sun.boot.library.path" value="/usr/lib/jvm/java-6-openjdk-i386/jre/lib/i386" />
+    <property name="ant.project.default-target" value="run" />
+    <property name="ant.project.name" value="arrows-and-circles" />
+    <property name="java.version" value="1.6.0_24" />
+    <property name="user.timezone" value="" />
+    <property name="env.DBUS_SESSION_BUS_ADDRESS" value="unix:abstract=/tmp/dbus-zYk5gcaWLX,guid=10f08f596fca88c9b01a913600000039" />
+    <property name="sun.arch.data.model" value="32" />
+    <property name="env.COMPIZ_CONFIG_PROFILE" value="ubuntu" />
+    <property name="env.SSH_AGENT_PID" value="2145" />
+    <property name="java.endorsed.dirs" value="/usr/lib/jvm/java-6-openjdk-i386/jre/lib/endorsed" />
+    <property name="sun.cpu.isalist" value="" />
+    <property name="sun.jnu.encoding" value="UTF-8" />
+    <property name="file.encoding.pkg" value="sun.io" />
+    <property name="env.SHLVL" value="1" />
+    <property name="file.separator" value="/" />
+    <property name="java.specification.name" value="Java Platform API Specification" />
+    <property name="env.GNOME_DESKTOP_SESSION_ID" value="this-is-deprecated" />
+    <property name="java.class.version" value="50.0" />
+    <property name="env.GDMSESSION" value="ubuntu" />
+    <property name="ant.file.arrows-and-circles" value="/home/data/documents/brown/course/cs032/final/build.xml" />
+    <property name="user.country" value="US" />
+    <property name="env.GNOME_KEYRING_PID" value="2097" />
+    <property name="java.home" value="/usr/lib/jvm/java-6-openjdk-i386/jre" />
+    <property name="dist.dir" value="/home/data/documents/brown/course/cs032/final/dist" />
+    <property name="java.vm.info" value="mixed mode" />
+    <property name="env.LOGNAME" value="kite" />
+    <property name="ant.file" value="/home/data/documents/brown/course/cs032/final/build.xml" />
+    <property name="os.version" value="3.2.0-24-generic-pae" />
+    <property name="path.separator" value=":" />
+    <property name="java.vm.version" value="20.0-b12" />
+    <property name="ant.library.dir" value="/usr/share/ant/lib" />
+    <property name="env.XDG_SESSION_PATH" value="/org/freedesktop/DisplayManager/Session0" />
+    <property name="junit.output.dir" value="junit" />
+    <property name="java.awt.printerjob" value="sun.print.PSPrinterJob" />
+    <property name="env.TERM" value="xterm" />
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle" />
+    <property name="env.LIBGL_DRIVERS_PATH" value="/usr/lib/fglrx/dri" />
+    <property name="user.home" value="/home/kite" />
+    <property name="target" value="1.6" />
+    <property name="env.__KMP_REGISTERED_LIB_2176" value="0xb5ffda94-cafe1e15-libiomp5.a" />
+    <property name="env.OLDPWD" value="/home/kite" />
+    <property name="ant.file.type.arrows-and-circles" value="file" />
+    <property name="java.specification.vendor" value="Sun Microsystems Inc." />
+    <property name="env.WINDOWID" value="56623110" />
+    <property name="java.vendor.url" value="http://java.sun.com/" />
+    <property name="java.library.path" value="/usr/lib/jvm/java-6-openjdk-i386/jre/lib/i386/server:/usr/lib/jvm/java-6-openjdk-i386/jre/lib/i386:/usr/lib/jvm/java-6-openjdk-i386/jre/../lib/i386:/usr/java/packages/lib/i386:/usr/lib/i386-linux-gnu/jni:/lib/i386-linux-gnu:/usr/lib/i386-linux-gnu:/usr/lib/jni:/lib:/usr/lib" />
+    <property name="java.vm.vendor" value="Sun Microsystems Inc." />
+    <property name="bin.dir" value="/home/data/documents/brown/course/cs032/final/bin" />
+    <property name="java.runtime.name" value="OpenJDK Runtime Environment" />
+    <property name="ant.version" value="Apache Ant(TM) version 1.8.2 compiled on December 3 2011" />
+    <property name="java.class.path" value="/home/data/documents/brown/course/cs032/final/bin:/home/data/documents/brown/course/cs032/final/lib/google-gson-stream-2.1.jar:/home/data/documents/brown/course/cs032/final/lib/junit-4.11-SNAPSHOT-20120416-1530.jar:/usr/share/java/ant-launcher-1.8.2.jar:/usr/share/ant/lib/ant.jar:/usr/share/ant/lib/ant-junit.jar:/usr/share/ant/lib/ant-junit4.jar" />
+    <property name="sun.java.command" value="org.apache.tools.ant.taskdefs.optional.junit.JUnitTestRunner testing.DiagramTest filtertrace=true haltOnError=false haltOnFailure=false formatter=org.apache.tools.ant.taskdefs.optional.junit.OutErrSummaryJUnitResultFormatter showoutput=false outputtoformatters=true logfailedtests=true logtestlistenerevents=false formatter=org.apache.tools.ant.taskdefs.optional.junit.XMLJUnitResultFormatter,/home/data/documents/brown/course/cs032/final/junit/TEST-testing.DiagramTest.xml crashfile=/home/data/documents/brown/course/cs032/final/junitvmwatcher8306500309063884104.properties propsfile=/home/data/documents/brown/course/cs032/final/junit6516924357044496464.properties" />
+    <property name="env.UBUNTU_MENUPROXY" value="libappmenu.so" />
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification" />
+    <property name="ant.file.type" value="file" />
+    <property name="java.vm.specification.version" value="1.0" />
+    <property name="sun.os.patch.level" value="unknown" />
+    <property name="sun.cpu.endian" value="little" />
+    <property name="env.HOME" value="/home/kite" />
+    <property name="debuglevel" value="source,lines,vars" />
+    <property name="env.XDG_SEAT_PATH" value="/org/freedesktop/DisplayManager/Seat0" />
+    <property name="java.io.tmpdir" value="/tmp" />
+    <property name="env.LD_LIBRARY_PATH" value="/usr/lib/jvm/java-6-openjdk-i386/jre/lib/i386/server:/usr/lib/jvm/java-6-openjdk-i386/jre/lib/i386:/usr/lib/jvm/java-6-openjdk-i386/jre/../lib/i386" />
+    <property name="env.LS_COLORS" value="rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arj=01;31:*.taz=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.dz=01;31:*.gz=01;31:*.lz=01;31:*.xz=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.jpg=01;35:*.jpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.axv=01;35:*.anx=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.axa=00;36:*.oga=00;36:*.spx=00;36:*.xspf=00;36:" />
+    <property name="java.vendor.url.bug" value="http://java.sun.com/cgi-bin/bugreport.cgi" />
+    <property name="env.SSH_AUTH_SOCK" value="/tmp/keyring-Cfdx5Z/ssh" />
+    <property name="java.awt.graphicsenv" value="sun.awt.X11GraphicsEnvironment" />
+    <property name="os.arch" value="i386" />
+    <property name="java.ext.dirs" value="/usr/lib/jvm/java-6-openjdk-i386/jre/lib/ext:/usr/java/packages/lib/ext" />
+    <property name="env.__KMP_REGISTERED_LIB_7300" value="0xb5ffda94-cafe828d-libiomp5.a" />
+    <property name="user.dir" value="/home/data/documents/brown/course/cs032/final" />
+    <property name="env.XAUTHORITY" value="/home/kite/.Xauthority" />
+    <property name="env.MANDATORY_PATH" value="/usr/share/gconf/ubuntu.mandatory.path" />
+    <property name="line.separator" value="&#xa;" />
+    <property name="java.vm.name" value="OpenJDK Server VM" />
+    <property name="env.COLORTERM" value="gnome-terminal" />
+    <property name="basedir" value="/home/data/documents/brown/course/cs032/final" />
+    <property name="ant.java.version" value="1.6" />
+    <property name="ant.core.lib" value="/usr/share/ant/lib/ant.jar" />
+    <property name="source" value="1.6" />
+    <property name="file.encoding" value="UTF-8" />
+    <property name="env.GPG_AGENT_INFO" value="/tmp/keyring-Cfdx5Z/gpg:0:1" />
+    <property name="java.specification.version" value="1.6" />
+    <property name="src.dir" value="/home/data/documents/brown/course/cs032/final/src" />
+    <property name="env.GNOME_KEYRING_CONTROL" value="/tmp/keyring-Cfdx5Z" />
+    <property name="ant.project.invoked-targets" value="testing-diagram" />
+    <property name="env.XDG_CONFIG_DIRS" value="/etc/xdg/xdg-ubuntu:/etc/xdg" />
+    <property name="env.LESSCLOSE" value="/usr/bin/lesspipe %s %s" />
+  </properties>
+  <testcase classname="testing.DiagramTest" name="testInvalidInput" time="0.008" />
+  <testcase classname="testing.DiagramTest" name="testValidLongSimulation" time="0.018" />
+  <testcase classname="testing.DiagramTest" name="testEndState" time="0.005" />
+  <testcase classname="testing.DiagramTest" name="testBadFSM1" time="0.002" />
+  <testcase classname="testing.DiagramTest" name="testBadFSM2" time="0.002" />
+  <testcase classname="testing.DiagramTest" name="testBadFSM3" time="0.002" />
+  <testcase classname="testing.DiagramTest" name="testBadFSM4" time="0.003" />
+  <testcase classname="testing.DiagramTest" name="testBadFSM5" time="0.003" />
+  <testcase classname="testing.DiagramTest" name="testBadFSM6" time="0.002" />
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
