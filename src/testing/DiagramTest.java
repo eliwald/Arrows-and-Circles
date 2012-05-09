@@ -1,38 +1,25 @@
 package testing;
 
+import static org.junit.Assert.*;
+import org.junit.Test;
 import java.util.List;
 
-import org.junit.Test;
-
 import manager.DiagramProject;
-
 import frontend.DrawingPanel;
-
 import backend.DiagramObject;
 import backend.Edge;
 import backend.EdgeDirection;
 import backend.InvalidDFSMException;
 import backend.Node;
-import junit.framework.TestCase;
 
-/**
- * This demonstrates our passion for testing.
- * @author egrystar, sstudent
- *
- */
-
-/**
- * Tests
- * 	By: Eddie Grystar and Sandy Student
- */
-public class DiagramTest extends TestCase {
+public class DiagramTest {
 
 	private DrawingPanel _container;
 	private Node n1, n2, n3, n4, n5, n6, n7, n8, n9, n0;
 	private Edge e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16, e17, e18, e19, e20, e21, e22, e23, e24, e25, e26, e27, e28;
 
-	public DiagramTest(String arg0) {
-		super(arg0);
+	public DiagramTest() {
+
 		_container = new DrawingPanel(DiagramProject.newProject());
 		n1 = new Node(0,0,_container);
 		_container.getDiagram().addNode(n1);
@@ -308,7 +295,5 @@ public class DiagramTest extends TestCase {
 			// TODO Auto-generated catch block		
 		}
 	}
-	
-
 
 }
