@@ -286,7 +286,7 @@ public class MainFrame extends javax.swing.JFrame {
 			public void windowClosing(WindowEvent e) {
 				int answer = quitActionPerformed(null);
 				if (answer != 2)
-					System.exit(0);
+					dispose();
 			}
 			
 			@Override
