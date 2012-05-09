@@ -2,12 +2,10 @@ package backend;
 
 import java.awt.*;
 import java.awt.geom.*;
-import java.awt.geom.Point2D.Double;
 import java.util.Collection;
 import java.util.HashSet;
 
 import javax.swing.JLabel;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.text.BadLocationException;
 
@@ -121,8 +119,6 @@ public class Node implements DiagramObject, Cloneable {
 		try {
 			html = HTMLParser.setLabelText(label);
 		} catch (BadLocationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 		
 		_label = new JLabel(html);
@@ -399,7 +395,7 @@ public class Node implements DiagramObject, Cloneable {
 	/**
 	 * This method relocates the circle associated with this node based on its current location.
 	 * It then relocates the other graphical components that move with the circle:
-	 * the jlabel/textfield and start symbol triangle.
+	 * the JLabel/JTextField and start symbol triangle.
 	 * @return
 	 */
 	public Ellipse2D.Double resetCircle() {

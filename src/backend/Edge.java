@@ -1,14 +1,11 @@
 package backend;
 
-
 import java.awt.*;
 import java.awt.geom.Arc2D;
 import java.awt.geom.Point2D;
-import java.awt.geom.Point2D.Double;
 
 import javax.swing.JLabel;
 import javax.swing.JTextField;
-import javax.swing.text.BadLocationException;
 
 import frontend.*;
 

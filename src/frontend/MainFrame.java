@@ -6,7 +6,6 @@ package frontend;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -31,6 +30,7 @@ import backend.*;
  *
  * @author Eddie, Sandy, Eli, and Plane
  */
+@SuppressWarnings("serial")
 public class MainFrame extends javax.swing.JFrame {
 
 	/*
@@ -657,7 +657,9 @@ public class MainFrame extends javax.swing.JFrame {
 		jMenuItem8.setText("Exit");
 		jMenuItem8.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				quitActionPerformed(evt);
+				int answer = quitActionPerformed(null);
+				if (answer != 2)
+					dispose();
 			}
 		});
 		jMenu3.add(jMenuItem8);
@@ -723,9 +725,7 @@ public class MainFrame extends javax.swing.JFrame {
 		jMenuItemAbout.setText("About");
 		jMenuHelp.add(jMenuItemAbout);
 		jMenuItemAbout.addActionListener(new AboutActionListener());
-		
-		
-		jMenuBar2.add(jMenuHelp);
+
 		
 		jMenuExport.setText("Export");
 		
@@ -750,6 +750,7 @@ public class MainFrame extends javax.swing.JFrame {
 		jMenuExport.add(jMenuItemExportToPNG);
 		
 		jMenuBar2.add(jMenuExport);
+		jMenuBar2.add(jMenuHelp);
 
 		setJMenuBar(jMenuBar2);
 		
@@ -823,8 +824,9 @@ public class MainFrame extends javax.swing.JFrame {
 			File file = new File(filename);
 			DiagramProject.writeDiagram(file, diagram);
 			project.saved();
+			removeStar();
 		} catch (IOException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
 
@@ -880,8 +882,9 @@ public class MainFrame extends javax.swing.JFrame {
 			project.setFilename(file.getPath());
 			DiagramProject.writeDiagram(file, diagram);
 			project.saved();
+			removeStar();
 		} catch (IOException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
 	
@@ -904,7 +907,7 @@ public class MainFrame extends javax.swing.JFrame {
 		
 		// Iterate through each file and try to open.
 		for(File file : files) {
-			if(filenames.contains(file.getName())) {
+			if(filenames.contains(file.getPath())) {
 				continue;
 			}
 			try {
@@ -948,6 +951,14 @@ public class MainFrame extends javax.swing.JFrame {
 				_edgesSelected.add(e);
 		}
 		drawingPanel1.repaint();
+		if (drawingPanel1.getDiagramProject().upToDate()) {
+			removeStar();
+			jTabbedPane1.repaint();
+		}
+		else {
+			setStar();
+			jTabbedPane1.repaint();
+		}
 	}
 	
 	/**
@@ -966,15 +977,79 @@ public class MainFrame extends javax.swing.JFrame {
 				_edgesSelected.add(e);
 		}
 		drawingPanel1.repaint();
+		
+		if (drawingPanel1.getDiagramProject().upToDate()) {
+			removeStar();
+			jTabbedPane1.repaint();
+		}
+		else {
+			setStar();
+			jTabbedPane1.repaint();
+		}
 	}
 	
 	/**
 	 * This is what happens when you click undo.
 	 */
 	private void exportToPNGActionPerformed(java.awt.event.ActionEvent evt) {
-		//TODO: Add code to handle undo.
+		if (drawingPanel1 != null) {
+			File file = exportImageFileChooser();
+			if (file == null)
+				return;
+			
+			File dir = file.getParentFile();
+			if(file.getName().equals(".png")) {
+				File[] existFiles = dir.listFiles();
+				HashSet<String> filenames = new HashSet<String>();
+				for(int i = 0; i < existFiles.length; i++) {
+					filenames.add(existFiles[i].getName());
+				}
+				
+				String proposedName = DEFAULT_FILENAME + ".png";
+				if(!filenames.contains(proposedName)) {
+					file = new File(dir.getPath() + "/" + proposedName);
+				} else {
+					for(int i = 0; true; i++) {
+						proposedName = DEFAULT_FILENAME + "(" + i + ")" + ".png";
+						if(!filenames.contains(proposedName)) {
+							file = new File(dir.getPath() + "/" + proposedName);
+							break;
+						}
+					}
+				}
+			}
+			else {
+				if(!file.getName().endsWith(".png")) {
+					file = new File(dir.getPath() + "/" + file.getName() + ".png");
+				}
+				if(file.exists()) {
+			        int result = JOptionPane.showConfirmDialog(this, "The file already exists. Would you like to overwrite anyway?", "File Existed", JOptionPane.YES_NO_OPTION);
+			        switch(result){
+			            case JOptionPane.YES_OPTION:
+			                break;
+			            case JOptionPane.NO_OPTION:
+			                return;
+			        }
+				}
+			}
+			Export.writeImage(drawingPanel1, file);
+		}
 	}
 	
+	private File exportImageFileChooser() {
+		JFileChooser chooser = new JFileChooser();
+		FileFilter filter = new FileNameExtensionFilter("PNG Picture File", "png");
+		chooser.setFileFilter(filter);
+		chooser.setAcceptAllFileFilterUsed(false);
+		
+		int returnVal = chooser.showSaveDialog(null);
+		if(returnVal == JFileChooser.APPROVE_OPTION) {
+			return chooser.getSelectedFile();
+		} else {
+			return null;
+		}
+	}
+
 	/**
 	 * This is what happens when you click undo.
 	 */
@@ -990,6 +1065,7 @@ public class MainFrame extends javax.swing.JFrame {
 		dialog.setSize(new Dimension(720, 480));
 		dialog.setLocation((int)this.getLocationOnScreen().getX() + 150, (int)this.getLocationOnScreen().getY() + 150);
 		dialog.setVisible(true);
+		dialog.setTitle("Copy Into a Latex Document");
 	}
 	
 	/**
@@ -1084,16 +1160,18 @@ public class MainFrame extends javax.swing.JFrame {
 	 * @param evt
 	 */
 	private void closeTabActionPerformed(java.awt.event.ActionEvent evt) {
-		if (drawingPanel1.getDiagramProject() == null) {
+		if (drawingPanel1 != null && drawingPanel1.getDiagramProject() == null) {
 			int currIndex = jTabbedPane1.getSelectedIndex();
-			jTabbedPane1.remove(currIndex);
-			if (jTabbedPane1.getSelectedComponent() != null){
-				jScrollPane1 = (JScrollPane)(jTabbedPane1.getSelectedComponent());
-				drawingPanel1 = (DrawingPanel)jScrollPane1.getViewport().getView();
-			}
-			else {
-				jScrollPane1 = null;
-				drawingPanel1 = null;
+			if (currIndex != -1) {
+				jTabbedPane1.remove(currIndex);
+				if (jTabbedPane1.getSelectedComponent() != null){
+					jScrollPane1 = (JScrollPane)(jTabbedPane1.getSelectedComponent());
+					drawingPanel1 = (DrawingPanel)jScrollPane1.getViewport().getView();
+				}
+				else {
+					jScrollPane1 = null;
+					drawingPanel1 = null;
+				}
 			}
 			return;
 		}
@@ -1723,6 +1801,23 @@ public class MainFrame extends javax.swing.JFrame {
 	public Robot getRobot() {
 		return _robot;
 	}
+	
+	public void setStar() {
+		if (jTabbedPane1.getSelectedIndex() != -1 && drawingPanel1.getDiagramProject() != null) {
+			int currIndex = jTabbedPane1.getSelectedIndex();
+			ImageIcon star = new ImageIcon("./src/img/star.png");
+			jTabbedPane1.setIconAt(currIndex, star);
+			jTabbedPane1.repaint();
+		}
+	}
+	
+	public void removeStar() {
+		if (jTabbedPane1.getSelectedIndex() != -1 && drawingPanel1.getDiagramProject() != null) {
+			int currIndex = jTabbedPane1.getSelectedIndex();
+			jTabbedPane1.setIconAt(currIndex, null);
+			jTabbedPane1.repaint();
+		}
+	}
 
 	/**
 	 * @param args the command line arguments
@@ -1754,5 +1849,5 @@ public class MainFrame extends javax.swing.JFrame {
 			}
 		});
 	}
-		}
+}
 

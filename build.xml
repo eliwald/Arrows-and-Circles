@@ -1,55 +1,63 @@
-<?xml version="1.0"?>
-<project basedir="." default="run" name="arrows">
-
-  <property name="src" location="${basedir}/src"/>
-  <property name="lib" location="${basedir}/lib"/>
-  <property name="build" location="${basedir}/bin"/>
-  <property name="pkg" value="frontend"/>
-  <property name="args" value="" />
-  <property name="main_class" value="MainFrame"/>
-
-  <property name="TALK" value="false" />
-
-  <property name="java_ver" value="1.6" />
-
-  <target name="get-jvm">
-    <condition property="jvm.ok">
-      <equals arg1="${ant.java.version}" arg2="1.6"/>
-    </condition>
-  </target>
-
-  <target name="check-jvm" depends="get-jvm" unless="jvm.ok">
-    <fail message="Wrong JVM - ${ant.java.version}. Try setting or unsetting yo\
-ur JAVA_HOME"/>
-  </target>
-
-  <target name="clean">
-    <delete dir="${build}"/>
-  </target>
-
-  <target name="init">
-    <mkdir dir="${build}" />
-  </target>
-
-  <target name="c" depends="check-jvm, init">
-    <javac
-        srcdir="${src}"
-        destdir="${build}"
-        debug="on"
-        source="${java_ver}" >
-      <include name="*.java"/>
-      <include name="*/*.java"/>
-      <include name="*/*/*.java"/>
-    </javac>
-  </target>
-
-  <target name="run" depends="c">
-    <java
-        classname="${pkg}.${main_class}"
-        classpath="${build}">
-      <arg value="${args}"/>
-    </java>
-  </target>
-
-
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- WARNING: Eclipse auto-generated file.
+              Any modifications will be overwritten.
+              To include a user specific buildfile here, simply create one in the same
+              directory with the processing instruction <?eclipse.ant.import?>
+              as the first entry and export the buildfile again. -->
+<project basedir="." default="build" name="arrows-and-circles">
+    <property environment="env"/>
+    <property name="ECLIPSE_HOME" value="../../../../../../../usr/lib/eclipse"/>
+    <property name="debuglevel" value="source,lines,vars"/>
+    <property name="target" value="1.6"/>
+    <property name="source" value="1.6"/>
+    <path id="JUnit 4.libraryclasspath">
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.junit4_4.5.0.v20090824/junit.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.hamcrest.core_1.1.0.jar"/>
+    </path>
+    <path id="arrows-and-circles.classpath">
+        <pathelement location="bin"/>
+        <pathelement location="lib/google-gson-stream-2.1.jar"/>
+        <path refid="JUnit 4.libraryclasspath"/>
+    </path>
+    <target name="init">
+        <mkdir dir="bin"/>
+        <copy includeemptydirs="false" todir="bin">
+            <fileset dir="src">
+                <exclude name="**/*.launch"/>
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+    <target name="clean">
+        <delete dir="bin"/>
+    </target>
+    <target depends="clean" name="cleanall"/>
+    <target depends="build-subprojects,build-project" name="build"/>
+    <target name="build-subprojects"/>
+    <target depends="init" name="build-project">
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="bin" source="${source}" target="${target}">
+            <src path="src"/>
+            <classpath refid="arrows-and-circles.classpath"/>
+        </javac>
+    </target>
+    <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
+    <target description="copy Eclipse compiler jars to ant lib directory" name="init-eclipse-compiler">
+        <copy todir="${ant.library.dir}">
+            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
+        </copy>
+        <unzip dest="${ant.library.dir}">
+            <patternset includes="jdtCompilerAdapter.jar"/>
+            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
+        </unzip>
+    </target>
+    <target description="compile project with Eclipse compiler" name="build-eclipse-compiler">
+        <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
+        <antcall target="build"/>
+    </target>
+    <target name="MainFrame">
+        <java classname="frontend.MainFrame" failonerror="true" fork="yes">
+            <classpath refid="arrows-and-circles.classpath"/>
+        </java>
+    </target>
 </project>

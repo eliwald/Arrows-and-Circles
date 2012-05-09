@@ -34,9 +34,6 @@ public class DiagramProject {
 	/** The object that keeps track of recent changes to the diagram.
 	 * It is useful for undo and redo features. */
 	private HistoryStack _history;
-
-	/** Boolean indicating whether the project is from a file, not a newly created one. */
-	private boolean _loaded;
 	
 	/** Last saved revision number */
 	private int _savedRevision;
@@ -185,7 +182,6 @@ public class DiagramProject {
 		DiagramProject project = new DiagramProject();
 		project._filename = null;
 		project._history = new HistoryStack();
-		project._loaded = false;
 		project._savedRevision = 0;
 		project._undoRedoRevision = 0;
 		project._diagram = new Diagram();
@@ -202,7 +198,6 @@ public class DiagramProject {
 		DiagramProject project = new DiagramProject();
 		project._filename = filename;
 		project._history = new HistoryStack();
-		project._loaded = true;
 		project._savedRevision = 1;
 		project._undoRedoRevision = 0;
 		project._diagram = openedDiagram;

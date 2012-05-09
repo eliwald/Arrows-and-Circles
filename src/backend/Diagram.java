@@ -17,7 +17,6 @@ public class Diagram implements Cloneable {
 	private MainFrame _frame;
 	private HashMap<Node, Node> _oldNodeToNew;
 	private HashMap<Edge, Edge> _newEdgeToOld;
-	private HashMap<Edge, Edge> _oldEdgeToNew;
 
 	public Diagram() {
 		_nodes = new HashSet<Node>();
@@ -91,7 +90,6 @@ public class Diagram implements Cloneable {
 		}
 		
 		_newEdgeToOld = edgeMap;
-		_oldEdgeToNew = newEdgeMap;
 		_oldNodeToNew = nodeMap;
 		
 		for (Node oldNode : old_nodes) {

@@ -9,8 +9,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import javax.swing.JTextField;
 
-import backend.Diagram;
-
 /**
  * Text area listener that gives focus back to the given container when enter is pressed.
  * @author sstudent
