@@ -173,7 +173,7 @@ public class DrawingPanelMouseListener extends MouseAdapter {
 		_frame.resetDrawingVariables();
 		
 		//Check if we are trying to draw another edge
-		if (MouseEvent.getMouseModifiersText(evt.getModifiers()).contains("Shift")) {
+		if (evt.isShiftDown()) {
 			for (Node n : _frame.getDrawing().getDiagram().getNodes()) {
 				if (n.getCircle().contains(evt.getPoint())) {
 					_frame.setEdgeStart(n);
