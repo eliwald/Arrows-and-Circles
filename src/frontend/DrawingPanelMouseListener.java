@@ -76,7 +76,7 @@ public class DrawingPanelMouseListener extends MouseAdapter {
 		//Otherwise, it's a single click
 		else{
 			//If Ctrl is clicked, we are selecting multiple nodes/edges
-			if (mod.equals("Ctrl+Button1")) {
+			if (evt.isControlDown()) {
 				//Iterate over all edges and nodes, toggling selection for each node and edge
 				for (Node n : _frame.getDrawing().getDiagram().getNodes()){
 					n.getTextField().setVisible(false);
