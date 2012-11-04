@@ -157,7 +157,7 @@ public class Export {
 			}
 			
 			// Draw label
-			dataToReturn += "\\draw (" + center.getX()*TEX_SCALE + "," + center.getY()*TEX_SCALE + ") node {$" + Export.addBrackets(n.getTextField().getText()) + "$};\n";
+			dataToReturn += "\\draw (" + center.getX()*TEX_SCALE + "," + center.getY()*TEX_SCALE + ") node {$" + n.getTextField().getText() + "$};\n";
 		}
 		
 		return dataToReturn;
@@ -173,15 +173,5 @@ public class Export {
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-
-	public static String addBrackets(String nodeLabel) {
-		String toReturn = "";
-		String[] underscoreSplit = nodeLabel.split("_");
-		toReturn += underscoreSplit[0];
-		for (int i = 1; i < underscoreSplit.length; i ++) {
-			toReturn += "_{" + underscoreSplit[i] + "}";
-		}
-		return toReturn;
 	}
 }
