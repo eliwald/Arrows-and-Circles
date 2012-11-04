@@ -10,7 +10,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.*;
-import javax.swing.text.DefaultEditorKit;
 import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -1052,9 +1051,6 @@ public class MainFrame extends javax.swing.JFrame {
 	 */
 	private void exportToLatexActionPerformed(java.awt.event.ActionEvent evt) {
 		JTextArea latexText = new JTextArea();
-		InputMap im = (InputMap) UIManager.get("TextField.focusInputMap");
-		im.put(KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.META_DOWN_MASK), DefaultEditorKit.copyAction);
-		im.put(KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.META_DOWN_MASK), DefaultEditorKit.pasteAction);
 		latexText.setEditable(false);
 		if (drawingPanel1.getDiagramProject() != null)
 			latexText.setText(Export.toLatex(drawingPanel1.getDiagram()));
