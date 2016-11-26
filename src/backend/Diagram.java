@@ -250,9 +250,11 @@ public class Diagram implements Cloneable {
 				}
 			}
 			
+			//mjmahone: This is not quite right: it should only fail if it hits
+			//a node without an edge it needs
 			//Make sure that all the strings in the input alphabet are in the temp_edge_labels, meaning
 			//that this node has all characters in the input alphabet.
-			already_seen = Collections.synchronizedSet(new HashSet<String>());
+			/*already_seen = Collections.synchronizedSet(new HashSet<String>());
 			for (String s : edge_labels) {
 				if(!temp_edge_labels.remove(s)) {
 					if (!already_seen.contains(s)) {
@@ -263,7 +265,7 @@ public class Diagram implements Cloneable {
 						already_seen.add(s);
 					}
 				}
-			}
+			}*/
 		}
 		
 		//For each character in the input string, make sure that the character is in the input alphabet.
@@ -288,6 +290,7 @@ public class Diagram implements Cloneable {
 		//set to return.
 		simulation.add(tempNode);
 		for (int i = 0; i < input.length(); i ++) {
+			boolean tookEdge = false;
 			tempInput = input.substring(i, i+1);
 			for (Edge e : tempNode.getConnected()){
 				String[] splitcomma = e.getTextField().getText().split(",");
@@ -301,10 +304,16 @@ public class Diagram implements Cloneable {
 				for (String s : labels) {
 					if (e.getStartNode() == tempNode && s.equals(tempInput)) {
 						tempDest = e.getEndNode();
+						tookEdge = true;
 						//tempEdgeTaken = e;
 						break;
 					}
 				}
+			}
+			if (!tookEdge) {
+				String tookEdgeMessage = "Node " + tempNode.getTextField().getText(); 
+				tookEdgeMessage += " doesn't have an edge labeled " + tempInput + ".\n";
+				throw new InvalidDFSMException(tookEdgeMessage);
 			}
 			//simulation.add(tempEdgeTaken);
 			simulation.add(tempDest);
